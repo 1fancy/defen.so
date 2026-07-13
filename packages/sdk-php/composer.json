@@ -1,0 +1,36 @@
+{
+    "name": "defenso/sdk-php",
+    "description": "Defenso PHP SDK — WAF, uptime, and attack-log middleware for Laravel and Symfony. Fails open.",
+    "type": "library",
+    "keywords": ["defenso", "waf", "security", "middleware", "laravel", "symfony"],
+    "homepage": "https://defen.so",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Defenso",
+            "email": "info@defen.so"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "psr/http-message": "^1.1 || ^2.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0 || ^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Defenso\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Defenso\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "minimum-stability": "stable"
+}

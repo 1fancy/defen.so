@@ -1,0 +1,74 @@
+{
+  "name": "@defen.so/sdk-node",
+  "version": "0.1.0",
+  "description": "Defenso Node.js SDK — fail-open WAF, bot detection, and attack-log middleware for Express, Fastify, and Next.js. One line, always on. If Defenso is unreachable, your app keeps serving.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./express": {
+      "types": "./dist/express.d.ts",
+      "import": "./dist/express.js"
+    },
+    "./fastify": {
+      "types": "./dist/fastify.d.ts",
+      "import": "./dist/fastify.js"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js"
+    }
+  },
+  "files": ["dist", "src", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "defenso",
+    "defen.so",
+    "waf",
+    "web-application-firewall",
+    "security",
+    "middleware",
+    "express",
+    "fastify",
+    "nextjs",
+    "next.js",
+    "bot-detection",
+    "ddos",
+    "attack-logs",
+    "owasp",
+    "sql-injection",
+    "xss",
+    "path-traversal",
+    "fails-open",
+    "vibe-coder",
+    "cursor",
+    "claude"
+  ],
+  "author": "Defenso <info@defen.so> (https://defen.so)",
+  "license": "MIT",
+  "homepage": "https://defen.so/install",
+  "bugs": {
+    "url": "https://github.com/1fancy/defen.so/issues",
+    "email": "info@defen.so"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1fancy/defen.so.git",
+    "directory": "packages/sdk-node"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}

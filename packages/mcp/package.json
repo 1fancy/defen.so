@@ -1,0 +1,53 @@
+{
+  "name": "@defen.so/mcp",
+  "version": "0.1.0",
+  "description": "Defenso MCP server for Claude Code, Cursor, Windsurf, and VS Code. Gives your AI assistant real security tools — scan any domain, check security headers, list uptime monitors, explain WAF verdicts. Deterministic, auditable, and safe to run inline.",
+  "type": "module",
+  "bin": {
+    "defenso": "./src/cli.js",
+    "defenso-mcp": "./src/index.js"
+  },
+  "main": "./src/index.js",
+  "files": ["src", "README.md"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "cursor",
+    "windsurf",
+    "codex",
+    "vscode",
+    "ai-security",
+    "waf",
+    "security",
+    "pentest",
+    "vibe-coder",
+    "defenso",
+    "defen.so",
+    "web-application-firewall",
+    "ddos",
+    "bot-detection",
+    "honeypot",
+    "site-security",
+    "developer-tools"
+  ],
+  "author": "Defenso <info@defen.so> (https://defen.so)",
+  "license": "MIT",
+  "homepage": "https://defen.so/mcp",
+  "bugs": {
+    "url": "https://github.com/1fancy/defen.so/issues",
+    "email": "info@defen.so"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1fancy/defen.so.git",
+    "directory": "packages/mcp"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

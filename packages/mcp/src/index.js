@@ -27,6 +27,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 const API_BASE = process.env.DEFENSO_API || 'https://mcp.defen.so';
+const API_PATH = process.env.DEFENSO_API_PATH || '/api/mcp';
 
 /** Load token from env, then ~/.defenso/config.json fallback. */
 function loadToken() {
@@ -43,19 +44,37 @@ const server = new Server(
   { capabilities: { tools: {} } }
 );
 
+/**
+ * Tool descriptions include explicit `WHEN TO USE` guidance so the assistant
+ * calls us only for things that need live data or authenticated writes.
+ * For general security reasoning (explain a CVE, write a WAF rule from scratch)
+ * the assistant should use its own model — cheaper for the user and for us.
+ */
 const TOOLS = [
   {
     name: 'scan_domain',
-    description: 'Run a Defenso surface pentest on a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git, headers. Returns a graded report.',
+    description: [
+      'Run a live surface pentest against a URL — TLS, HSTS, CSP, cookie flags, exposed .env/.git/backup files, security headers. Returns a graded A–F report with per-check evidence.',
+      '',
+      'WHEN TO USE: user asks to "audit", "pentest", "scan", or "check the security of" a specific URL and needs *fresh live data*. This tool actually reaches the target.',
+      'WHEN NOT TO USE: for general "how do I secure X" advice, answer with your own knowledge — don\'t burn a scan quota. Also skip if the user only wants headers (use check_headers instead, it\'s cheaper).',
+    ].join('\n'),
     inputSchema: {
       type: 'object',
-      properties: { url: { type: 'string', description: 'Full URL, e.g. https://example.com' } },
+      properties: {
+        url: { type: 'string', description: 'Full URL including scheme, e.g. https://example.com' },
+      },
       required: ['url'],
     },
   },
   {
     name: 'check_headers',
-    description: 'Fetch a URL and inspect security headers (HSTS, CSP, X-Frame-Options, Referrer-Policy). Faster than scan_domain.',
+    description: [
+      'Fetch a URL and return the response security-header set (HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) plus server banner. Deterministic, ~1 second.',
+      '',
+      'WHEN TO USE: user asks about the *current* security header state of a specific site. Faster and lighter than scan_domain.',
+      'WHEN NOT TO USE: to explain what a header does — answer that from your own knowledge.',
+    ].join('\n'),
     inputSchema: {
       type: 'object',
       properties: { url: { type: 'string' } },
@@ -63,16 +82,51 @@ const TOOLS = [
     },
   },
   {
-    name: 'list_monitors',
-    description: 'List all uptime monitors for the authenticated Defenso account.',
+    name: 'list_sites',
+    description: [
+      'List every site registered under the authenticated Defenso account, with plan, connection method, and CNAME status.',
+      '',
+      'WHEN TO USE: user asks "what sites do I have on defenso", "which sites are protected", or wants a summary of coverage. Requires a valid DEFENSO_TOKEN.',
+    ].join('\n'),
     inputSchema: { type: 'object', properties: {} },
   },
   {
-    name: 'explain_verdict',
-    description: 'Explain a Defenso attack log verdict in plain language, with reproduction steps and mitigation.',
+    name: 'list_monitors',
+    description: [
+      'List every uptime monitor the calling account owns, with current status (up/down), last checked timestamp, and 24h uptime %.',
+      '',
+      'WHEN TO USE: user asks "are my sites up", "any monitors down", or wants current uptime state.',
+    ].join('\n'),
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'list_recent_attacks',
+    description: [
+      'Return the most recent WAF and honeypot events from the last N hours, with rule, IP, path, action.',
+      '',
+      'WHEN TO USE: user asks "any attacks recently", "who\'s hitting my site", or is investigating an incident. Live data — the assistant cannot know this without calling us.',
+    ].join('\n'),
     inputSchema: {
       type: 'object',
-      properties: { verdict_id: { type: 'string' } },
+      properties: {
+        hours: { type: 'integer', description: 'How far back to look (default 24, max 168)', minimum: 1, maximum: 168 },
+        limit: { type: 'integer', description: 'Max rows (default 20, max 100)', minimum: 1, maximum: 100 },
+      },
+    },
+  },
+  {
+    name: 'explain_verdict',
+    description: [
+      'Given a Defenso attack-log verdict ID or rule ID, return the pattern, target, action, plan tier, and one-paragraph explanation with reproduction and mitigation.',
+      '',
+      'WHEN TO USE: user asks "why did rule XSS-1 fire", "explain this block", or references a specific verdict/rule ID. Preferred over guessing.',
+      'WHEN NOT TO USE: for generic "what is XSS" answers — use your own knowledge.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        verdict_id: { type: 'string', description: 'Attack log row ID or WAF rule ID (e.g. XSS-1, SQLi-3, HONEY)' },
+      },
       required: ['verdict_id'],
     },
   },
@@ -91,7 +145,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/${name}`, {
+    const response = await fetch(`${API_BASE}${API_PATH}/${name}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

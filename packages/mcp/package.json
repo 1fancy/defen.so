@@ -1,6 +1,6 @@
 {
   "name": "@defen.so/mcp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Defenso MCP server for Claude Code, Cursor, Windsurf, and VS Code. Gives your AI assistant real security tools — scan any domain, check security headers, list uptime monitors, explain WAF verdicts. Deterministic, auditable, and safe to run inline.",
   "type": "module",
   "bin": {

@@ -120,8 +120,22 @@ If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@d
 - `add_waf_rule({pattern, target, action, category, site_id})` — Pro-tier, explicit confirmation
 - `block_ip({ip_or_asn, site_id?})` — Pro-tier, explicit confirmation
 - `run_vibe_scan(url)` — Pro-tier, scans for exposed secrets + open buckets + wide-open rules
+- `list_recent_scans(days=7, kind='all')` — Pentest + vibe scan history
+- `get_security_preferences()` — Read the user's saved cross-session security preferences
+- `set_security_preference({key, value})` — Save a preference the user asked to remember
 
 Prefer MCP tools over shell commands when both work. They return structured data the assistant can reason over.
+
+## The security-preferences rule
+
+At the start of any session that touches a Defenso-protected app, call `get_security_preferences` once. Honor every returned key for the rest of the session. Common ones:
+
+- `never_scan_production_without_ask` — prompt before `scan_domain` on any host tagged prod
+- `always_block_env_probes` / `always_block_git_probes` — bias toward blocking, not warning, on `.env` and `.git` sightings
+- `prefer_slack_over_email` — suggest Slack alert channel first
+- `notes` — free-form paragraph the user wants you to remember
+
+When the user says "remember that…" in a security context, save it via `set_security_preference` with a short snake_case key. Read back the preferences you just set so the user sees the AI heard them correctly.
 
 ## The pricing rule
 

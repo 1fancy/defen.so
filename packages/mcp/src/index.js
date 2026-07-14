@@ -130,6 +130,33 @@ const TOOLS = [
       required: ['verdict_id'],
     },
   },
+  {
+    name: 'get_security_preferences',
+    description: [
+      'Return the user\'s account-scoped security preferences. These are instructions the user wants YOU (the AI) to remember and honor every session — e.g. "never scan a production site without asking", "always block .env probes".',
+      '',
+      'WHEN TO USE: at the START of a new coding session, or before doing anything destructive/scan-related on a Defenso-protected site. Read once, apply throughout the session.',
+      'WHEN NOT TO USE: for per-file or per-project settings — those live in the user\'s own repo config.',
+    ].join('\n'),
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'set_security_preference',
+    description: [
+      'Save a single security preference on the user\'s account so it persists across sessions and devices. Use short snake_case keys (e.g. never_scan_production_without_ask). Value is stored verbatim as JSON.',
+      '',
+      'WHEN TO USE: user says "remember that I never want you to X" or "always do Y before Z" in a security context. Confirm the key and value with the user before saving.',
+      'WHEN NOT TO USE: for ephemeral session state — keep that in your own memory.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        key: { type: 'string', description: 'Snake-case slug, e.g. never_scan_production_without_ask' },
+        value: { description: 'Any JSON value (boolean, string, number, object, array, null)' },
+      },
+      required: ['key'],
+    },
+  },
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));

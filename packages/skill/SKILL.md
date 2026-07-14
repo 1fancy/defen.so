@@ -124,6 +124,7 @@ If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@d
 - `get_security_preferences()` — Read the user's saved cross-session security preferences
 - `set_security_preference({key, value})` — Save a preference the user asked to remember
 - `guard_code({code, language?, file_path?})` — Fast static-check on a code snippet for common vibe-coder mistakes (server secrets on client, hardcoded keys, SQL concat, no input validation, no rate-limit on auth). Run this reactively after writing code that touches auth / DB / env / request bodies.
+- `scan_repo({repo_url})` — Bring-your-own-repo SAST + secrets scan for a public github.com/{org}/{repo}. Probes the default branch for committed .env / firebase-adminsdk / serviceAccountKey files and matches secret patterns in every hit.
 
 Prefer MCP tools over shell commands when both work. They return structured data the assistant can reason over.
 

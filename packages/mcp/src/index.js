@@ -131,6 +131,22 @@ const TOOLS = [
     },
   },
   {
+    name: 'scan_repo',
+    description: [
+      'Scan a public GitHub repo for committed secrets, exposed .env / firebase-adminsdk / serviceAccountKey files, and other SAST-style leaks. Reads the default branch via GitHub raw-content endpoints — no clone, no auth needed.',
+      '',
+      'WHEN TO USE: user asks "is my repo leaking anything", "did we commit an .env", or is pointing at a specific github.com/{org}/{repo} URL. Also great before a public repo goes public.',
+      'WHEN NOT TO USE: for the user\'s running website — use scan_domain instead. For a private repo — this endpoint has no token so it will get a 404.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        repo_url: { type: 'string', description: 'https://github.com/{org}/{repo} — public repo only' },
+      },
+      required: ['repo_url'],
+    },
+  },
+  {
     name: 'guard_code',
     description: [
       'Run a fast pattern check on a code snippet the user just wrote (or is about to write) and return security findings: server secrets on the client, hardcoded API keys, SQL concatenation, unbounded queries, missing input validation, unrate-limited auth routes, dynamic eval.',

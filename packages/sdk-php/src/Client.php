@@ -145,10 +145,18 @@ final class Client
      */
     private function extractTarget(array $request, string $target): string
     {
+        // Decode percent-encoding + `+` for query/url/body targets so
+        // rule patterns like `\bunion\s+select\b` match "1+UNION+SELECT"
+        // the same as "1 UNION SELECT". Attackers URL-encode payloads
+        // to slip past naive regex.
+        $decode = static function (string $s): string {
+            return $s === '' ? '' : rawurldecode(str_replace('+', ' ', $s));
+        };
+
         return match ($target) {
-            'url' => (string) ($request['url'] ?? ''),
-            'query' => (string) (parse_url((string) ($request['url'] ?? ''), PHP_URL_QUERY) ?? ''),
-            'body' => is_string($request['body'] ?? null) ? $request['body'] : json_encode($request['body'] ?? '', JSON_UNESCAPED_SLASHES),
+            'url' => $decode((string) ($request['url'] ?? '')),
+            'query' => $decode((string) (parse_url((string) ($request['url'] ?? ''), PHP_URL_QUERY) ?? '')),
+            'body' => $decode(is_string($request['body'] ?? null) ? $request['body'] : json_encode($request['body'] ?? '', JSON_UNESCAPED_SLASHES)),
             'headers' => implode(
                 "\n",
                 array_map(

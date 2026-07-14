@@ -13,7 +13,7 @@ final class ClientTest extends TestCase
     private function makeClient(array $rules = []): Client
     {
         // Bypass network — inject a fake policy directly.
-        $client = new Client('rk_live_test', 'http://127.0.0.1:1', 60, 50, 0.1);
+        $client = new Client('df_live_test', 'http://127.0.0.1:1', 60, 50, 0.1);
         $reflector = new ReflectionClass($client);
         $prop = $reflector->getProperty('policy');
         $prop->setAccessible(true);
@@ -69,7 +69,7 @@ final class ClientTest extends TestCase
 
     public function test_fails_open_when_no_policy(): void
     {
-        $client = new Client('rk_live_test', 'http://127.0.0.1:1', 60, 50, 0.1);
+        $client = new Client('df_live_test', 'http://127.0.0.1:1', 60, 50, 0.1);
         // policy stays null because refresh silently failed
         $verdict = $client->inspect([
             'method' => 'GET',

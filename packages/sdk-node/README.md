@@ -1,8 +1,14 @@
 # @defenso/sdk-node
 
-Defenso security in your Node app. WAF + attack logging in one line.
+**One-line WAF, bot detection, and attack logging for Node, Express, Fastify, Next.js, Bun, and Deno.** Part of [Defenso](https://defen.so) — the security layer for indie devs, vibe coders, and shipping teams.
 
-**Fails open.** If Defenso is unreachable, your app keeps serving.
+- Managed WAF with OWASP Top 10 + Core Rule Set + your custom rules
+- Bot detection with UA classification + rate limits
+- Attack logging with full context (IP, ASN, country, payload, route, verdict)
+- **Fails open** — if Defenso is unreachable, your app keeps serving
+- ~0.1 ms in-process latency (rules cached, evaluation is local)
+- Attack events queued and flushed in the background
+- Free tier forever · Pro $29/mo per site
 
 ## Install
 
@@ -10,9 +16,11 @@ Defenso security in your Node app. WAF + attack logging in one line.
 npm install @defenso/sdk-node
 ```
 
-Then get a token at https://app.defen.so/developer.
+Get a token at https://app.defen.so/developer.
 
-## Express
+## Frameworks
+
+### Express
 
 ```ts
 import express from 'express';
@@ -25,7 +33,7 @@ app.get('/', (req, res) => res.send('hi'));
 app.listen(3000);
 ```
 
-## Fastify
+### Fastify
 
 ```ts
 import Fastify from 'fastify';
@@ -38,7 +46,7 @@ app.get('/', async () => ({ hello: 'world' }));
 app.listen({ port: 3000 });
 ```
 
-## Next.js
+### Next.js (App or Pages router)
 
 ```ts
 // middleware.ts
@@ -56,10 +64,26 @@ export function middleware(req: Request) {
 }
 ```
 
+### Bun
+
+```ts
+import { defenso } from '@defenso/sdk-node';
+const guard = defenso({ token: Bun.env.DEFENSO_TOKEN });
+Bun.serve({ fetch: guard.fetch });
+```
+
+### Deno
+
+```ts
+import { defenso } from 'npm:@defenso/sdk-node';
+const guard = defenso({ token: Deno.env.get('DEFENSO_TOKEN')! });
+Deno.serve(guard.handler);
+```
+
 ## How it works
 
-- **Policy** (WAF rules) is pulled from Defenso every 5 min and cached locally.
-- **Requests** are inspected in-process against the cached policy. Latency: ~0.1 ms.
+- **Policy** (WAF rules) is pulled from Defenso every 5 min and cached in-memory.
+- **Requests** are inspected in-process against the cached policy. Latency ~0.1 ms.
 - **Attack events** are queued and flushed to Defenso every 10 s in the background.
 - **If Defenso is down**, requests are allowed. Your app never blocks on the network.
 
@@ -67,14 +91,33 @@ export function middleware(req: Request) {
 
 ```ts
 defenso({
-    token: '...',                // required
-    api: 'https://app.defen.so/api', // override for self-hosted
-    policyRefreshMs: 5 * 60_000,     // how often to pull rules
-    logFlushMs: 10_000,              // background log flush cadence
-    logBatchSize: 50,                // immediate flush at this batch size
-    policyTimeoutMs: 250,            // fail-open threshold on policy fetch
+    token: '...',                        // required
+    api: 'https://app.defen.so/api',     // override for self-hosted
+    policyRefreshMs: 5 * 60_000,         // how often to pull rules
+    logFlushMs: 10_000,                  // background log flush cadence
+    logBatchSize: 50,                    // immediate flush at this batch size
+    policyTimeoutMs: 250,                // fail-open threshold on policy fetch
 });
 ```
+
+## What Defenso stops
+
+SQL injection, XSS (reflected / stored / DOM), CSRF, SSRF, path traversal, XXE, NoSQL / LDAP / command injection, brute force, credential stuffing, malicious file uploads (polyglots, PHP-in-PNG), bot scrapers, headless browser abuse, TOR exit nodes, exposed secrets, wide-open cloud config. Full list at [defen.so/threats](https://defen.so/threats).
+
+## Companion tools
+
+- **[@defen.so/init](https://www.npmjs.com/package/@defen.so/init)** — one-command bootstrap that detects your framework and adds the SDK correctly.
+- **[Playground](https://playground.defen.so)** — fire attacks at a live SDK-protected origin and see what got blocked.
+- **[MCP for Claude Code / Cursor / Windsurf / VS Code](https://mcp.defen.so)** — give your AI IDE real security tools.
+
+## Links
+
+- Marketing site: [defen.so](https://defen.so)
+- App: [app.defen.so](https://app.defen.so)
+- Source (monorepo): [github.com/1fancy/defen.so](https://github.com/1fancy/defen.so/tree/main/packages/sdk-node)
+- Issues: [github.com/1fancy/defen.so/issues](https://github.com/1fancy/defen.so/issues)
+- Pricing: [defen.so/pricing](https://defen.so/pricing)
+- Contact: info@defen.so
 
 ## License
 

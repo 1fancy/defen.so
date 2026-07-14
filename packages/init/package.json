@@ -1,0 +1,29 @@
+{
+  "name": "@defen.so/init",
+  "version": "0.1.0",
+  "description": "One command to add Defenso security to a JavaScript, PHP, or Python project. Detects the framework, installs the SDK, wires the middleware, and writes DEFENSO_TOKEN to .env.",
+  "type": "module",
+  "bin": {
+    "defenso-init": "./bin/init.js"
+  },
+  "main": "./bin/init.js",
+  "files": ["bin", "README.md"],
+  "keywords": [
+    "defenso", "defen.so", "waf", "security", "middleware",
+    "next.js", "express", "fastify", "laravel", "symfony", "django", "flask", "fastapi",
+    "vibe-coding", "ai-security", "sdk", "install", "bootstrap", "init"
+  ],
+  "author": "Defenso (Next Lab LLC) <info@defen.so> (https://defen.so)",
+  "license": "MIT",
+  "homepage": "https://defen.so/install",
+  "bugs": {
+    "url": "https://github.com/1fancy/defen.so/issues",
+    "email": "info@defen.so"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1fancy/defen.so.git",
+    "directory": "packages/init"
+  },
+  "engines": { "node": ">=18" }
+}

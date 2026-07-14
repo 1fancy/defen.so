@@ -24,3 +24,10 @@ to make the discover-and-install story symmetric with other runtimes.
 ## Status
 
 Alpha alias — use `@defenso/sdk-node` directly for now.
+
+## Source
+
+- Public repo: [github.com/1fancy/defen.so](https://github.com/1fancy/defen.so/tree/main/packages/sdk-bun)
+- Issues: [github.com/1fancy/defen.so/issues](https://github.com/1fancy/defen.so/issues)
+- License: MIT
+- Publisher: Next Lab LLC · info@defen.so

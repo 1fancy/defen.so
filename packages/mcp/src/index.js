@@ -12,7 +12,7 @@
  *
  * Wire into ~/.claude/mcp.json:
  *   { "mcpServers": { "defenso": { "command": "npx", "args": ["-y", "@defen.so/mcp"],
- *     "env": { "DEFENSO_TOKEN": "rk_live_..." } } } }
+ *     "env": { "DEFENSO_TOKEN": "df_live_..." } } } }
  *
  * Don't have a token yet? Run `npx -y @defen.so/mcp link` — opens a browser,
  * approve once, and the token is stored in ~/.defenso/config.json.
@@ -134,12 +134,40 @@ const TOOLS = [
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
 
+/**
+ * Turn a structured Defenso API error into a message the assistant can act on.
+ * The API returns { error: <code>, message: <text>, fix_url?, sites_url?, onboard_url? }.
+ * We flatten that into human-readable text with the actionable URL surfaced.
+ */
+function friendlyError(status, body) {
+  let parsed;
+  try { parsed = JSON.parse(body); } catch { parsed = null; }
+  if (!parsed || typeof parsed !== 'object') {
+    return `Defenso returned HTTP ${status}. Raw response: ${body.slice(0, 400)}`;
+  }
+  const bits = [];
+  if (parsed.message) bits.push(parsed.message);
+  else if (parsed.error) bits.push(parsed.error);
+  else bits.push(`HTTP ${status}`);
+  for (const key of ['fix_url', 'sites_url', 'onboard_url', 'upgrade_url', 'docs']) {
+    if (parsed[key]) bits.push(`→ ${parsed[key]}`);
+  }
+  return bits.join('\n');
+}
+
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
   const { name, arguments: args } = req.params;
 
   if (!TOKEN) {
     return {
-      content: [{ type: 'text', text: 'No Defenso token found. Run `npx -y @defen.so/mcp link` to connect this device, or set DEFENSO_TOKEN.' }],
+      content: [{
+        type: 'text',
+        text: [
+          'No Defenso token found. Two options:',
+          '  1. Run `npx -y @defen.so/mcp link` to connect this device via the browser (no paste).',
+          '  2. Set DEFENSO_TOKEN in your MCP client config (get one at https://app.defen.so/developer).',
+        ].join('\n'),
+      }],
       isError: true,
     };
   }
@@ -150,7 +178,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${TOKEN}`,
-        'User-Agent': '@defen.so/mcp/0.1.0',
+        'User-Agent': '@defen.so/mcp/0.2.0',
       },
       body: JSON.stringify(args ?? {}),
     });
@@ -159,7 +187,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
     if (!response.ok) {
       return {
-        content: [{ type: 'text', text: `Defenso API error ${response.status}: ${body}` }],
+        content: [{ type: 'text', text: friendlyError(response.status, body) }],
         isError: true,
       };
     }
@@ -167,7 +195,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
     return { content: [{ type: 'text', text: body }] };
   } catch (err) {
     return {
-      content: [{ type: 'text', text: `Request failed: ${err.message}` }],
+      content: [{ type: 'text', text: `Could not reach Defenso (${err.message}). If this persists, https://app.defen.so/status shows realtime status.` }],
       isError: true,
     };
   }

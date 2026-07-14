@@ -48,3 +48,10 @@ defenso(app, token=os.environ["DEFENSO_TOKEN"])
 ## Status
 
 Alpha. Scaffold only. Full implementation ships next.
+
+## Source
+
+- Public repo: [github.com/1fancy/defen.so](https://github.com/1fancy/defen.so/tree/main/packages/sdk-python)
+- Issues: [github.com/1fancy/defen.so/issues](https://github.com/1fancy/defen.so/issues)
+- License: MIT
+- Publisher: Next Lab LLC · info@defen.so

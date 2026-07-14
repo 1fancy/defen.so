@@ -131,6 +131,24 @@ const TOOLS = [
     },
   },
   {
+    name: 'guard_code',
+    description: [
+      'Run a fast pattern check on a code snippet the user just wrote (or is about to write) and return security findings: server secrets on the client, hardcoded API keys, SQL concatenation, unbounded queries, missing input validation, unrate-limited auth routes, dynamic eval.',
+      '',
+      'WHEN TO USE: after writing anything that touches auth, DB, env vars, request bodies, or is in a client-side file. Also whenever the user pastes a chunk of code and asks "is this safe?".',
+      'WHEN NOT TO USE: as a substitute for a full pentest — this is heuristic, not exhaustive. Use scan_domain for the running app.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        code: { type: 'string', description: 'The code snippet to check (max 60000 chars)' },
+        language: { type: 'string', description: 'Language hint (js, ts, py, php, go, rb, java)' },
+        file_path: { type: 'string', description: 'Relative path of the file so we can tell client vs server (e.g. app/api/route.ts, src/pages/index.tsx)' },
+      },
+      required: ['code'],
+    },
+  },
+  {
     name: 'get_security_preferences',
     description: [
       'Return the user\'s account-scoped security preferences. These are instructions the user wants YOU (the AI) to remember and honor every session — e.g. "never scan a production site without asking", "always block .env probes".',

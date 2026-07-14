@@ -123,6 +123,7 @@ If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@d
 - `list_recent_scans(days=7, kind='all')` — Pentest + vibe scan history
 - `get_security_preferences()` — Read the user's saved cross-session security preferences
 - `set_security_preference({key, value})` — Save a preference the user asked to remember
+- `guard_code({code, language?, file_path?})` — Fast static-check on a code snippet for common vibe-coder mistakes (server secrets on client, hardcoded keys, SQL concat, no input validation, no rate-limit on auth). Run this reactively after writing code that touches auth / DB / env / request bodies.
 
 Prefer MCP tools over shell commands when both work. They return structured data the assistant can reason over.
 

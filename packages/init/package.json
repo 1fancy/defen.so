@@ -1,7 +1,7 @@
 {
   "name": "@defen.so/init",
-  "version": "0.1.0",
-  "description": "One command to add Defenso security to a JavaScript, PHP, or Python project. Detects the framework, installs the SDK, wires the middleware, and writes DEFENSO_TOKEN to .env.",
+  "version": "0.2.0",
+  "description": "One command to install a production Web Application Firewall in any framework. Detects Node / PHP / Python / Ruby / Go / Rust / Java / .NET, installs the right Defenso SDK, wires the middleware, writes DEFENSO_TOKEN to .env. Free forever tier. Fails open. Playground + MCP for Claude Code / Cursor / Windsurf included.",
   "type": "module",
   "bin": {
     "defenso-init": "./bin/init.js"

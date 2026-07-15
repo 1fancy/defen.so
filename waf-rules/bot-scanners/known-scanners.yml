@@ -1,0 +1,32 @@
+# Known scanner + attacker tool user-agents. Curated from Kali defaults
+# and the wapiti/nuclei/nikto/sqlmap communities.
+
+- id: bot.scanner
+  category: bot
+  description: Common security scanner user-agents
+  pattern: '(sqlmap|nikto|nuclei|nmap|masscan|dirbuster|gobuster|wpscan|acunetix|burp)'
+  flags: i
+  target: headers
+  action: block
+  min_plan: scout
+  priority: 85
+
+- id: bot.headless
+  category: bot
+  description: Headless browser fingerprints without a legitimate reason
+  pattern: '(HeadlessChrome|PhantomJS|SlimerJS|Selenium/)'
+  flags: ''
+  target: headers
+  action: challenge
+  min_plan: pro
+  priority: 65
+
+- id: bot.python
+  category: bot
+  description: Bare Python HTTP libraries (requests/urllib) — legitimate services rarely leave the default UA
+  pattern: '^(python-requests|python-urllib|Wget|curl)/'
+  flags: ''
+  target: headers
+  action: challenge
+  min_plan: pro
+  priority: 55

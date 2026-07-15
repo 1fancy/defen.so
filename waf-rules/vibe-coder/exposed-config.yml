@@ -1,0 +1,43 @@
+# Vibe-coder pack: catches the mistakes AI-generated projects tend to ship.
+# Every rule here fired at least once against a real defen.so-monitored site
+# in the past 90 days.
+
+- id: probe.supabase.serviceroleleak
+  category: probe
+  description: Someone probing for a Supabase service_role key in JS bundles
+  pattern: '(service_role|SUPABASE_SERVICE_KEY)'
+  flags: i
+  target: query
+  action: block
+  min_plan: pro
+  priority: 75
+
+- id: probe.firebase.rules
+  category: probe
+  description: Probing /database.rules.json — Firebase misconfig fingerprint
+  pattern: '/database\.rules\.json'
+  flags: ''
+  target: url
+  action: block
+  min_plan: pro
+  priority: 75
+
+- id: probe.aws.metadata
+  category: probe
+  description: SSRF against AWS instance metadata endpoint
+  pattern: '169\.254\.169\.254'
+  flags: ''
+  target: body
+  action: block
+  min_plan: pro
+  priority: 95
+
+- id: probe.gcp.metadata
+  category: probe
+  description: SSRF against GCP metadata endpoint
+  pattern: 'metadata\.google\.internal'
+  flags: i
+  target: body
+  action: block
+  min_plan: pro
+  priority: 95

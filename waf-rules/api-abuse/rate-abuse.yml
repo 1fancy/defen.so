@@ -1,0 +1,21 @@
+# API abuse patterns. These fire in addition to per-endpoint rate limits.
+
+- id: api.mass.assignment
+  category: api
+  description: Suspicious mass-assignment payload (admin/role/is_admin in body)
+  pattern: '"(admin|is_admin|role|isSuperUser)"\s*:\s*(true|"admin")'
+  flags: i
+  target: body
+  action: block
+  min_plan: pro
+  priority: 88
+
+- id: api.graphql.introspection
+  category: api
+  description: GraphQL __schema introspection query outside of dev
+  pattern: '__schema\s*\{'
+  flags: ''
+  target: body
+  action: challenge
+  min_plan: pro
+  priority: 45

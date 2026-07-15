@@ -1,0 +1,63 @@
+# OWASP A03:2021 — Injection
+# The core patterns Defen.so ships out of the box. Every rule here mirrors
+# one row in the WafRulesSeeder on the app side.
+
+- id: sqli.union
+  category: sqli
+  description: SQL UNION SELECT
+  pattern: '\bunion\s+select\b'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 100
+
+- id: sqli.or1eq1
+  category: sqli
+  description: Classic tautology ('OR 1=1 or 'OR '1'='1')
+  pattern: "['\"]?\\s*or\\s+['\"]?\\w+['\"]?\\s*=\\s*['\"]?\\w+['\"]?"
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 100
+
+- id: sqli.sleep
+  category: sqli
+  description: Time-based SQLi (SLEEP/BENCHMARK)
+  pattern: '\b(sleep|benchmark)\s*\('
+  flags: i
+  target: query
+  action: block
+  min_plan: pro
+  priority: 100
+
+- id: sqli.comment
+  category: sqli
+  description: SQL comment injection
+  pattern: '(--|#|/\*).*?(union|select|drop|insert)'
+  flags: i
+  target: body
+  action: block
+  min_plan: pro
+  priority: 100
+
+- id: cmdi.pipe
+  category: cmdi
+  description: Shell pipe/backtick with common commands
+  pattern: '[;`|]\s*(cat|ls|whoami|id|curl|wget|nc|bash|sh)\b'
+  flags: i
+  target: query
+  action: block
+  min_plan: pro
+  priority: 100
+
+- id: nosql.mongo
+  category: nosql
+  description: Mongo operator injection
+  pattern: '\$where|\$ne|\$gt'
+  flags: i
+  target: body
+  action: block
+  min_plan: business
+  priority: 90

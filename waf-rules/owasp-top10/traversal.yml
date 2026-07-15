@@ -1,0 +1,61 @@
+# OWASP A01:2021 — Broken Access Control: path traversal + file probes
+
+- id: traversal.dot
+  category: traversal
+  description: Directory traversal .. in URL
+  pattern: '\.\./'
+  flags: ''
+  target: url
+  action: block
+  min_plan: scout
+  priority: 80
+
+- id: traversal.etc_passwd
+  category: traversal
+  description: /etc/passwd probe
+  pattern: '/etc/passwd'
+  flags: ''
+  target: url
+  action: block
+  min_plan: scout
+  priority: 80
+
+- id: traversal.win_ini
+  category: traversal
+  description: win.ini / boot.ini probe
+  pattern: '(win|boot)\.ini'
+  flags: i
+  target: url
+  action: block
+  min_plan: pro
+  priority: 80
+
+- id: probe.env
+  category: probe
+  description: Probing /.env
+  pattern: '/\.env(\?|$|/)'
+  flags: ''
+  target: url
+  action: block
+  min_plan: scout
+  priority: 70
+
+- id: probe.git
+  category: probe
+  description: Probing /.git
+  pattern: '/\.git/'
+  flags: ''
+  target: url
+  action: block
+  min_plan: scout
+  priority: 70
+
+- id: probe.wpadmin
+  category: probe
+  description: Probing /wp-admin on non-WP sites
+  pattern: '/wp-admin'
+  flags: ''
+  target: url
+  action: challenge
+  min_plan: pro
+  priority: 60

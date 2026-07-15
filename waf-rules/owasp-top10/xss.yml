@@ -1,0 +1,41 @@
+# OWASP A03:2021 — Cross-site scripting
+
+- id: xss.script
+  category: xss
+  description: Inline <script> in body
+  pattern: '<\s*script[^>]*>'
+  flags: i
+  target: body
+  action: block
+  min_plan: scout
+  priority: 90
+
+- id: xss.script.query
+  category: xss
+  description: Inline <script> in query string
+  pattern: '<\s*script[^>]*>'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 90
+
+- id: xss.onerror
+  category: xss
+  description: onerror/onload/onclick handler injection
+  pattern: '\bon(?:error|load|click|mouseover)\s*='
+  flags: i
+  target: body
+  action: block
+  min_plan: pro
+  priority: 90
+
+- id: xss.javascript_uri
+  category: xss
+  description: 'javascript: URI'
+  pattern: 'javascript\s*:'
+  flags: i
+  target: query
+  action: block
+  min_plan: pro
+  priority: 90

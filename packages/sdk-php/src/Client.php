@@ -59,15 +59,15 @@ final class Client
      * Inspect a request. Returns a verdict describing the action to take.
      *
      * @param  array<string,mixed>  $request  ['method', 'url', 'headers', 'body'?, 'ip'?]
-     * @return array{action: 'allow'|'block'|'challenge', rule?: string, reason?: string, category?: string}
+     * @return array{action: 'allow'|'block'|'challenge'|'deceive', rule?: string, reason?: string, category?: string}
      */
     public function inspect(array $request): array
     {
-        if ($this->policy === null || empty($this->policy['rules'])) {
+        if ($this->policy === null) {
             return ['action' => 'allow'];
         }
 
-        foreach ($this->policy['rules'] as $rule) {
+        foreach ($this->policy['rules'] ?? [] as $rule) {
             $target = $this->extractTarget($request, $rule['target']);
             if ($target === '') {
                 continue;
@@ -90,6 +90,30 @@ final class Client
                 }
 
                 return $verdict;
+            }
+        }
+
+        // Deception: if this site is opted in for API deception and the path
+        // looks like an API endpoint, return a 'deceive' verdict so the
+        // middleware can serve a plausible fake 200 instead of hitting the
+        // real 404 (which would confirm the endpoint doesn't exist).
+        $deception = $this->policy['deception'] ?? null;
+        if (is_array($deception) && ! empty($deception['api_hosts'])) {
+            $host = strtolower((string) parse_url((string) ($request['url'] ?? ''), PHP_URL_HOST));
+            $path = (string) parse_url((string) ($request['url'] ?? ''), PHP_URL_PATH);
+            if ($host !== '' && in_array($host, array_map('strtolower', (array) $deception['api_hosts']), true)) {
+                $pat = '#'.($deception['api_path_pattern'] ?? '^/(api|graphql|rest|v[0-9]+)(/|$)').'#i';
+                if (@preg_match($pat, $path) === 1) {
+                    $verdict = [
+                        'action' => 'deceive',
+                        'rule' => 'deception.api',
+                        'reason' => 'API deception: unknown endpoint served plausible fake',
+                        'category' => 'deception',
+                    ];
+                    $this->queueLog($request, $verdict);
+
+                    return $verdict;
+                }
             }
         }
 

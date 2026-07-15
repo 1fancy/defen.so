@@ -138,6 +138,7 @@ final class Client
                 'version' => (string) ($body['version'] ?? time()),
                 'updated_at' => time(),
                 'rules' => $body['rules'],
+                'deception' => $body['deception'] ?? null,
             ];
             $this->policyLastFetch = time();
         } catch (GuzzleException) {

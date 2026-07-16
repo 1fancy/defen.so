@@ -11,6 +11,9 @@
   action: block
   min_plan: pro
   priority: 75
+  mitre_attack: [T1552.001, T1526]
+  owasp: [A05:2021]
+  cwe: [200, 538]
 
 - id: probe.firebase.rules
   category: probe
@@ -21,6 +24,9 @@
   action: block
   min_plan: pro
   priority: 75
+  mitre_attack: [T1526]
+  owasp: [A05:2021]
+  cwe: [200]
 
 - id: probe.aws.metadata
   category: probe
@@ -31,6 +37,9 @@
   action: block
   min_plan: pro
   priority: 95
+  mitre_attack: [T1580]
+  owasp: [A10:2021]
+  cwe: [918]
 
 - id: probe.gcp.metadata
   category: probe
@@ -41,3 +50,6 @@
   action: block
   min_plan: pro
   priority: 95
+  mitre_attack: [T1580]
+  owasp: [A10:2021]
+  cwe: [918]

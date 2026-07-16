@@ -9,6 +9,9 @@
   action: block
   min_plan: scout
   priority: 80
+  mitre_attack: [T1083]
+  owasp: [A01:2021]
+  cwe: [22]
 
 - id: traversal.etc_passwd
   category: traversal
@@ -19,6 +22,9 @@
   action: block
   min_plan: scout
   priority: 80
+  mitre_attack: [T1083]
+  owasp: [A01:2021]
+  cwe: [22, 200]
 
 - id: traversal.win_ini
   category: traversal
@@ -29,6 +35,9 @@
   action: block
   min_plan: pro
   priority: 80
+  mitre_attack: [T1083]
+  owasp: [A01:2021]
+  cwe: [22]
 
 - id: probe.env
   category: probe
@@ -39,6 +48,9 @@
   action: block
   min_plan: scout
   priority: 70
+  mitre_attack: [T1552.001]
+  owasp: [A05:2021]
+  cwe: [200, 538]
 
 - id: probe.git
   category: probe
@@ -49,6 +61,9 @@
   action: block
   min_plan: scout
   priority: 70
+  mitre_attack: [T1552.001]
+  owasp: [A05:2021]
+  cwe: [200, 538]
 
 - id: probe.wpadmin
   category: probe
@@ -59,3 +74,6 @@
   action: challenge
   min_plan: pro
   priority: 60
+  mitre_attack: [T1595.002]
+  owasp: [A05:2021]
+  cwe: [200]

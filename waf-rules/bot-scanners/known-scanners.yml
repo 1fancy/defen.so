@@ -10,6 +10,9 @@
   action: block
   min_plan: scout
   priority: 85
+  mitre_attack: [T1595.002]
+  owasp: [A05:2021]
+  cwe: [200]
 
 - id: bot.headless
   category: bot
@@ -20,6 +23,9 @@
   action: challenge
   min_plan: pro
   priority: 65
+  mitre_attack: [T1595, T1071]
+  owasp: [A05:2021]
+  cwe: [200]
 
 - id: bot.python
   category: bot
@@ -30,3 +36,6 @@
   action: challenge
   min_plan: pro
   priority: 55
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]

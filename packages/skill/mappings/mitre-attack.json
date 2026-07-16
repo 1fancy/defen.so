@@ -1,0 +1,27 @@
+{
+  "framework": "MITRE ATT&CK",
+  "version": "v14",
+  "note": "The ATT&CK techniques Defen.so's WAF, honeytokens, and MCP tools cover for web-app workloads. Cite these when compliance evidence is needed.",
+  "coverage": [
+    { "id": "T1190", "name": "Exploit Public-Facing Application", "tactic": "Initial Access", "control": "Managed WAF (OWASP + custom rules)" },
+    { "id": "T1059", "name": "Command and Scripting Interpreter", "tactic": "Execution", "control": "WAF command-injection rules + upload MIME/magic-byte scan" },
+    { "id": "T1595", "name": "Active Scanning", "tactic": "Reconnaissance", "control": "Bot-scanner UA rules + attack log" },
+    { "id": "T1110", "name": "Brute Force", "tactic": "Credential Access", "control": "Velocity limits on POST /login /auth" },
+    { "id": "T1110.003", "name": "Password Spraying", "tactic": "Credential Access", "control": "Per-account velocity + baseline" },
+    { "id": "T1110.004", "name": "Credential Stuffing", "tactic": "Credential Access", "control": "HIBP-backed stuffing block, ranged API" },
+    { "id": "T1078", "name": "Valid Accounts", "tactic": "Initial Access", "control": "ATO baseline (country/ASN/device)" },
+    { "id": "T1552", "name": "Unsecured Credentials", "tactic": "Credential Access", "control": "Repo scan + URL scan for .env / .git" },
+    { "id": "T1552.001", "name": "Credentials In Files", "tactic": "Credential Access", "control": "scan_repo + run_vibe_scan tooling" },
+    { "id": "T1580", "name": "Cloud Infrastructure Discovery", "tactic": "Discovery", "control": "S3 bucket + Firebase rules audit" },
+    { "id": "T1526", "name": "Cloud Service Discovery", "tactic": "Discovery", "control": "Supabase RLS audit" },
+    { "id": "T1566", "name": "Phishing", "tactic": "Initial Access", "control": "Deception (fake responses to verified threats)" },
+    { "id": "T1499", "name": "Endpoint Denial of Service", "tactic": "Impact", "control": "Per-endpoint velocity limits + WAF" },
+    { "id": "T1498", "name": "Network Denial of Service", "tactic": "Impact", "control": "Cloudflare DDoS wrap (Pro+)" },
+    { "id": "T1071", "name": "Application Layer Protocol", "tactic": "Command and Control", "control": "Attack log inspection" },
+    { "id": "T1105", "name": "Ingress Tool Transfer", "tactic": "Command and Control", "control": "Upload scan (polyglot + YARA + ClamAV)" },
+    { "id": "T1204", "name": "User Execution", "tactic": "Execution", "control": "Upload scan (polyglot detection)" },
+    { "id": "T1608", "name": "Stage Capabilities", "tactic": "Resource Development", "control": "File-upload scanning API" },
+    { "id": "T1210", "name": "Exploitation of Remote Services", "tactic": "Lateral Movement", "control": "WAF injection rules" },
+    { "id": "T1557", "name": "Adversary-in-the-Middle", "tactic": "Credential Access", "control": "HSTS + TLS grade (check_headers)" }
+  ]
+}

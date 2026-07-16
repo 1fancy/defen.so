@@ -1,0 +1,17 @@
+{
+  "framework": "NIST CSF",
+  "version": "2.0",
+  "coverage": [
+    { "function": "GOVERN", "category": "GV.PO", "name": "Policy", "controls": ["pentest triage → written policy per finding"] },
+    { "function": "IDENTIFY", "category": "ID.AM", "name": "Asset Management", "controls": ["list_sites", "list_monitors"] },
+    { "function": "IDENTIFY", "category": "ID.RA", "name": "Risk Assessment", "controls": ["pentest scans", "run_vibe_scan"] },
+    { "function": "PROTECT", "category": "PR.AA", "name": "Identity Management, Auth", "controls": ["auth hardening (HIBP + velocity)"] },
+    { "function": "PROTECT", "category": "PR.DS", "name": "Data Security", "controls": ["check_headers (HSTS/TLS)", "upload scan"] },
+    { "function": "PROTECT", "category": "PR.PS", "name": "Platform Security", "controls": ["Managed WAF", "code guard", "custom WAF rules"] },
+    { "function": "DETECT", "category": "DE.CM", "name": "Continuous Monitoring", "controls": ["attack log", "uptime monitor", "honeytoken"] },
+    { "function": "DETECT", "category": "DE.AE", "name": "Adverse Event Analysis", "controls": ["deception trip alerts", "explain_verdict"] },
+    { "function": "RESPOND", "category": "RS.AN", "name": "Analysis", "controls": ["pentest triage", "list_recent_scans"] },
+    { "function": "RESPOND", "category": "RS.MI", "name": "Mitigation", "controls": ["block_ip", "add_waf_rule", "Cloudflare DDoS wrap"] },
+    { "function": "RECOVER", "category": "RC.RP", "name": "Recovery Planning", "controls": ["uptime monitor + status page"] }
+  ]
+}

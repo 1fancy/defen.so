@@ -1,0 +1,16 @@
+{
+  "framework": "OWASP Top 10",
+  "version": "2021",
+  "coverage": [
+    { "id": "A01:2021", "name": "Broken Access Control", "controls": ["Managed WAF", "auth hardening", "code guard (missing-auth pattern)"] },
+    { "id": "A02:2021", "name": "Cryptographic Failures", "controls": ["check_headers (HSTS + TLS grade)"] },
+    { "id": "A03:2021", "name": "Injection", "controls": ["WAF owasp-top10/injection pack", "code guard (sql-concat)"] },
+    { "id": "A04:2021", "name": "Insecure Design", "controls": ["code guard (missing rate limit)", "pentest triage"] },
+    { "id": "A05:2021", "name": "Security Misconfiguration", "controls": ["check_headers", "run_vibe_scan"] },
+    { "id": "A06:2021", "name": "Vulnerable and Outdated Components", "controls": ["list_cves proxy", "pentest triage"] },
+    { "id": "A07:2021", "name": "Identification and Authentication Failures", "controls": ["auth hardening (HIBP + velocity + JA4)"] },
+    { "id": "A08:2021", "name": "Software and Data Integrity Failures", "controls": ["upload scan (MIME + magic + YARA)"] },
+    { "id": "A09:2021", "name": "Security Logging and Monitoring Failures", "controls": ["attack log", "uptime guard", "SIEM webhook"] },
+    { "id": "A10:2021", "name": "Server-Side Request Forgery", "controls": ["WAF SSRF rules", "code guard (ssrf pattern)"] }
+  ]
+}

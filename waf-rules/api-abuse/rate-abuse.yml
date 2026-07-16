@@ -9,6 +9,9 @@
   action: block
   min_plan: pro
   priority: 88
+  mitre_attack: [T1078]
+  owasp: [A01:2021, A04:2021]
+  cwe: [915]
 
 - id: api.graphql.introspection
   category: api
@@ -19,3 +22,6 @@
   action: challenge
   min_plan: pro
   priority: 45
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]

@@ -9,6 +9,9 @@
   action: block
   min_plan: scout
   priority: 90
+  mitre_attack: [T1059.007]
+  owasp: [A03:2021]
+  cwe: [79]
 
 - id: xss.script.query
   category: xss
@@ -19,6 +22,9 @@
   action: block
   min_plan: scout
   priority: 90
+  mitre_attack: [T1059.007]
+  owasp: [A03:2021]
+  cwe: [79]
 
 - id: xss.onerror
   category: xss
@@ -29,6 +35,9 @@
   action: block
   min_plan: pro
   priority: 90
+  mitre_attack: [T1059.007]
+  owasp: [A03:2021]
+  cwe: [79]
 
 - id: xss.javascript_uri
   category: xss
@@ -39,3 +48,6 @@
   action: block
   min_plan: pro
   priority: 90
+  mitre_attack: [T1059.007]
+  owasp: [A03:2021]
+  cwe: [79]

@@ -11,6 +11,9 @@
   action: block
   min_plan: scout
   priority: 100
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [89]
 
 - id: sqli.or1eq1
   category: sqli
@@ -21,6 +24,9 @@
   action: block
   min_plan: scout
   priority: 100
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [89]
 
 - id: sqli.sleep
   category: sqli
@@ -31,6 +37,9 @@
   action: block
   min_plan: pro
   priority: 100
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [89]
 
 - id: sqli.comment
   category: sqli
@@ -41,6 +50,9 @@
   action: block
   min_plan: pro
   priority: 100
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [89]
 
 - id: cmdi.pipe
   category: cmdi
@@ -51,6 +63,9 @@
   action: block
   min_plan: pro
   priority: 100
+  mitre_attack: [T1059, T1059.004]
+  owasp: [A03:2021]
+  cwe: [78]
 
 - id: nosql.mongo
   category: nosql
@@ -61,3 +76,6 @@
   action: block
   min_plan: business
   priority: 90
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [943]

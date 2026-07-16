@@ -71,11 +71,19 @@ class Defenso_Connector
     {
         require_once DEFENSO_PLUGIN_DIR.'includes/malware-scan.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/file-integrity.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/vuln-scan.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/geo-block.php';
         if (class_exists('Defenso_Malware_Scan')) {
             Defenso_Malware_Scan::register();
         }
         if (class_exists('Defenso_File_Integrity')) {
             Defenso_File_Integrity::register();
+        }
+        if (class_exists('Defenso_Vuln_Scan')) {
+            Defenso_Vuln_Scan::register();
+        }
+        if (class_exists('Defenso_Geo_Block')) {
+            Defenso_Geo_Block::register();
         }
     }
 

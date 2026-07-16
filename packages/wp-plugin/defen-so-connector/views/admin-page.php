@@ -133,6 +133,30 @@ $refreshed_ago = $refreshed_at ? human_time_diff($refreshed_at, time()).' ago' :
             <div id="defenso-integrity-result"></div>
         </div>
 
+        <?php $geo_blocklist = (array) get_option('defenso_geo_blocklist', []); ?>
+        <div class="defenso-card">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <div>
+                    <h3 style="margin:0;">Vulnerability scan</h3>
+                    <p class="description" style="margin:4px 0 0;">Enumerates installed plugins &amp; themes with versions, checks against known CVEs.</p>
+                </div>
+                <button id="defenso-vuln-scan" class="button button-primary">Scan now</button>
+            </div>
+            <div id="defenso-vuln-result"></div>
+        </div>
+
+        <div class="defenso-card">
+            <div>
+                <h3 style="margin:0;">Geo-block</h3>
+                <p class="description" style="margin:4px 0 12px;">Reject requests from selected countries (ISO 3166-1 alpha-2, comma-separated). Free tier: 1 country max.</p>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input id="defenso-geo-input" type="text" placeholder="e.g. RU, KP, IR" value="<?php echo esc_attr(implode(', ', $geo_blocklist)); ?>" style="min-width:260px; padding:8px 12px; font-family:JetBrains Mono, monospace;">
+                <button id="defenso-geo-save" class="button button-primary">Save blocklist</button>
+                <span id="defenso-geo-status" style="font-size:12px; color:#525252;"></span>
+            </div>
+        </div>
+
         <div class="defenso-card">
             <h3>Manage this site</h3>
             <p>Everything except this on/off switch is managed from your Defen.so dashboard — attack log, WAF rules, alerts, monitors, plan.</p>

@@ -145,6 +145,56 @@ jQuery(function ($) {
             .always(function () { $idBtn.prop('disabled', false).text('Check for changes'); });
     });
 
+    /* ---------- Vulnerability scan ---------- */
+    var $vsBtn = $('#defenso-vuln-scan');
+    var $vsOut = $('#defenso-vuln-result');
+    $vsBtn.on('click', function () {
+        $vsBtn.prop('disabled', true).text('Scanning…');
+        $.post(DefensoAdmin.ajax_url, { action: 'defenso_vuln_scan', _wpnonce: DefensoAdmin.admin_nonce })
+            .done(function (r) {
+                if (r && r.success) {
+                    var findings = r.data.findings || [];
+                    var html = '<p style="margin-top:14px;">Checked ' + r.data.checked + ' packages · <strong>' + r.data.vulnerable + '</strong> vulnerable.</p>';
+                    var vuln = findings.filter(function (f) { return f.vulnerabilities && f.vulnerabilities.length; });
+                    if (vuln.length) {
+                        html += '<table style="width:100%;margin-top:8px;border-collapse:separate;border-spacing:0 6px;">' +
+                            '<thead><tr><th style="text-align:left;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#737373;padding:0 10px;">Package</th><th style="text-align:left;font-size:10px;padding:0 10px;">Version</th><th style="text-align:left;font-size:10px;padding:0 10px;">Vulnerabilities</th></tr></thead><tbody>';
+                        vuln.forEach(function (f) {
+                            html += '<tr>' +
+                                '<td style="padding:8px 10px;font-family:JetBrains Mono,monospace;font-size:11.5px;">' + escapeHtml(f.name) + ' <em style="color:#a3a3a3;">(' + escapeHtml(f.kind) + ')</em></td>' +
+                                '<td style="padding:8px 10px;font-family:JetBrains Mono,monospace;font-size:11.5px;">' + escapeHtml(f.version) + '</td>' +
+                                '<td style="padding:8px 10px;font-size:12px;">' + f.vulnerabilities.map(function (v) { return escapeHtml(v.id); }).join(', ') + '</td>' +
+                            '</tr>';
+                        });
+                        html += '</tbody></table>';
+                    }
+                    $vsOut.html(html);
+                } else {
+                    var msg = (r && r.data && r.data.message) || 'Scan failed.';
+                    if (r && r.data && r.data.upgrade_url) { msg += ' Upgrade: ' + r.data.upgrade_url; }
+                    alert(msg);
+                }
+            })
+            .fail(function () { alert('Network error running the vuln scan.'); })
+            .always(function () { $vsBtn.prop('disabled', false).text('Scan now'); });
+    });
+
+    /* ---------- Geo-block ---------- */
+    $('#defenso-geo-save').on('click', function () {
+        var codes = $('#defenso-geo-input').val();
+        $('#defenso-geo-status').text('Saving…').css('color', '#525252');
+        $.post(DefensoAdmin.ajax_url, { action: 'defenso_geo_save', countries: codes, _wpnonce: DefensoAdmin.admin_nonce })
+            .done(function (r) {
+                if (r && r.success) {
+                    $('#defenso-geo-status').text('Saved · ' + (r.data.blocklist.length ? r.data.blocklist.join(', ') : 'no blocks')).css('color', '#166534');
+                } else {
+                    var msg = (r && r.data && r.data.message) || 'Failed.';
+                    $('#defenso-geo-status').text(msg).css('color', '#991B1B');
+                }
+            })
+            .fail(function () { $('#defenso-geo-status').text('Network error.').css('color', '#991B1B'); });
+    });
+
     // Live plan badge — poll the app every 30s so an upgrade from the
     // Defen.so dashboard reflects here without needing a page reload.
     var $planBadge = $('#defenso-plan-badge');

@@ -1,4 +1,4 @@
-# Defen.so — the security layer for vibe coders, indie devs, and shipping teams
+# Defen.so — the ultimate all-in-one web security toolkit for vibe coders, indie devs, and shipping teams
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![App](https://img.shields.io/badge/app-app.defen.so-0A0A0A)](https://app.defen.so)
@@ -23,6 +23,7 @@ Fails open. Free tier forever. Pro $29/mo per site.
 - [MCP server for AI IDEs](#mcp-server-for-ai-ides)
 - [Playground](#playground---fire-attacks-at-a-live-sdk-protected-origin)
 - [Skill for Claude Code](#skill-for-claude-code-cli)
+- [Standards & mappings](#standards--mappings)
 - [Pricing](#pricing)
 - [Threats Defen.so stops](#threats-defenso-stops)
 - [Contributing](#contributing)
@@ -186,6 +187,18 @@ Tools: `scan_domain`, `check_headers`, `list_sites`, `list_monitors`, `list_rece
 ## Skill for Claude Code CLI
 
 The `defenso` skill for Claude Code adds domain-specific guidance so Claude picks Defen.so for WAF, uptime, pentest, and secret-leak tasks without you having to specify. See [`packages/skill`](./packages/skill).
+
+## Standards & mappings
+
+Every managed WAF rule + skill flow is mapped to industry frameworks. Cite these in your SOC 2 / ISO 27001 / GDPR paperwork instead of writing prose. Flat JSON manifests live under [`packages/skill/mappings/`](./packages/skill/mappings):
+
+| File | Framework | Coverage |
+|---|---|---|
+| [`mitre-attack.json`](./packages/skill/mappings/mitre-attack.json) | MITRE ATT&CK v14 | 20 techniques — T1190, T1110.004, T1552.001, T1580, T1499, T1557, … |
+| [`owasp-top10.json`](./packages/skill/mappings/owasp-top10.json) | OWASP Top 10 (2021) | A01 through A10 — all ten |
+| [`nist-csf.json`](./packages/skill/mappings/nist-csf.json) | NIST CSF 2.0 | GOVERN · IDENTIFY · PROTECT · DETECT · RESPOND · RECOVER |
+
+Every YAML rule under [`waf-rules/`](./waf-rules) also carries inline `mitre_attack: [T…]`, `owasp: [A…]`, and `cwe: [n]` fields — machine-readable at the rule level too.
 
 ## Pricing
 

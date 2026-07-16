@@ -111,8 +111,13 @@ Command palette → *MCP: Add Server* → paste the block. Or edit `~/.vscode/mc
 | `add_waf_rule` | ❌ | ✅ 25 rules | ✅ ∞ | Add a custom WAF rule (pattern, target, action). Requires explicit confirmation. |
 | `block_ip` | ❌ | ✅ | ✅ | Block a specific IP or ASN across sites you own. Requires explicit confirmation. |
 | `run_vibe_scan` | ❌ | ✅ 20/mo | ✅ ∞ | Vibe-coder scan of a public URL: exposed secrets, open S3 buckets, Supabase RLS, Firebase rules. |
+| `list_recent_scans` | ✅ 7d | ✅ 30d | ✅ 90d | Pentest + vibe-scan history. Read the latest report or diff two runs. |
+| `scan_repo` | ✅ | ✅ | ✅ | Bring-your-own-repo SAST + secrets scan of a public `github.com/{org}/{repo}`. Probes the default branch for `.env`, `firebase-adminsdk*.json`, `serviceAccountKey.json`, and 13 secret-family patterns. |
+| `guard_code` | ✅ | ✅ | ✅ | Reactive SAST on a code snippet. Catches hardcoded secrets, SQL string concat, missing auth checks, missing rate limits, unsafe deserialisation, SSRF, path traversal, open redirects. Run after every security-sensitive edit. |
+| `get_security_preferences` | ✅ | ✅ | ✅ | Read the user's saved cross-session preferences (e.g. `never_scan_production_without_ask`, `always_block_env_probes`). |
+| `set_security_preference` | ✅ | ✅ | ✅ | Save a preference the user asked the AI to remember across sessions. |
 
-All read tools are always safe. Write tools (`add_waf_rule`, `block_ip`) require explicit user approval from the AI's UI — the MCP server does not auto-apply changes.
+All read tools are always safe. Write tools (`add_waf_rule`, `block_ip`, `set_security_preference`) require explicit user approval from the AI's UI — the MCP server does not auto-apply changes.
 
 ## How the AI actually uses these tools
 

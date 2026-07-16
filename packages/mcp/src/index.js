@@ -191,6 +191,56 @@ const TOOLS = [
       required: ['key'],
     },
   },
+  {
+    name: 'check_s3_bucket',
+    description: [
+      'Probe a public AWS S3 bucket for open ACLs. HEAD + anonymous ListBucket only — no AWS credentials required, no writes. Flags AllUsers / AuthenticatedUsers grants and whether the bucket allows anonymous listing.',
+      '',
+      'WHEN TO USE: user says "is my S3 bucket public", "check this bucket", or pastes a bucket URL. Also part of the vibe-audit runbook.',
+      'WHEN NOT TO USE: for private buckets that require authentication — this endpoint has no AWS creds so it will just report "not reachable".',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        bucket: { type: 'string', description: 'Bucket name (3-63 chars, lowercase, hyphens allowed)' },
+        region: { type: 'string', description: 'AWS region (default us-east-1)' },
+      },
+      required: ['bucket'],
+    },
+  },
+  {
+    name: 'list_cves',
+    description: [
+      'Look up known CVEs affecting a package via osv.dev (Open Source Vulnerabilities). Returns the 30 most-recent vulnerabilities with severity, affected version ranges, and advisory URLs.',
+      '',
+      'WHEN TO USE: user asks "any CVEs in X", "is package Y safe", or you spot a dependency in code they just wrote. Also useful before recommending a package.',
+      'WHEN NOT TO USE: for private/internal packages — osv.dev only knows about public ecosystems (npm, PyPI, Packagist, Go, RubyGems, crates.io, Maven, NuGet).',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        package: { type: 'string', description: 'Package name, e.g. "lodash" or "django"' },
+        ecosystem: { type: 'string', enum: ['npm', 'PyPI', 'Packagist', 'Go', 'RubyGems', 'crates.io', 'Maven', 'NuGet'], description: 'Package ecosystem (default npm)' },
+        version: { type: 'string', description: 'Optional exact version to filter to' },
+      },
+      required: ['package'],
+    },
+  },
+  {
+    name: 'pentest_status',
+    description: [
+      'Look up the status of a pentest run on the user\'s account. Without run_id, returns the most-recent scan across all sites. With run_id, returns that specific scan\'s state — useful for polling while a long scan runs.',
+      '',
+      'WHEN TO USE: user just kicked off a pentest and wants to know when it\'s done, or wants to see the last pentest verdict for their site.',
+      'WHEN NOT TO USE: for the vibe scan history — use list_recent_scans with kind:"vibe" instead.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        run_id: { type: 'integer', description: 'Optional pentest run ID. If omitted, returns the most recent scan.' },
+      },
+    },
+  },
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));

@@ -116,6 +116,9 @@ Command palette → *MCP: Add Server* → paste the block. Or edit `~/.vscode/mc
 | `guard_code` | ✅ | ✅ | ✅ | Reactive SAST on a code snippet. Catches hardcoded secrets, SQL string concat, missing auth checks, missing rate limits, unsafe deserialisation, SSRF, path traversal, open redirects. Run after every security-sensitive edit. |
 | `get_security_preferences` | ✅ | ✅ | ✅ | Read the user's saved cross-session preferences (e.g. `never_scan_production_without_ask`, `always_block_env_probes`). |
 | `set_security_preference` | ✅ | ✅ | ✅ | Save a preference the user asked the AI to remember across sessions. |
+| `check_s3_bucket` | ✅ 60/day | ✅ 60/day | ✅ 60/day | Probe a public AWS S3 bucket for open ACLs. HEAD + anonymous ListBucket only. |
+| `list_cves` | ✅ 100/day | ✅ 100/day | ✅ 100/day | Look up known CVEs affecting a package via osv.dev. Supports npm, PyPI, Packagist, Go, RubyGems, crates.io, Maven, NuGet. |
+| `pentest_status` | ✅ | ✅ | ✅ | Status of a pentest run (or the most recent one). Useful for polling while a long scan runs. |
 
 All read tools are always safe. Write tools (`add_waf_rule`, `block_ip`, `set_security_preference`) require explicit user approval from the AI's UI — the MCP server does not auto-apply changes.
 

@@ -4,7 +4,7 @@
  * Plugin Name: Defen.so Connector — WAF, uptime, upload scanning
  * Plugin URI: https://defen.so/wordpress
  * Description: Official Defen.so connector for WordPress. One-click connect to Defen.so, block SQL injection / XSS / bot scanners at the edge, scan every uploaded file for polyglots + malware, watch uptime, and detect brute-force logins. Manage everything from your Defen.so dashboard at https://defen.so.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Defen.so
  * Author URI: https://defen.so
  * License: GPLv2 or later
@@ -17,7 +17,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('DEFENSO_VERSION', '1.0.0');
+define('DEFENSO_VERSION', '1.1.0');
 define('DEFENSO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DEFENSO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('DEFENSO_APP_URL', 'https://app.defen.so');
@@ -73,6 +73,8 @@ class Defenso_Connector
         require_once DEFENSO_PLUGIN_DIR.'includes/file-integrity.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/vuln-scan.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/geo-block.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/login-hardening.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/activity-log.php';
         if (class_exists('Defenso_Malware_Scan')) {
             Defenso_Malware_Scan::register();
         }
@@ -84,6 +86,12 @@ class Defenso_Connector
         }
         if (class_exists('Defenso_Geo_Block')) {
             Defenso_Geo_Block::register();
+        }
+        if (class_exists('Defenso_Login_Hardening')) {
+            Defenso_Login_Hardening::register();
+        }
+        if (class_exists('Defenso_Activity_Log')) {
+            Defenso_Activity_Log::register();
         }
     }
 

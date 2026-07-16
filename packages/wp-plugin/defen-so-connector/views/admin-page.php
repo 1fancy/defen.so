@@ -157,6 +157,67 @@ $refreshed_ago = $refreshed_at ? human_time_diff($refreshed_at, time()).' ago' :
             </div>
         </div>
 
+        <?php
+        $login_max = (int) get_option('defenso_login_max', 5);
+        $login_window = (int) get_option('defenso_login_window', 900);
+        $recaptcha_site = (string) get_option('defenso_recaptcha_site_key', '');
+        $recaptcha_secret = (string) get_option('defenso_recaptcha_secret_key', '');
+        $activity = array_slice((array) get_option('defenso_activity_log', []), 0, 10);
+        $plan_lower = strtolower((string) get_option('defenso_plan_label', 'Free'));
+        ?>
+        <div class="defenso-card">
+            <h3 style="margin-top:0;">Login hardening</h3>
+            <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px; margin-top:14px;">
+                <div>
+                    <p class="defenso-eyebrow">Max failed attempts</p>
+                    <input id="defenso-login-max" type="number" min="1" max="50" value="<?php echo esc_attr($login_max); ?>" <?php echo $plan_lower === 'free' ? 'disabled' : ''; ?> style="width:120px; padding:6px 10px;">
+                </div>
+                <div>
+                    <p class="defenso-eyebrow">Window (seconds)</p>
+                    <input id="defenso-login-window" type="number" min="60" max="86400" value="<?php echo esc_attr($login_window); ?>" <?php echo $plan_lower === 'free' ? 'disabled' : ''; ?> style="width:120px; padding:6px 10px;">
+                </div>
+                <div>
+                    <p class="defenso-eyebrow">reCAPTCHA v3 site key <span style="color:#a3a3a3;">(optional)</span></p>
+                    <input id="defenso-recaptcha-site" type="text" value="<?php echo esc_attr($recaptcha_site); ?>" placeholder="6L…" style="width:100%; padding:6px 10px; font-family:JetBrains Mono,monospace; font-size:11.5px;">
+                </div>
+                <div>
+                    <p class="defenso-eyebrow">reCAPTCHA v3 secret key</p>
+                    <input id="defenso-recaptcha-secret" type="password" value="<?php echo esc_attr($recaptcha_secret); ?>" placeholder="6L…" style="width:100%; padding:6px 10px; font-family:JetBrains Mono,monospace; font-size:11.5px;">
+                </div>
+            </div>
+            <p style="margin-top:14px;">
+                <button id="defenso-login-save" class="button button-primary">Save login settings</button>
+                <span id="defenso-login-status" style="font-size:12px; color:#525252; margin-left:10px;"></span>
+            </p>
+            <?php if ($plan_lower === 'free') : ?>
+                <p class="description" style="color:#a3a3a3;">Free tier is locked to 5 attempts / 15 min. Upgrade to edit.</p>
+            <?php endif; ?>
+        </div>
+
+        <div class="defenso-card">
+            <h3 style="margin-top:0;">Recent activity</h3>
+            <?php if (empty($activity)) : ?>
+                <p class="description">No admin events yet. Login, plugin activate/deactivate, and role changes show up here.</p>
+            <?php else : ?>
+                <table style="width:100%; margin-top:8px; border-collapse:separate; border-spacing:0 4px;">
+                    <thead><tr>
+                        <th style="text-align:left; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:#737373; padding:0 10px;">When</th>
+                        <th style="text-align:left; font-size:10px; padding:0 10px;">Actor</th>
+                        <th style="text-align:left; font-size:10px; padding:0 10px;">Event</th>
+                    </tr></thead>
+                    <tbody>
+                        <?php foreach ($activity as $ev) : ?>
+                            <tr>
+                                <td style="padding:6px 10px; font-size:11.5px; color:#737373;"><?php echo esc_html(human_time_diff((int) $ev['at'], time()).' ago'); ?></td>
+                                <td style="padding:6px 10px; font-size:11.5px; font-family:JetBrains Mono, monospace;"><?php echo esc_html($ev['actor'] ?? '—'); ?></td>
+                                <td style="padding:6px 10px; font-size:12px;"><?php echo esc_html($ev['summary'] ?? $ev['kind']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        </div>
+
         <div class="defenso-card">
             <h3>Manage this site</h3>
             <p>Everything except this on/off switch is managed from your Defen.so dashboard — attack log, WAF rules, alerts, monitors, plan.</p>

@@ -195,6 +195,27 @@ jQuery(function ($) {
             .fail(function () { $('#defenso-geo-status').text('Network error.').css('color', '#991B1B'); });
     });
 
+    /* ---------- Login hardening ---------- */
+    $('#defenso-login-save').on('click', function () {
+        $('#defenso-login-status').text('Saving…').css('color', '#525252');
+        $.post(DefensoAdmin.ajax_url, {
+            action: 'defenso_login_settings',
+            max: $('#defenso-login-max').val(),
+            window: $('#defenso-login-window').val(),
+            recaptcha_site_key: $('#defenso-recaptcha-site').val(),
+            recaptcha_secret_key: $('#defenso-recaptcha-secret').val(),
+            _wpnonce: DefensoAdmin.admin_nonce
+        }).done(function (r) {
+            if (r && r.success) {
+                $('#defenso-login-status').text('Saved · ' + r.data.max + ' attempts / ' + r.data.window + 's' + (r.data.recaptcha_enabled ? ' · reCAPTCHA on' : '')).css('color', '#166534');
+            } else {
+                $('#defenso-login-status').text((r && r.data && r.data.message) || 'Save failed.').css('color', '#991B1B');
+            }
+        }).fail(function () {
+            $('#defenso-login-status').text('Network error.').css('color', '#991B1B');
+        });
+    });
+
     // Live plan badge — poll the app every 30s so an upgrade from the
     // Defen.so dashboard reflects here without needing a page reload.
     var $planBadge = $('#defenso-plan-badge');

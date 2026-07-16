@@ -58,7 +58,25 @@ class Defenso_Connector
 
     private function __construct()
     {
+        $this->load_modules();
         $this->init_hooks();
+    }
+
+    /**
+     * MalCare-parity feature modules. Each one is self-contained and only
+     * registers its own admin-ajax callbacks — no runtime overhead when not
+     * being used.
+     */
+    private function load_modules(): void
+    {
+        require_once DEFENSO_PLUGIN_DIR.'includes/malware-scan.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/file-integrity.php';
+        if (class_exists('Defenso_Malware_Scan')) {
+            Defenso_Malware_Scan::register();
+        }
+        if (class_exists('Defenso_File_Integrity')) {
+            Defenso_File_Integrity::register();
+        }
     }
 
     private function init_hooks(): void

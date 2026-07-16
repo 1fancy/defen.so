@@ -85,6 +85,54 @@ $refreshed_ago = $refreshed_at ? human_time_diff($refreshed_at, time()).' ago' :
             </div>
         </div>
 
+        <?php
+        $malware_stats = get_option('defenso_malware_stats');
+        $integrity_baseline_at = (int) get_option('defenso_integrity_baseline_at', 0);
+        $integrity_last_diff = get_option('defenso_integrity_last_diff');
+        ?>
+        <div class="defenso-card">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <div>
+                    <h3 style="margin:0;">Malware scan</h3>
+                    <p class="description" style="margin:4px 0 0;">
+                        <?php if ($malware_stats) : ?>
+                            Last scan: <?php echo esc_html(human_time_diff((int) $malware_stats['ran_at'], time()).' ago'); ?> · <?php echo (int) $malware_stats['files_seen']; ?> files inspected · <strong><?php echo (int) $malware_stats['files_flagged']; ?> flagged</strong>
+                        <?php else : ?>
+                            Not run yet. Free tier: 1 scan / 7 days.
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <button id="defenso-malware-scan" class="button button-primary">Scan now</button>
+            </div>
+            <div id="defenso-malware-findings"></div>
+        </div>
+
+        <div class="defenso-card">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                <div>
+                    <h3 style="margin:0;">File integrity</h3>
+                    <p class="description" style="margin:4px 0 0;">
+                        <?php if ($integrity_baseline_at) : ?>
+                            Baseline: <?php echo esc_html(human_time_diff($integrity_baseline_at, time()).' ago'); ?>
+                            <?php if (is_array($integrity_last_diff) && isset($integrity_last_diff['counts'])) : ?>
+                                · Last check flagged
+                                <strong><?php echo (int) $integrity_last_diff['counts']['added']; ?></strong> new,
+                                <strong><?php echo (int) $integrity_last_diff['counts']['changed']; ?></strong> changed,
+                                <strong><?php echo (int) $integrity_last_diff['counts']['removed']; ?></strong> removed.
+                            <?php endif; ?>
+                        <?php else : ?>
+                            No baseline taken yet. Take one after a clean install / update.
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <div>
+                    <button id="defenso-integrity-baseline" class="button">Take baseline</button>
+                    <button id="defenso-integrity-diff" class="button button-primary" <?php echo $integrity_baseline_at ? '' : 'disabled'; ?>>Check for changes</button>
+                </div>
+            </div>
+            <div id="defenso-integrity-result"></div>
+        </div>
+
         <div class="defenso-card">
             <h3>Manage this site</h3>
             <p>Everything except this on/off switch is managed from your Defen.so dashboard — attack log, WAF rules, alerts, monitors, plan.</p>

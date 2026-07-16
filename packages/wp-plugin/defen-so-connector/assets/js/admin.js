@@ -53,6 +53,98 @@ jQuery(function ($) {
         }).done(function () { window.location.reload(); });
     });
 
+    /* ---------- Malware scan ---------- */
+    var $mwBtn = $('#defenso-malware-scan');
+    var $mwOut = $('#defenso-malware-findings');
+    function renderFindings(list) {
+        if (! list || ! list.length) {
+            $mwOut.html('<p style="margin-top:14px;color:#166534;">No malware signatures matched. This is heuristic — a real cleanup should be done from your Defen.so dashboard.</p>');
+            return;
+        }
+        var rows = list.map(function (f) {
+            var sev = (f.severity || 'low').toLowerCase();
+            var bg = sev === 'critical' ? '#FEE2E2' : (sev === 'high' ? '#FEF3C7' : '#F3F4F6');
+            var col = sev === 'critical' ? '#991B1B' : (sev === 'high' ? '#92400E' : '#525252');
+            return '<tr>' +
+                '<td style="padding:8px 10px;font-family:JetBrains Mono,monospace;font-size:11.5px;color:#0a0a0a;">' + escapeHtml(f.file) + '</td>' +
+                '<td style="padding:8px 10px;font-size:11px;font-weight:700;background:' + bg + ';color:' + col + ';border-radius:4px;">' + escapeHtml(String(f.severity || '').toUpperCase()) + '</td>' +
+                '<td style="padding:8px 10px;font-size:12px;color:#525252;">' + escapeHtml(f.reason || '') + '</td>' +
+                '</tr>';
+        }).join('');
+        $mwOut.html('<table style="width:100%;margin-top:16px;border-collapse:separate;border-spacing:0 6px;">' +
+            '<thead><tr><th style="text-align:left;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#737373;padding:0 10px;">File</th><th style="text-align:left;font-size:10px;padding:0 10px;">Sev</th><th style="text-align:left;font-size:10px;padding:0 10px;">Signature</th></tr></thead>' +
+            '<tbody>' + rows + '</tbody></table>');
+    }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+    $mwBtn.on('click', function () {
+        $mwBtn.prop('disabled', true).text('Scanning…');
+        $.post(DefensoAdmin.ajax_url, { action: 'defenso_malware_scan', _wpnonce: DefensoAdmin.admin_nonce })
+            .done(function (r) {
+                if (r && r.success) {
+                    renderFindings(r.data.findings);
+                    $mwBtn.text('Scan again');
+                } else {
+                    var msg = (r && r.data && r.data.message) || 'Scan failed.';
+                    if (r && r.data && r.data.upgrade_url) {
+                        msg += ' Upgrade for unlimited scans: ' + r.data.upgrade_url;
+                    }
+                    alert(msg);
+                    $mwBtn.text('Scan now');
+                }
+            })
+            .fail(function () { alert('Network error running the scan.'); $mwBtn.text('Scan now'); })
+            .always(function () { $mwBtn.prop('disabled', false); });
+    });
+
+    /* ---------- File integrity ---------- */
+    var $ibBtn = $('#defenso-integrity-baseline');
+    var $idBtn = $('#defenso-integrity-diff');
+    var $ibOut = $('#defenso-integrity-result');
+    $ibBtn.on('click', function () {
+        if (! confirm('Take a fresh integrity baseline of every PHP/JS/.htaccess file? Overwrites the current baseline.')) return;
+        $ibBtn.prop('disabled', true).text('Hashing…');
+        $.post(DefensoAdmin.ajax_url, { action: 'defenso_integrity_baseline', _wpnonce: DefensoAdmin.admin_nonce })
+            .done(function (r) {
+                if (r && r.success) {
+                    $ibOut.html('<p style="margin-top:14px;color:#166534;">Baseline stored · ' + r.data.files + ' files hashed.</p>');
+                    $idBtn.prop('disabled', false);
+                } else {
+                    alert((r && r.data && r.data.message) || 'Failed.');
+                }
+            })
+            .fail(function () { alert('Network error taking baseline.'); })
+            .always(function () { $ibBtn.prop('disabled', false).text('Take baseline'); });
+    });
+    $idBtn.on('click', function () {
+        $idBtn.prop('disabled', true).text('Comparing…');
+        $.post(DefensoAdmin.ajax_url, { action: 'defenso_integrity_diff', _wpnonce: DefensoAdmin.admin_nonce })
+            .done(function (r) {
+                if (r && r.success) {
+                    var d = r.data;
+                    var html = '<div style="margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">' +
+                        '<div class="defenso-card" style="padding:12px 14px;margin:0;"><div style="font-size:22px;font-weight:700;">' + d.counts.added + '</div><div style="font-size:11px;color:#737373;">Added</div></div>' +
+                        '<div class="defenso-card" style="padding:12px 14px;margin:0;"><div style="font-size:22px;font-weight:700;">' + d.counts.changed + '</div><div style="font-size:11px;color:#737373;">Changed</div></div>' +
+                        '<div class="defenso-card" style="padding:12px 14px;margin:0;"><div style="font-size:22px;font-weight:700;">' + d.counts.removed + '</div><div style="font-size:11px;color:#737373;">Removed</div></div>' +
+                        '</div>';
+                    var top = [].concat(d.added.slice(0, 8).map(function (p) { return { kind:'added', p:p }; }),
+                                        d.changed.slice(0, 8).map(function (p) { return { kind:'changed', p:p }; }),
+                                        d.removed.slice(0, 8).map(function (p) { return { kind:'removed', p:p }; }));
+                    if (top.length) {
+                        html += '<ul style="margin-top:12px;font-family:JetBrains Mono,monospace;font-size:11.5px;">' +
+                            top.map(function (row) {
+                                var col = row.kind === 'added' ? '#166534' : (row.kind === 'changed' ? '#92400E' : '#991B1B');
+                                return '<li style="padding:2px 0;color:' + col + ';">[' + row.kind + '] ' + escapeHtml(row.p) + '</li>';
+                            }).join('') + '</ul>';
+                    }
+                    $ibOut.html(html);
+                } else {
+                    alert((r && r.data && r.data.message) || 'Compare failed.');
+                }
+            })
+            .fail(function () { alert('Network error running the diff.'); })
+            .always(function () { $idBtn.prop('disabled', false).text('Check for changes'); });
+    });
+
     // Live plan badge — poll the app every 30s so an upgrade from the
     // Defen.so dashboard reflects here without needing a page reload.
     var $planBadge = $('#defenso-plan-badge');

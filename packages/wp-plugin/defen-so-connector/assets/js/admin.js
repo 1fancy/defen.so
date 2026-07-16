@@ -9,7 +9,7 @@ jQuery(function ($) {
         var url = DefensoAdmin.oauth_url
             + '?wp_url=' + encodeURIComponent(DefensoAdmin.site_url)
             + '&nonce=' + encodeURIComponent(DefensoAdmin.oauth_nonce);
-        var w = 560, h = 720;
+        var w = 640, h = 780;
         var y = window.outerHeight / 2 + window.screenY - h / 2;
         var x = window.outerWidth / 2 + window.screenX - w / 2;
         popup = window.open(url, 'defensoConnect',
@@ -31,6 +31,7 @@ jQuery(function ($) {
         $.post(DefensoAdmin.ajax_url, {
             action: 'defenso_save_key',
             api_key: key,
+            plan_label: event.data.plan_label || '',
             _wpnonce: DefensoAdmin.oauth_nonce
         }).done(function (r) {
             if (r && r.success) {
@@ -51,4 +52,35 @@ jQuery(function ($) {
             _wpnonce: DefensoAdmin.admin_nonce
         }).done(function () { window.location.reload(); });
     });
+
+    // Live plan badge — poll the app every 30s so an upgrade from the
+    // Defen.so dashboard reflects here without needing a page reload.
+    var $planBadge = $('#defenso-plan-badge');
+    if ($planBadge.length) {
+        function refreshSiteInfo() {
+            $.post(DefensoAdmin.ajax_url, {
+                action: 'defenso_site_info',
+                _wpnonce: DefensoAdmin.admin_nonce
+            }).done(function (r) {
+                if (! r || ! r.success || ! r.data) return;
+                var d = r.data;
+                if (d.plan_label) {
+                    $planBadge.text(d.plan_label).removeClass('defenso-pill-warn defenso-pill-ok').addClass('defenso-pill-ok');
+                }
+                if (typeof d.verified !== 'undefined') {
+                    var $v = $('#defenso-verified-chip');
+                    if ($v.length) {
+                        $v.text(d.verified ? '● Verified' : '◐ Not verified')
+                          .toggleClass('defenso-pill-ok', d.verified)
+                          .toggleClass('defenso-pill-warn', ! d.verified);
+                    }
+                }
+                if (d.upgrade_url) {
+                    $('#defenso-upgrade-link').attr('href', d.upgrade_url);
+                }
+            });
+        }
+        refreshSiteInfo();
+        setInterval(refreshSiteInfo, 30000);
+    }
 });

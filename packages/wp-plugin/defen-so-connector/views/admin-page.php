@@ -5,6 +5,8 @@ if (! defined('ABSPATH')) {
 
 $connected = (bool) get_option('defenso_api_token');
 $connected_at = get_option('defenso_connected_at');
+$plan_label = (string) get_option('defenso_plan_label', 'Free');
+$verified = get_option('defenso_verified', '1') === '1';
 $rules_count = is_array(get_option('defenso_policy_cache')) ? count(get_option('defenso_policy_cache')['rules'] ?? []) : 0;
 $queue_count = is_array(get_option('defenso_attack_log_queue')) ? count(get_option('defenso_attack_log_queue')) : 0;
 $refreshed_at = (int) get_option('defenso_policy_refreshed_at', 0);
@@ -22,6 +24,10 @@ $refreshed_ago = $refreshed_at ? human_time_diff($refreshed_at, time()).' ago' :
         <div class="defenso-status">
             <?php if ($connected) { ?>
                 <span class="defenso-pill defenso-pill-ok">● Connected</span>
+                <span id="defenso-verified-chip" class="defenso-pill <?php echo $verified ? 'defenso-pill-ok' : 'defenso-pill-warn'; ?>" style="margin-left:6px;">
+                    <?php echo $verified ? '● Verified' : '◐ Not verified'; ?>
+                </span>
+                <span id="defenso-plan-badge" class="defenso-pill defenso-pill-ok" style="margin-left:6px;"><?php echo esc_html($plan_label); ?></span>
             <?php } else { ?>
                 <span class="defenso-pill defenso-pill-warn">◐ Not connected</span>
             <?php } ?>
@@ -56,19 +62,21 @@ $refreshed_ago = $refreshed_at ? human_time_diff($refreshed_at, time()).' ago' :
     <?php } else { ?>
         <div class="defenso-grid">
             <div class="defenso-card">
-                <p class="defenso-eyebrow">Status</p>
+                <p class="defenso-eyebrow">Live plan</p>
+                <p class="defenso-metric-small" id="defenso-plan-name"><?php echo esc_html($plan_label); ?></p>
+                <p class="description">
+                    <a id="defenso-upgrade-link" href="<?php echo esc_url(DEFENSO_APP_URL); ?>" target="_blank">Upgrade →</a>
+                </p>
+            </div>
+            <div class="defenso-card">
+                <p class="defenso-eyebrow">WAF rules active</p>
                 <p class="defenso-metric"><?php echo esc_html($rules_count); ?></p>
-                <p class="description">WAF rules active</p>
+                <p class="description">refreshed <?php echo esc_html($refreshed_ago); ?></p>
             </div>
             <div class="defenso-card">
                 <p class="defenso-eyebrow">Queued events</p>
                 <p class="defenso-metric"><?php echo esc_html($queue_count); ?></p>
                 <p class="description">shipping in the next request</p>
-            </div>
-            <div class="defenso-card">
-                <p class="defenso-eyebrow">Policy refreshed</p>
-                <p class="defenso-metric-small"><?php echo esc_html($refreshed_ago); ?></p>
-                <p class="description">cached 10 min, stale-while-revalidate</p>
             </div>
             <div class="defenso-card">
                 <p class="defenso-eyebrow">Connected</p>

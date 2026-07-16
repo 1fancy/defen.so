@@ -70,6 +70,7 @@ class Defenso_Connector
         add_action('wp_ajax_defenso_save_key', [$this, 'ajax_save_key']);
         add_action('wp_ajax_defenso_disconnect', [$this, 'ajax_disconnect']);
         add_action('wp_ajax_defenso_status', [$this, 'ajax_status']);
+        add_action('wp_ajax_defenso_site_info', [$this, 'ajax_site_info']);
         add_filter('plugin_action_links_'.plugin_basename(__FILE__), [$this, 'plugin_action_links']);
         add_action('wp_dashboard_setup', [$this, 'register_dashboard_widget']);
 
@@ -129,12 +130,59 @@ class Defenso_Connector
         }
         update_option('defenso_api_token', $key);
         update_option('defenso_connected_at', current_time('mysql'));
+
+        // Persist the plan label the callback sent so the admin page can
+        // render it immediately, before the first site-info poll returns.
+        $plan_label = isset($_POST['plan_label']) ? sanitize_text_field(wp_unslash($_POST['plan_label'])) : '';
+        if ($plan_label !== '' && preg_match('/^[A-Za-z]{3,20}$/', $plan_label)) {
+            update_option('defenso_plan_label', $plan_label);
+        }
+
         // Fetch the policy immediately so protection is live from the next request.
         $this->refresh_policy();
         wp_send_json_success([
             'message' => 'Connected',
             'redirect' => admin_url('admin.php?page=defen-so&connected=1'),
         ]);
+    }
+
+    /**
+     * Poll the app for this WP site's current plan + verified state so the
+     * admin badge stays live when the owner upgrades from the dashboard.
+     */
+    public function ajax_site_info(): void
+    {
+        if (! current_user_can('manage_options')) {
+            wp_send_json_error(['message' => 'Permission denied'], 403);
+        }
+        $token = get_option('defenso_api_token');
+        if (! $token) {
+            wp_send_json_error(['message' => 'Not connected'], 400);
+        }
+        $response = wp_remote_post(DEFENSO_API_BASE.'/wp/site-info', [
+            'timeout' => 4,
+            'headers' => [
+                'Authorization' => 'Bearer '.$token,
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'Defenso-WP/'.DEFENSO_VERSION,
+            ],
+            'body' => wp_json_encode(['wp_url' => get_site_url()]),
+        ]);
+        if (is_wp_error($response)) {
+            wp_send_json_error(['message' => $response->get_error_message()], 502);
+        }
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        if (! is_array($data)) {
+            wp_send_json_error(['message' => 'Bad response'], 502);
+        }
+        if (isset($data['plan_label']) && is_string($data['plan_label'])) {
+            update_option('defenso_plan_label', $data['plan_label']);
+        }
+        if (isset($data['verified'])) {
+            update_option('defenso_verified', $data['verified'] ? '1' : '0');
+        }
+        wp_send_json_success($data);
     }
 
     public function ajax_disconnect(): void
@@ -150,6 +198,8 @@ class Defenso_Connector
         delete_option('defenso_policy_cache');
         delete_option('defenso_policy_refreshed_at');
         delete_option('defenso_attack_log_queue');
+        delete_option('defenso_plan_label');
+        delete_option('defenso_verified');
         wp_send_json_success(['message' => 'Disconnected']);
     }
 

@@ -14,4 +14,6 @@ delete_option('defenso_setup_needed');
 delete_option('defenso_policy_cache');
 delete_option('defenso_policy_refreshed_at');
 delete_option('defenso_attack_log_queue');
+delete_option('defenso_plan_label');
+delete_option('defenso_verified');
 wp_clear_scheduled_hook('defenso_policy_refresh');

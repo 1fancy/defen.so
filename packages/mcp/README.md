@@ -2,11 +2,15 @@
 
 **Give your AI assistant real web-security tools.** The official [Defenso](https://defen.so) Model Context Protocol server plugs into Claude Code, Cursor, Windsurf, VS Code Copilot, or any assistant that speaks MCP. Deterministic tools, auditable output, safe to run inline — no hallucinated verdicts.
 
+*Your security layer. Shipped in 30 seconds.*
+
 ```bash
 npx -y @defen.so/mcp
 ```
 
-Free forever tier. Pro $29/mo per site.
+$0 to start. Pro $29/mo per site.
+
+Scans run through this server surface not just header/TLS grade but **email-security (SPF / DKIM / DMARC)** and compliance-style findings too.
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![Playground](https://img.shields.io/badge/playground-playground.defen.so-38BDF8)](https://playground.defen.so)
@@ -39,8 +43,11 @@ With `@defen.so/mcp` connected, the same AI can now:
 - **Scan the endpoint** you just wrote for real vulnerabilities (via `scan_domain`)
 - **Check security headers** on the site it deploys to (`check_headers`)
 - **See attacks that already hit** the same route on other environments (`list_recent_attacks`)
-- **Add a WAF rule** that catches the injection pattern in production (via the paid Pro-tier `deploy_rule` tool, with explicit confirmation)
+- **Guard the code** you just wrote for SQL concat, hardcoded secrets, missing auth (`guard_code`)
+- **Add a WAF rule or block an IP/ASN** in production, with explicit confirmation (`add_waf_rule`, `block_ip` — Pro+)
 - **Explain in plain English** what a WAF verdict means and how to reproduce it (`explain_verdict`)
+
+The MCP server calls no LLM of its own — it runs on **your** AI assistant's credits and enforces your per-site plan quotas (over quota returns a `429` with an `upgrade_url`).
 
 No context switch. No dashboard tab. No "please go check X on defen.so". The AI stays in your editor and does the work.
 
@@ -100,27 +107,27 @@ Command palette → *MCP: Add Server* → paste the block. Or edit `~/.vscode/mc
 
 ## Tools exposed
 
-| Tool | Free | Pro | Business | What it does |
+| Tool | $0 | Pro | Business | What it does |
 |---|---|---|---|---|
-| `scan_domain` | ✅ 1/day | ✅ 100/mo | ✅ ∞ | Quick pentest surface scan of any public URL. Returns grade A-F + list of failing checks. |
+| `scan_domain` | ✅ 10/mo | ✅ 100/mo | ✅ ∞ | Quick pentest surface scan of any public URL. Returns grade A-F + failing checks — headers, TLS, cookies, exposed `.env`/`.git`, **email security (SPF / DKIM / DMARC)**, and compliance-style findings. |
 | `check_headers` | ✅ | ✅ | ✅ | TLS grade, HSTS, CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy in one call. |
 | `list_sites` | ✅ | ✅ | ✅ | Every site under your account with plan + last-scan + coverage status. |
 | `list_monitors` | ✅ | ✅ | ✅ | Every uptime monitor + latest status + last-checked timestamp. |
-| `list_recent_attacks` | ✅ 7d | ✅ 30d | ✅ 90d | Attack logs in a time window, filterable by site + verdict + category. |
-| `explain_verdict` | ✅ | ✅ | ✅ | Plain-English explanation of a WAF rule: what it catches, how attackers use it, how to reproduce, how to mitigate. |
-| `add_waf_rule` | ❌ | ✅ 25 rules | ✅ ∞ | Add a custom WAF rule (pattern, target, action). Requires explicit confirmation. |
+| `list_recent_attacks` | ✅ 7d | ✅ 30d | ✅ 90d | Recent WAF + honeypot events from the last N hours (rule, IP, path, action). |
+| `list_recent_scans` | ✅ | ✅ | ✅ | Your recent pentest + repo/vibe scans, with target, grade, and pass/warn/fail counts — including the email-security and compliance sections. |
+| `explain_verdict` | ✅ | ✅ | ✅ | Plain-English explanation of a WAF verdict or rule: what it catches, how attackers use it, how to reproduce, how to mitigate. |
+| `add_waf_rule` | ❌ | ✅ 25 rules | ✅ ∞ | Add a custom WAF rule (pattern, target, action) to a site you own. Requires explicit confirmation. |
 | `block_ip` | ❌ | ✅ | ✅ | Block a specific IP or ASN across sites you own. Requires explicit confirmation. |
-| `run_vibe_scan` | ❌ | ✅ 20/mo | ✅ ∞ | Vibe-coder scan of a public URL: exposed secrets, open S3 buckets, Supabase RLS, Firebase rules. |
-| `list_recent_scans` | ✅ 7d | ✅ 30d | ✅ 90d | Pentest + vibe-scan history. Read the latest report or diff two runs. |
+| `run_vibe_scan` | ❌ | ✅ 20/mo | ✅ ∞ | Vibe-coder scan of a public URL: exposed secrets, open S3 buckets, Supabase RLS off, wide-open Firebase rules. |
 | `scan_repo` | ✅ | ✅ | ✅ | Bring-your-own-repo SAST + secrets scan of a public `github.com/{org}/{repo}`. Probes the default branch for `.env`, `firebase-adminsdk*.json`, `serviceAccountKey.json`, and 13 secret-family patterns. |
-| `guard_code` | ✅ | ✅ | ✅ | Reactive SAST on a code snippet. Catches hardcoded secrets, SQL string concat, missing auth checks, missing rate limits, unsafe deserialisation, SSRF, path traversal, open redirects. Run after every security-sensitive edit. |
-| `get_security_preferences` | ✅ | ✅ | ✅ | Read the user's saved cross-session preferences (e.g. `never_scan_production_without_ask`, `always_block_env_probes`). |
+| `guard_code` | ✅ | ✅ | ✅ | Reactive SAST on a code snippet. Catches hardcoded secrets (Stripe/GitHub/GitLab/Slack tokens, AWS `AKIA` keys, Google `AIza` keys, PEM private keys), SQL string concat, missing input validation, missing rate limits on auth, dynamic eval. Run after every security-sensitive edit. |
+| `check_s3_bucket` | ✅ | ✅ | ✅ | Probe a public S3 bucket for world-readable / world-listable access. Returns a grade + the HEAD/LIST status. |
+| `get_security_preference` | ✅ | ✅ | ✅ | Read the user's saved cross-session preferences (e.g. `never_scan_production_without_ask`, `always_block_env_probes`). |
 | `set_security_preference` | ✅ | ✅ | ✅ | Save a preference the user asked the AI to remember across sessions. |
-| `check_s3_bucket` | ✅ 60/day | ✅ 60/day | ✅ 60/day | Probe a public AWS S3 bucket for open ACLs. HEAD + anonymous ListBucket only. |
 | `list_cves` | ✅ 100/day | ✅ 100/day | ✅ 100/day | Look up known CVEs affecting a package via osv.dev. Supports npm, PyPI, Packagist, Go, RubyGems, crates.io, Maven, NuGet. |
 | `pentest_status` | ✅ | ✅ | ✅ | Status of a pentest run (or the most recent one). Useful for polling while a long scan runs. |
 
-All read tools are always safe. Write tools (`add_waf_rule`, `block_ip`, `set_security_preference`) require explicit user approval from the AI's UI — the MCP server does not auto-apply changes.
+All read tools are always safe. Write tools (`add_waf_rule`, `block_ip`, `set_security_preference`) require explicit user approval — every MCP-compatible client shows an approval dialog before running them, and the server never auto-applies changes. Write tools are also plan-gated: the server returns a `429` with an `upgrade_url` when the token's plan doesn't cover the tool.
 
 ## How the AI actually uses these tools
 
@@ -147,36 +154,36 @@ Claude Code: Let me check what Defenso would catch.
      SELECT via the sqli.union rule but your app doesn't validate `id`
      as a number, so a live attacker could still enumerate rows.
 
-  → Called list_recent_attacks({ hours: 24, category: "sqli" })
+  → Called list_recent_attacks({ hours: 24 })
   ← 47 SQL-injection attempts blocked on your other sites in the last 24h.
      Common pattern: 1' OR '1'='1
 
 Recommendation: add strict validation `id: z.number().int().positive()`
-before the query, and I'll deploy a WAF rule tightening the sqli.or1eq1
-pattern for this specific route. Want me to do both?
+before the query. Managed WAF already blocks the common `UNION SELECT` /
+`OR 1=1` payloads; add custom rules from your dashboard if you need more.
+Want me to add the validation?
 ```
 
 </details>
 
 <details>
-<summary><strong>2. Deploying a fix</strong></summary>
+<summary><strong>2. Guarding a fix before you ship it</strong></summary>
 
 ```
-You: Deploy the WAF rule you mentioned.
+You: I just wrote this login handler — check it before I commit.
 
 Claude Code:
-  → Called add_waf_rule({
-      pattern: "['\"]?\\s*or\\s+['\"]?\\d+['\"]?\\s*=\\s*['\"]?\\d+",
-      flags: "i",
-      target: "url",
-      action: "block",
-      category: "sqli",
-      description: "OR N=N pattern targeting /api/users",
-      site_id: 42
+  → Called guard_code({
+      language: "js",
+      code: "const q = `SELECT * FROM users WHERE email='${email}'`; ..."
     })
-  ← Rule deployed. Live in ~5 min (SDK policy TTL).
-     Rule ID: usr.sqli.or_eq_users_42
-     View: https://app.defen.so/sites/AB12CD34EF/rules/usr.sqli.or_eq_users_42
+  ← 2 findings:
+     • HIGH  sql-concat — user input interpolated into a SQL string.
+       Use a parameterized query instead.
+     • MED   no-rate-limit — auth handler has no per-IP throttle.
+
+Fix the SQL concat with a prepared statement and I'll add a rate limiter
+before you commit. Want me to apply both?
 ```
 
 </details>
@@ -188,12 +195,12 @@ Claude Code:
 You: A user complained their request got blocked. What happened?
 
 Claude Code:
-  → Called list_recent_attacks({ hours: 2, ip: "203.0.113.45" })
+  → Called list_recent_attacks({ hours: 2 })
   ← 1 result: verdict=block, rule=xss.script_tag,
      url=/api/comments?body=<script>alert(1)</script>,
      ip=203.0.113.45, ua=Mozilla/5.0 (Macintosh...)
 
-  → Called explain_verdict({ rule_id: "xss.script_tag" })
+  → Called explain_verdict({ verdict_id: "xss.script_tag" })
   ← This rule blocks any request whose body or query contains a literal
      `<script>` tag. Common false-positive: a developer testing XSS payloads
      against their own site. The rule's target is `body|query` and it
@@ -214,7 +221,7 @@ defenso link       # connect this device to your Defenso account (browser flow)
 defenso whoami     # print the linked account
 defenso status     # ping the Defenso edge, confirm the SDK API is reachable
 defenso help       # list every command
-defenso unlink     # remove ~/.defenso/config.json
+defenso logout     # remove ~/.defenso/config.json
 ```
 
 ## Comparison with other AI security integrations
@@ -223,12 +230,12 @@ defenso unlink     # remove ~/.defenso/config.json
 |---|---|---|---|---|
 | Live WAF integration | ✅ | ❌ | ❌ | ❌ |
 | Reads real production attack logs | ✅ | ❌ | ❌ | ❌ |
-| Deploys rules to production | ✅ (Pro) | ❌ | ❌ | ❌ |
+| Guards your code before you ship | ✅ | ⚠️ SAST only | ❌ | ✅ |
 | Explains verdicts in plain English | ✅ | ⚠️ CVE lookup | ❌ | ⚠️ Rule description |
 | Runs pentest scanner | ✅ | ⚠️ SAST only | ✅ | ⚠️ SAST only |
 | Runs vibe-coder / secret scan | ✅ | ✅ | ⚠️ | ✅ |
 | Uptime monitoring | ✅ | ❌ | ❌ | ❌ |
-| Free tier | ✅ | ⚠️ Limited | ✅ | ⚠️ Limited |
+| $0 tier | ✅ | ⚠️ Limited | ✅ | ⚠️ Limited |
 | Zero-config on install | ✅ | ⚠️ | ⚠️ | ⚠️ |
 
 Defenso is the only MCP-integrated tool that combines *runtime* protection with the AI's *design-time* knowledge.
@@ -239,23 +246,24 @@ Per-site, transparent:
 
 | Plan | Price | MCP tool access |
 |---|---|---|
-| **Free** | $0 forever | Read tools + 1 pentest/day + 7-day log lookback |
-| **Pro** | $29/mo | Everything free + `add_waf_rule` (25 rules) + `block_ip` + `run_vibe_scan` (20/mo) + 30-day log lookback |
-| **Business** | $49/mo | Everything Pro + unlimited rules + unlimited scans + 90-day log lookback + SIEM webhook |
-| **Enterprise** | custom | Everything Business + dedicated regions + SSO + on-call + 365-day retention |
+| **$0 to start** | $0 | Read tools + 1 pentest/day + 7-day log lookback |
+| **Pro** | $29/mo | Everything on $0 + 25 custom WAF rules + 30-day log lookback |
+| **Business** | $69/mo | Everything Pro + unlimited rules + unlimited scans + 90-day log lookback + SIEM webhook |
+| **Agency** | custom | Everything Business + dedicated regions + SSO + on-call + 365-day retention |
 
-Yearly billing: −25%. Full pricing: [defen.so/pricing](https://defen.so/pricing).
+Per site. Yearly billing saves 35%. Full pricing: [defen.so/pricing](https://defen.so/pricing).
 
 ## Companion packages
 
 | Package | Registry | Purpose |
 |---|---|---|
 | [`@defen.so/init`](https://www.npmjs.com/package/@defen.so/init) | npm | One-command bootstrap that installs the right Defenso SDK for your framework |
-| [`@defenso/sdk-node`](https://www.npmjs.com/package/@defenso/sdk-node) | npm | Node / Bun / Deno WAF SDK |
+| [`@defen.so/sdk-node`](https://www.npmjs.com/package/@defen.so/sdk-node) | npm | Node / Bun / Deno WAF SDK |
 | [`defenso/sdk-php`](https://packagist.org/packages/defenso/sdk-php) | Packagist | PHP 8.2+ SDK (Laravel, Symfony, plain PHP) |
-| [`defenso`](https://pypi.org/project/defenso/) | PyPI | Python 3.10+ SDK |
 
-Plus Go, Ruby, Rust, Java, .NET — all in the [public repo](https://github.com/1fancy/defen.so).
+Python, Go, Ruby, Rust, Java, and .NET SDKs are in development — scaffolds live in the [public repo](https://github.com/1fancy/defen.so), not yet published to their registries.
+
+Beyond the registries: the [**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) WordPress plugin (local hardening + one-click managed WAF, live on WordPress.org) and the [**Defenso Alerts**](https://play.google.com/store/apps/details?id=so.defen.alerts) mobile app ([defen.so/website-monitor-app](https://defen.so/website-monitor-app) — call-style **Alarm** notifications that ring through silent mode / DND until acknowledged, per-site per-event Off/Notification/Alarm; iOS coming soon) round out the ecosystem.
 
 ## Environment
 
@@ -263,8 +271,7 @@ Plus Go, Ruby, Rust, Java, .NET — all in the [public repo](https://github.com/
 |---|---|---|
 | `DEFENSO_TOKEN` | — | API key. Auto-loaded from `~/.defenso/config.json` after `defenso link`. |
 | `DEFENSO_API` | `https://mcp.defen.so` | Override the MCP-facing endpoint for self-hosted setups. |
-| `DEFENSO_APP` | `https://app.defen.so` | Override the app API for policy + scan calls. |
-| `DEFENSO_TIMEOUT_MS` | `8000` | Per-tool timeout. Bump if scanning slow sites. |
+| `DEFENSO_API_PATH` | `/api/mcp` | Override the tool path prefix for self-hosted setups. |
 
 ## FAQ
 
@@ -281,15 +288,15 @@ Only when you ask it to (e.g. "check recent attacks"). The AI cannot poll — ev
 </details>
 
 <details>
-<summary><strong>Can it deploy rules without asking me?</strong></summary>
+<summary><strong>Does it change anything without asking me?</strong></summary>
 
-No. `add_waf_rule` and `block_ip` are marked as "write" tools in the MCP schema — every MCP-compatible client shows an explicit confirmation dialog before running them. The server also refuses to run write tools when the API token is missing the required plan tier.
+No. Only `add_waf_rule`, `block_ip`, and `set_security_preference` write anything — they are marked as "write" tools in the MCP schema, so every MCP-compatible client shows an explicit confirmation dialog before running them. The server also enforces your per-site plan quota and returns a `429` with an `upgrade_url` when a tool is over quota or above your plan tier.
 </details>
 
 <details>
 <summary><strong>What about rate limits?</strong></summary>
 
-Same as the Defenso API: read tools 120/hour per IP, write tools plan-gated. `scan_domain` uses your account's pentest quota (Free 1/day, Pro 100/mo, Business ∞).
+Same as the Defenso API: read tools 120/hour per IP, write tools plan-gated. `scan_domain` uses a separate MCP-scan quota — metered apart from the dashboard pentest quota because these scans run on your own AI/compute ($0 tier 10/mo, Pro 100/mo, Business ∞).
 </details>
 
 <details>
@@ -304,6 +311,8 @@ Same as the Defenso API: read tools 120/hour per IP, write tools plan-gated. `sc
 - App: [app.defen.so](https://app.defen.so)
 - MCP endpoint: [mcp.defen.so](https://mcp.defen.so)
 - Playground: [playground.defen.so](https://playground.defen.so)
+- WordPress plugin: [Defen.so Connector](https://wordpress.org/plugins/defen-so-connector/)
+- Mobile app: [Defenso Alerts on Google Play](https://play.google.com/store/apps/details?id=so.defen.alerts)
 - Docs: [defen.so/docs](https://defen.so/docs)
 - Threat map: [defen.so/threats](https://defen.so/threats)
 - Source: [github.com/1fancy/defen.so](https://github.com/1fancy/defen.so)

@@ -8,7 +8,7 @@ Fail-open Defenso middleware for Go web frameworks.
 go get github.com/defenso/sdk-go
 ```
 
-## Use — chi
+## Use — net/http (works with chi and any net/http router)
 
 ```go
 import "github.com/defenso/sdk-go"
@@ -19,24 +19,9 @@ r.Use(defenso.Middleware(defenso.Config{
 }))
 ```
 
-## Use — gin
-
-```go
-r := gin.Default()
-r.Use(defenso.GinMiddleware(defenso.Config{
-    Token: os.Getenv("DEFENSO_TOKEN"),
-}))
-```
-
-## Fail-open contract
-
-- 24 h in-memory cache of last-known-good policy.
-- API failure ⇒ evaluate against cache.
-- Cache miss + API failure ⇒ pass through.
-
 ## Status
 
-Alpha scaffold.
+Scaffold — this SDK currently passes every request through and does not yet inspect, block, cache policy, or forward attack logs. For working protection today use the CNAME edge (point your domain at guard.defen.so — full WAF, no code) or the Node/PHP SDKs.
 
 ## Source
 

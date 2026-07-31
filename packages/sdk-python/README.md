@@ -18,36 +18,16 @@ app = FastAPI()
 app.add_middleware(Defenso, token=os.environ["DEFENSO_TOKEN"])
 ```
 
-## Use — Django
-
-```python
-# settings.py
-MIDDLEWARE = [
-    "defenso.django.DefensoMiddleware",
-    # ... rest
-]
-DEFENSO_TOKEN = os.environ["DEFENSO_TOKEN"]
-```
-
-## Use — Flask
-
-```python
-from defenso.flask import defenso
-
-app = Flask(__name__)
-defenso(app, token=os.environ["DEFENSO_TOKEN"])
-```
-
-## Fail-open contract
-
-- Caches the last-known-good policy for 24 hours.
-- On Defenso API failure, evaluates against the cached policy.
-- On cache miss + API failure, requests pass through and a warning is logged.
-- Your app never breaks because Defenso is unreachable.
+Only the ASGI middleware (FastAPI / Starlette) ships today. Django and Flask
+adapters are coming soon — there is no `defenso.django` or `defenso.flask`
+module yet, so don't import them.
 
 ## Status
 
-Alpha. Scaffold only. Full implementation ships next.
+Scaffold — this SDK currently passes every request through and does not yet
+inspect, block, cache policy, or forward attack logs. For working protection
+today use the CNAME edge (point your domain at guard.defen.so — full WAF, no
+code) or the Node/PHP SDKs.
 
 ## Source
 

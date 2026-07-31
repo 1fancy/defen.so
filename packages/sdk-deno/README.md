@@ -1,24 +1,35 @@
-# @defenso/sdk-deno
+# @defen.so/sdk-deno
 
-Deno-native alias for `@defenso/sdk-node`.
+Deno-native alias for `@defen.so/sdk-node`.
 
 ## Install
 
 ```bash
-deno add npm:@defenso/sdk-node
+deno add npm:@defen.so/sdk-node
 ```
 
 ## Use
 
-```ts
-import { defenso } from 'npm:@defenso/sdk-node'
+`defensoNext` inspects any Web `Request` and returns `{ blocked, reason }`, which
+wires straight into `Deno.serve`:
 
-Deno.serve(defenso({ token: Deno.env.get('DEFENSO_TOKEN') }).handler)
+```ts
+import { defensoNext } from 'npm:@defen.so/sdk-node/next'
+
+const inspect = defensoNext({ token: Deno.env.get('DEFENSO_TOKEN')! })
+
+Deno.serve((req) => {
+  const verdict = inspect(req)
+  if (verdict.blocked) {
+    return new Response(JSON.stringify({ error: verdict.reason }), { status: 403 })
+  }
+  return new Response('hi')
+})
 ```
 
 ## Status
 
-Alpha alias — use `npm:@defenso/sdk-node` directly.
+Alpha alias — use `npm:@defen.so/sdk-node` directly.
 
 ## Source
 

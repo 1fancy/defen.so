@@ -1,6 +1,6 @@
-# @defenso/sdk-node
+# @defen.so/sdk-node
 
-**One-line WAF, bot detection, and attack logging for Node, Express, Fastify, Next.js, Bun, and Deno.** Part of [Defenso](https://defen.so) — the security layer for indie devs, vibe coders, and shipping teams.
+**One-line WAF, bot detection, and attack logging for Node, Express, Fastify, Next.js, Bun, and Deno.** Part of [Defenso](https://defen.so) — your security layer, shipped in 30 seconds.
 
 - Managed WAF with OWASP Top 10 + Core Rule Set + your custom rules
 - Bot detection with UA classification + rate limits
@@ -8,12 +8,12 @@
 - **Fails open** — if Defenso is unreachable, your app keeps serving
 - ~0.1 ms in-process latency (rules cached, evaluation is local)
 - Attack events queued and flushed in the background
-- Free tier forever · Pro $29/mo per site
+- $0 to start · Pro $29/mo per site
 
 ## Install
 
 ```bash
-npm install @defenso/sdk-node
+npm install @defen.so/sdk-node
 ```
 
 Get a token at https://app.defen.so/developer.
@@ -24,7 +24,7 @@ Get a token at https://app.defen.so/developer.
 
 ```ts
 import express from 'express';
-import { defenso } from '@defenso/sdk-node/express';
+import { defenso } from '@defen.so/sdk-node/express';
 
 const app = express();
 app.use(defenso({ token: process.env.DEFENSO_TOKEN! }));
@@ -37,7 +37,7 @@ app.listen(3000);
 
 ```ts
 import Fastify from 'fastify';
-import { defensoFastify } from '@defenso/sdk-node/fastify';
+import { defensoFastify } from '@defen.so/sdk-node/fastify';
 
 const app = Fastify();
 await app.register(defensoFastify, { token: process.env.DEFENSO_TOKEN! });
@@ -51,7 +51,7 @@ app.listen({ port: 3000 });
 ```ts
 // middleware.ts
 import { NextResponse } from 'next/server';
-import { defensoNext } from '@defenso/sdk-node/next';
+import { defensoNext } from '@defen.so/sdk-node/next';
 
 const inspect = defensoNext({ token: process.env.DEFENSO_TOKEN! });
 
@@ -66,18 +66,39 @@ export function middleware(req: Request) {
 
 ### Bun
 
+`defensoNext` inspects any Web `Request` and returns `{ blocked, reason }`, so
+it wires straight into `Bun.serve`:
+
 ```ts
-import { defenso } from '@defenso/sdk-node';
-const guard = defenso({ token: Bun.env.DEFENSO_TOKEN });
-Bun.serve({ fetch: guard.fetch });
+import { defensoNext } from '@defen.so/sdk-node/next';
+
+const inspect = defensoNext({ token: Bun.env.DEFENSO_TOKEN! });
+
+Bun.serve({
+    fetch(req) {
+        const verdict = inspect(req);
+        if (verdict.blocked) {
+            return new Response(JSON.stringify({ error: verdict.reason }), { status: 403 });
+        }
+        return new Response('hi');
+    },
+});
 ```
 
 ### Deno
 
 ```ts
-import { defenso } from 'npm:@defenso/sdk-node';
-const guard = defenso({ token: Deno.env.get('DEFENSO_TOKEN')! });
-Deno.serve(guard.handler);
+import { defensoNext } from 'npm:@defen.so/sdk-node/next';
+
+const inspect = defensoNext({ token: Deno.env.get('DEFENSO_TOKEN')! });
+
+Deno.serve((req) => {
+    const verdict = inspect(req);
+    if (verdict.blocked) {
+        return new Response(JSON.stringify({ error: verdict.reason }), { status: 403 });
+    }
+    return new Response('hi');
+});
 ```
 
 ## How it works
@@ -89,26 +110,33 @@ Deno.serve(guard.handler);
 
 ## Options
 
+All framework adapters (`defenso`, `defensoFastify`, `defensoNext`) accept the
+same options object:
+
 ```ts
-defenso({
+{
     token: '...',                        // required
     api: 'https://app.defen.so/api',     // override for self-hosted
     policyRefreshMs: 5 * 60_000,         // how often to pull rules
     logFlushMs: 10_000,                  // background log flush cadence
     logBatchSize: 50,                    // immediate flush at this batch size
     policyTimeoutMs: 250,                // fail-open threshold on policy fetch
-});
+}
 ```
 
 ## What Defenso stops
 
 SQL injection, XSS (reflected / stored / DOM), CSRF, SSRF, path traversal, XXE, NoSQL / LDAP / command injection, brute force, credential stuffing, malicious file uploads (polyglots, PHP-in-PNG), bot scrapers, headless browser abuse, TOR exit nodes, exposed secrets, wide-open cloud config. Full list at [defen.so/threats](https://defen.so/threats).
 
-## Companion tools
+## Part of the Defenso platform
+
+This SDK is the in-process WAF layer. It plugs into the same account that powers uptime monitoring, quick pentest (headers, TLS, **email security** SPF/DKIM/DMARC, and compliance-style findings), vibe-coder and repo/secret scans, active deception, and the real-time attack log — all managed from [app.defen.so](https://app.defen.so).
 
 - **[@defen.so/init](https://www.npmjs.com/package/@defen.so/init)** — one-command bootstrap that detects your framework and adds the SDK correctly.
 - **[Playground](https://playground.defen.so)** — fire attacks at a live SDK-protected origin and see what got blocked.
 - **[MCP for Claude Code / Cursor / Windsurf / VS Code](https://mcp.defen.so)** — give your AI IDE real security tools.
+- **[Defen.so Connector for WordPress](https://wordpress.org/plugins/defen-so-connector/)** — local hardening + one-click managed WAF for WP sites.
+- **[Defenso Alerts on Google Play](https://play.google.com/store/apps/details?id=so.defen.alerts)** — call-style **Alarm** notifications that ring through silent mode / DND until you acknowledge, plus per-site per-event Off/Notification/Alarm and Slack/Discord/Telegram/email/webhook fan-out ([defen.so/website-monitor-app](https://defen.so/website-monitor-app); iOS coming soon).
 
 ## Links
 

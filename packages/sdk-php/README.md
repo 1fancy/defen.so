@@ -8,7 +8,7 @@
 - **Fails open** — if Defenso is unreachable, your app keeps serving
 - ~0.1 ms in-process latency (rules cached, evaluation is local)
 - Attack events queued and flushed asynchronously
-- Free tier forever · Pro $29/mo per site
+- $0 to start · Pro $29/mo per site
 - Requires PHP 8.2+ (works great on 8.4)
 
 ## Install
@@ -105,11 +105,15 @@ new Defenso\Client(
 
 SQL injection, XSS (reflected / stored / DOM), CSRF, SSRF, path traversal, XXE, NoSQL / LDAP / command injection, brute force, credential stuffing, malicious file uploads (polyglots, PHP-in-PNG), bot scrapers, headless browser abuse, TOR exit nodes, exposed secrets, wide-open cloud config. Full list at [defen.so/threats](https://defen.so/threats).
 
-## Companion tools
+## Part of the Defenso platform
+
+This SDK is the in-process WAF layer. It plugs into the same account that powers uptime monitoring, quick pentest (headers, TLS, **email security** SPF/DKIM/DMARC, and compliance-style findings), vibe-coder and repo/secret scans, active deception, and the real-time attack log — all managed from [app.defen.so](https://app.defen.so).
 
 - **[@defen.so/init](https://www.npmjs.com/package/@defen.so/init)** — one-command bootstrap that detects your framework and adds the SDK correctly.
 - **[Playground](https://playground.defen.so)** — fire attacks at a live PHP-SDK-protected origin and see what got blocked.
 - **[MCP for Claude Code / Cursor / Windsurf / VS Code](https://mcp.defen.so)** — give your AI IDE real security tools.
+- **[Defen.so Connector for WordPress](https://wordpress.org/plugins/defen-so-connector/)** — local hardening + one-click managed WAF, live on WordPress.org.
+- **[Defenso Alerts on Google Play](https://play.google.com/store/apps/details?id=so.defen.alerts)** — call-style **Alarm** notifications that ring through silent mode / DND until you acknowledge ([defen.so/website-monitor-app](https://defen.so/website-monitor-app); iOS coming soon).
 
 ## Links
 

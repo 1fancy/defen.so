@@ -5,7 +5,7 @@ Fail-open Defenso servlet filter.
 ## Install
 
 ```gradle
-implementation "io.defenso:sdk:0.1.0"
+implementation "io.defenso:defenso:0.2.0"
 ```
 
 or Maven:
@@ -27,13 +27,9 @@ public DefensoFilter defenso() {
 }
 ```
 
-## Fail-open contract
-
-Same guarantees as the Node SDK.
-
 ## Status
 
-Alpha scaffold.
+Scaffold — this SDK currently passes every request through and does not yet inspect, block, cache policy, or forward attack logs. For working protection today use the CNAME edge (point your domain at guard.defen.so — full WAF, no code) or the Node/PHP SDKs.
 
 ## Source
 

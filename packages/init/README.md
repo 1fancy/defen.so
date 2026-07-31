@@ -1,12 +1,12 @@
 # @defen.so/init
 
-**The one-command way to install a production web application firewall in any language.** No config files. No DevOps ticket. No credit card. `npx @defen.so/init` detects your framework, adds the right SDK, wires the middleware, and prints your next step — all in about 30 seconds.
+**The one-command way to install a production web application firewall in any language.** No config files. No DevOps ticket. `npx @defen.so/init` detects your framework, adds the right SDK, wires the middleware, and prints your next step — all in about 30 seconds.
 
 ```bash
 npx @defen.so/init
 ```
 
-Free forever tier. Pro $29/mo per site. Powered by [Defenso](https://defen.so) — the security layer built for indie developers, vibe coders, AI-first shipping teams, and small startups shipping fast.
+$0 to start. Pro $29/mo per site. Powered by [Defenso](https://defen.so) — the security layer built for indie developers, vibe coders, AI-first shipping teams, and small startups shipping fast.
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![App](https://img.shields.io/badge/app-app.defen.so-0A0A0A)](https://app.defen.so)
@@ -74,15 +74,15 @@ When you run `npx @defen.so/init` in a project directory:
 
 | Step | Action |
 |---|---|
-| 1 | Reads your `package.json`, `composer.json`, `requirements.txt`, `Cargo.toml`, `go.mod`, or `Gemfile` to detect language + framework |
-| 2 | Picks the right SDK — `@defenso/sdk-node`, `defenso/sdk-php`, `defenso` (Python), `github.com/defenso/sdk-go`, and 6 more |
-| 3 | Installs the SDK using your existing package manager (npm / pnpm / yarn / bun / composer / pip / poetry / bundle / cargo / go) |
-| 4 | Locates the correct wire-up file for your framework (`middleware.ts`, `bootstrap/app.php`, `main.py`, `config.ru`, `Program.cs`, etc.) |
-| 5 | Inserts the middleware call with `process.env.DEFENSO_TOKEN` — never a hardcoded secret |
-| 6 | Appends `DEFENSO_TOKEN=` to your `.env` or `.env.local` as a stub |
+| 1 | Reads `next.config.*`, `package.json`, `artisan`, `composer.json` / `symfony.lock`, or `manage.py` / `main.py` / `app.py` to detect your framework |
+| 2 | Picks the right SDK — `@defen.so/sdk-node` (Node) and `defenso/sdk-php` (PHP) are published today; Python, Go, Ruby, Rust, Java, and .NET SDKs are in development |
+| 3 | Installs the SDK with `npm` (Node) or `composer` (PHP); for Python it prints the `pip install defenso` command to run yourself |
+| 4 | For Next.js, writes `middleware.ts`; for every other framework it prints the middleware/listener snippet to paste into your wire-up file |
+| 5 | Uses `process.env.DEFENSO_TOKEN` in the wire-up — never a hardcoded secret |
+| 6 | Appends a `DEFENSO_TOKEN=` stub to your `.env` |
 | 7 | Prints a clear next-step checklist so you know exactly what remains |
 
-**Idempotent.** Re-running the command on an already-bootstrapped project just prints "already installed" and exits.
+**Idempotent.** Re-running skips steps already done — an existing `middleware.ts` is left untouched and a `.env` that already has `DEFENSO_TOKEN` is left as-is.
 
 ## Quick start
 
@@ -103,59 +103,32 @@ DEFENSO_TOKEN=df_live_...
 
 ## Framework support
 
-**Node.js / TypeScript**
+`@defen.so/init` auto-detects and wires the frameworks below. For everything else it prints the manual install snippet and exits.
 
-| Framework | Version | Detected by |
+**Node.js / TypeScript** — installs `@defen.so/sdk-node`
+
+| Framework | Detected by | Wire-up |
 |---|---|---|
-| Express | 4.x, 5.x | `package.json` dep |
-| Fastify | 3.x, 4.x, 5.x | `package.json` dep |
-| Koa | 2.x | `package.json` dep |
-| Hapi | 21.x | `package.json` dep |
-| Next.js (App + Pages router) | 12+, 13+, 14+, 15+ | `next` dep + `next.config.*` |
-| Nuxt | 3.x | `nuxt` dep |
-| SvelteKit | any | `@sveltejs/kit` dep |
-| Astro | 3.x, 4.x, 5.x | `astro` dep |
-| Remix | 2.x | `@remix-run/*` dep |
-| NestJS | 10.x, 11.x | `@nestjs/core` dep |
-| Bun (native `Bun.serve`) | any | `bun` runtime |
-| Deno (native `Deno.serve`) | any | `deno.json` or `deno.jsonc` |
-| Hono | any | `hono` dep |
-| ElysiaJS | any | `elysia` dep |
-| t3-stack | any | `create-t3-app` detected |
+| Next.js (App + Pages router) | `next.config.*` or `next` dep | Writes `middleware.ts` |
+| Express | `express` dep in `package.json` | Prints the `app.use(defenso(...))` snippet |
+| Fastify | `fastify` dep in `package.json` | Prints the `app.register(defensoFastify, ...)` snippet |
 
-**PHP** (8.2+, tested against 8.4)
+**PHP** — installs `defenso/sdk-php`
 
-| Framework | Version | Wire-up point |
+| Framework | Detected by | Wire-up |
 |---|---|---|
-| Laravel | 10, 11, 12 | `bootstrap/app.php` middleware group |
-| Symfony | 6, 7 | Kernel event listener via `services.yaml` |
-| Slim | 4 | Middleware pipe |
-| Lumen | 9, 10 | `bootstrap/app.php` |
-| Plain PHP | any 8.2+ | Direct `\Defenso\Client::inspect()` call |
+| Laravel | `artisan` + `composer.json` | Prints the `bootstrap/app.php` middleware snippet |
+| Symfony | `symfony/framework-bundle` in `composer.json` or `symfony.lock` | Prints the `services.yaml` listener snippet |
 
-**Python** (3.10+)
+**Python** — prints install + wiring instructions (SDK not auto-installed)
 
-| Framework | Version | Wire-up point |
+| Framework | Detected by | Wire-up |
 |---|---|---|
-| FastAPI | 0.100+ | `app.add_middleware(Defenso, token=...)` |
-| Starlette | 0.30+ | Same middleware call |
-| Django | 3.x, 4.x, 5.x | `MIDDLEWARE` in `settings.py` |
-| Flask | 2.x, 3.x | `before_request` hook |
-| Quart | 0.19+ | Same as Flask |
-| aiohttp | 3.x | Middleware coroutine |
+| Django | `manage.py` | Prints `pip install defenso` + docs link |
+| FastAPI | `FastAPI` in `main.py` / `app.py` | Prints `pip install defenso` + docs link |
+| Flask | `Flask` in `main.py` / `app.py` | Prints `pip install defenso` + docs link |
 
-**Ruby / Go / Rust / Java / .NET**
-
-| Language | Package | Wire-up |
-|---|---|---|
-| Ruby (Rails 6, 7, 8) | `defenso` | `config/application.rb` middleware.use |
-| Ruby (Sinatra) | `defenso` | `use Defenso::Middleware` |
-| Go (chi / gin / echo / fiber / net/http) | `github.com/defenso/sdk-go` | `r.Use(defenso.Middleware(...))` |
-| Rust (axum / actix-web / warp / tower) | `defenso` | `.layer(DefensoLayer::new(...))` |
-| Java (Spring Boot 2, 3) | `io.defenso:sdk` | `@Bean DefensoFilter` |
-| .NET (ASP.NET Core) | `Defenso` | `app.UseDefenso()` |
-
-If your framework isn't listed: `npx @defen.so/init --sdk-only` installs the SDK and prints the snippet to paste yourself.
+If your framework isn't detected, `@defen.so/init` prints the manual install commands (`npm i @defen.so/sdk-node`, `composer require defenso/sdk-php`, or `pip install defenso`) and a link to the docs so you can wire it yourself.
 
 ## How the underlying SDK works
 
@@ -182,7 +155,7 @@ Different tools solve different parts of the problem. Here's how Defenso fits wi
 | Uptime monitoring included | ✅ 30s-15min | ❌ | ❌ | ❌ | ❌ |
 | Pentest scanner included | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Vibe-coder / secret scanner | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Free tier for real projects | ✅ forever | Free plan basic | Pay per request | Free (self-host) | Included |
+| $0 tier for real projects | ✅ | Free plan basic | Pay per request | Free (self-host) | Included |
 | Fails open on our incident | ✅ by design | N/A (edge) | N/A (edge) | Config-dependent | Yes |
 | MCP for AI IDEs | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Price for one site | $0 or $29/mo | $0 or $20+/mo | $5-20/mo + $ per rule | Free (you host) | Included with Vercel |
@@ -193,14 +166,14 @@ Different tools solve different parts of the problem. Here's how Defenso fits wi
 
 Per-site, transparent, no sales calls:
 
-| Plan | Price | Sites | Monitors | Interval | Pentests / mo | Vibe scans / mo | Custom WAF rules | Log retention |
-|---|---|---|---|---|---|---|---|---|
-| **Free** | $0 forever | 1 | 1 | 15 min | 1 | 0 | 8 | 7 days |
-| **Pro** | $29/mo | 5 | 10 | 1 min | 100 | 20 | 25 | 30 days |
-| **Business** | $49/mo | 25 | 50 | 30 sec | ∞ | ∞ | ∞ | 90 days |
-| **Agency / Enterprise** | custom | ∞ | ∞ | custom | ∞ | ∞ | ∞ | 365 days |
+| Plan | Price | Monitors | Interval | Pentests / mo | Vibe scans / mo | Custom WAF rules | Log retention |
+|---|---|---|---|---|---|---|---|
+| **$0 to start** | $0 | 1 | 15 min | 1 | 0 | — | 7 days |
+| **Pro** | $29/mo | 4 (+3 extra) | near-instant | 100 | 20 | 25 | 30 days |
+| **Business** | $69/mo | 7 (+6 extra) | 30 sec | ∞ | ∞ | ∞ | 90 days |
+| **Agency / Enterprise** | custom | ∞ | custom | ∞ | ∞ | ∞ | 365 days |
 
-Yearly billing: **−25%**. AppSumo lifetime redemption supported. Full pricing: [defen.so/pricing](https://defen.so/pricing).
+Per site. Yearly billing saves **35%**. AppSumo lifetime redemption supported. Full pricing: [defen.so/pricing](https://defen.so/pricing).
 
 ## Everything else you get
 
@@ -209,7 +182,7 @@ Yearly billing: **−25%**. AppSumo lifetime redemption supported. Full pricing:
 **Uptime monitoring**
 
 - Auto-created when you add a site — no forms
-- Check interval scales with plan: 15 min free, 1 min Pro, 30 sec Business
+- Check interval scales with plan: 15 min on $0, near-instant on Pro, 30 sec on Business
 - Latency tier per check: Fast (< 300 ms), OK (< 900 ms), Slow (< 2 s), Bad (≥ 2 s)
 - Only 2xx/3xx counts as up — no "warning" state on a 500 for two hours
 - Public status page every site gets, embeddable
@@ -221,13 +194,13 @@ Yearly billing: **−25%**. AppSumo lifetime redemption supported. Full pricing:
 
 - Grade A-F on TLS, headers, cookies, exposed `.env` / `.git`, WordPress probes, common misconfigurations
 - One-click from your dashboard, or auto-run weekly (Sunday 3 AM)
-- Free tier gets 1/month; Pro 100/month; Business unlimited
+- The $0 tier gets 1/month; Pro 100/month; Business unlimited
 
 **Vibe-coder scan**
 
 - Catches mistakes AI-generated projects tend to ship: hardcoded secrets, open S3 buckets, Supabase RLS off, wide-open Firebase rules, committed `.env`
 - Auto-run weekly (Monday 4 AM)
-- Free tier gets 0; Pro 20/month; Business unlimited
+- The $0 tier gets 0; Pro 20/month; Business unlimited
 
 **Live CVE feed**
 
@@ -254,7 +227,7 @@ Install via `~/.claude/mcp.json`:
   "mcpServers": {
     "defenso": {
       "command": "npx",
-      "args": ["-y", "@defenso/mcp"],
+      "args": ["-y", "@defen.so/mcp"],
       "env": { "DEFENSO_TOKEN": "df_live_..." }
     }
   }
@@ -298,7 +271,7 @@ Every request is allowed. You lose protection until we recover. Your site keeps 
 <details>
 <summary><strong>How does the token get to production?</strong></summary>
 
-Same way you handle any secret. Add `DEFENSO_TOKEN` in Vercel/Netlify/Fly/Railway/Heroku dashboard, or your infra's env-var mechanism. Never commit it. The `@defen.so/init` CLI writes the variable name to `.env` but leaves the value blank.
+Same way you handle any secret. Add `DEFENSO_TOKEN` in Vercel/Netlify/Fly/Railway/Heroku dashboard, or your infra's env-var mechanism. Never commit it. The `@defen.so/init` CLI writes a `DEFENSO_TOKEN=` stub to `.env` with a placeholder value for you to replace — never a real secret.
 </details>
 
 <details>
@@ -328,7 +301,7 @@ No. Attack logs stay in your account, tied to your plan's retention window. We d
 <details>
 <summary><strong>How do I remove Defenso?</strong></summary>
 
-Delete the middleware line the CLI added, uninstall the SDK. Your app keeps working. `@defen.so/init --uninstall` will also do it automatically.
+Delete the middleware line the CLI added, then uninstall the SDK (`npm rm @defen.so/sdk-node` or `composer remove defenso/sdk-php`). Your app keeps working.
 </details>
 
 ## If you already have a Defenso account
@@ -351,17 +324,19 @@ If you're on **Pro or Business**, unlock:
 
 ## Companion packages
 
-| Package | Registry | Language |
-|---|---|---|
-| [`@defenso/sdk-node`](https://www.npmjs.com/package/@defenso/sdk-node) | npm | Node / Bun / Deno |
-| [`defenso/sdk-php`](https://packagist.org/packages/defenso/sdk-php) | Packagist | PHP 8.2+ |
-| [`defenso`](https://pypi.org/project/defenso/) | PyPI | Python 3.10+ |
-| [`github.com/defenso/sdk-go`](https://pkg.go.dev/github.com/defenso/sdk-go) | Go modules | Go 1.21+ |
-| [`defenso`](https://rubygems.org/gems/defenso) | RubyGems | Ruby 3.0+ |
-| [`defenso`](https://crates.io/crates/defenso) | crates.io | Rust 1.75+ |
-| [`io.defenso:sdk`](https://central.sonatype.com/artifact/io.defenso/sdk) | Maven Central | Java 17+ |
-| [`Defenso`](https://www.nuget.org/packages/Defenso/) | NuGet | .NET 8+ |
-| [`@defenso/mcp`](https://www.npmjs.com/package/@defenso/mcp) | npm | MCP server (any client) |
+| Package | Registry | Language | Status |
+|---|---|---|---|
+| [`@defen.so/sdk-node`](https://www.npmjs.com/package/@defen.so/sdk-node) | npm | Node / Bun / Deno | ✅ published |
+| [`defenso/sdk-php`](https://packagist.org/packages/defenso/sdk-php) | Packagist | PHP 8.2+ | ✅ published |
+| [`@defen.so/mcp`](https://www.npmjs.com/package/@defen.so/mcp) | npm | MCP server (any client) | ✅ published |
+| `defenso` | PyPI | Python 3.10+ | 🚧 in development |
+| `github.com/defenso/sdk-go` | Go modules | Go 1.21+ | 🚧 in development |
+| `defenso` | RubyGems | Ruby 3.0+ | 🚧 in development |
+| `defenso` | crates.io | Rust 1.75+ | 🚧 in development |
+| `io.defenso:sdk` | Maven Central | Java 17+ | 🚧 in development |
+| `Defenso` | NuGet | .NET 8+ | 🚧 in development |
+
+Beyond the SDKs, Defenso also ships the [**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) WordPress plugin (local hardening + one-click managed WAF) and the [**Defenso Alerts**](https://play.google.com/store/apps/details?id=so.defen.alerts) Android app (push the moment a site goes down or is attacked; iOS coming soon).
 
 ## Links
 
@@ -369,6 +344,8 @@ If you're on **Pro or Business**, unlock:
 - **App / dashboard**: [app.defen.so](https://app.defen.so)
 - **MCP server**: [mcp.defen.so](https://mcp.defen.so)
 - **Playground (attack sandbox)**: [playground.defen.so](https://playground.defen.so)
+- **WordPress plugin**: [Defen.so Connector](https://wordpress.org/plugins/defen-so-connector/)
+- **Mobile app (Google Play)**: [Defenso Alerts](https://play.google.com/store/apps/details?id=so.defen.alerts)
 - **Documentation**: [defen.so/docs](https://defen.so/docs)
 - **Pricing**: [defen.so/pricing](https://defen.so/pricing)
 - **Uptime monitoring**: [defen.so/uptime](https://defen.so/uptime)

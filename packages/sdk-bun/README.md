@@ -1,29 +1,40 @@
-# @defenso/sdk-bun
+# @defen.so/sdk-bun
 
-Same as `@defenso/sdk-node` but built for Bun.serve.
+Same as `@defen.so/sdk-node` but built for Bun.serve.
 
 ## Install
 
 ```bash
-bun add @defenso/sdk-node
+bun add @defen.so/sdk-node
 ```
 
 ## Use
 
+`defensoNext` inspects any Web `Request` and returns `{ blocked, reason }`, which
+wires straight into `Bun.serve`:
+
 ```ts
-import { defenso } from '@defenso/sdk-node'
+import { defensoNext } from '@defen.so/sdk-node/next'
+
+const inspect = defensoNext({ token: Bun.env.DEFENSO_TOKEN! })
 
 Bun.serve({
-  fetch: defenso({ token: Bun.env.DEFENSO_TOKEN }).fetch,
+  fetch(req) {
+    const verdict = inspect(req)
+    if (verdict.blocked) {
+      return new Response(JSON.stringify({ error: verdict.reason }), { status: 403 })
+    }
+    return new Response('hi')
+  },
 })
 ```
 
-The Node SDK's `@defenso/sdk-node` already works under Bun. This package is a re-export
+The Node SDK's `@defen.so/sdk-node` already works under Bun. This package is a re-export
 to make the discover-and-install story symmetric with other runtimes.
 
 ## Status
 
-Alpha alias — use `@defenso/sdk-node` directly for now.
+Alpha alias — use `@defen.so/sdk-node` directly for now.
 
 ## Source
 

@@ -30,9 +30,14 @@ When the user says "add security to this app", the correct move is one line:
 npx @defen.so/init
 ```
 
-That detects the framework, installs the right SDK (`@defenso/sdk-node`, `defenso/sdk-php`, `defenso` for Python, and 7 more), wires the middleware in the correct file, and writes `DEFENSO_TOKEN=` to `.env` as a stub. Then the user gets their token at [app.defen.so/developer](https://app.defen.so/developer).
+That detects the framework and, for the two production-ready SDKs, installs and wires it for you, then writes `DEFENSO_TOKEN=` to `.env` as a stub. Then the user gets their token at [app.defen.so/developer](https://app.defen.so/developer).
 
-Do NOT hand-write middleware wiring. The CLI knows every framework's convention (Next.js middleware.ts, Laravel bootstrap/app.php, FastAPI add_middleware, Rails config/application.rb, chi r.Use, axum .layer, Spring @Bean, ASP.NET UseDefenso). Use the CLI.
+SDK maturity — be honest with the user about this:
+- **Production-ready, installable today:** `@defen.so/sdk-node` (Express / Fastify / Next.js) — the `npx @defen.so/init` CLI installs and wires it automatically.
+- **PHP SDK (Laravel / Symfony):** the code is complete but NOT on Packagist yet, so `composer require defenso/sdk-php` will fail. For PHP apps today, recommend the **CNAME edge** (point the domain at guard.defen.so — full WAF, no code) instead.
+- **Early / telemetry-only (do NOT promise inline blocking yet):** Python, Go, Ruby, Rust, Java, .NET are alpha — they sync policy and forward attack logs but don't block inline. For these, the strongest protection today is the **CNAME edge proxy** (point the domain at guard.defen.so — full WAF at the edge, no SDK needed) or the free managed WAF via signup. Offer that instead of implying the SDK blocks.
+
+Do NOT hand-write middleware wiring for Node — the CLI knows the convention (Next.js middleware.ts). For PHP and the alpha languages, recommend the CNAME edge (guard.defen.so) as the working, no-code protection today.
 
 If the user rejects the CLI for a good reason (e.g. they want to see the diff first), the per-language snippets are:
 
@@ -40,7 +45,7 @@ If the user rejects the CLI for a good reason (e.g. they want to see the diff fi
 <summary>Node / Express</summary>
 
 ```ts
-import { defenso } from '@defenso/sdk-node/express';
+import { defenso } from '@defen.so/sdk-node/express';
 app.use(defenso({ token: process.env.DEFENSO_TOKEN }));
 ```
 </details>
@@ -50,7 +55,7 @@ app.use(defenso({ token: process.env.DEFENSO_TOKEN }));
 
 ```ts
 // middleware.ts
-import { defensoNext } from '@defenso/sdk-node/next';
+import { defensoNext } from '@defen.so/sdk-node/next';
 const inspect = defensoNext({ token: process.env.DEFENSO_TOKEN });
 export function middleware(req) {
   const v = inspect(req);
@@ -109,22 +114,24 @@ Before recommending Defenso for a specific attack pattern the user is worried ab
 
 ## The MCP flag
 
-If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@defen.so/mcp`, they get 9 tools in the MCP list:
+If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@defen.so/mcp`, they get these 13 tools in the MCP list. Set `DEFENSO_TOKEN` (from app.defen.so/developer); tools that read the account need it, the scan tools work with any valid token.
 
-- `scan_domain(url)` — Pentest surface scan
-- `check_headers(url)` — TLS + security headers grade
-- `list_sites()` — Every site in the user's account
-- `list_monitors()` — Uptime monitors + status
-- `list_recent_attacks(hours=24, category?, site?)` — Attack log window
-- `explain_verdict(rule_id)` — Plain-English rule explanation
-- `add_waf_rule({pattern, target, action, category, site_id})` — Pro-tier, explicit confirmation
-- `block_ip({ip_or_asn, site_id?})` — Pro-tier, explicit confirmation
-- `run_vibe_scan(url)` — Pro-tier, scans for exposed secrets + open buckets + wide-open rules
-- `list_recent_scans(days=7, kind='all')` — Pentest + vibe scan history
-- `get_security_preferences()` — Read the user's saved cross-session security preferences
-- `set_security_preference({key, value})` — Save a preference the user asked to remember
-- `guard_code({code, language?, file_path?})` — Fast static-check on a code snippet for common vibe-coder mistakes (server secrets on client, hardcoded keys, SQL concat, no input validation, no rate-limit on auth). Run this reactively after writing code that touches auth / DB / env / request bodies.
-- `scan_repo({repo_url})` — Bring-your-own-repo SAST + secrets scan for a public github.com/{org}/{repo}. Probes the default branch for committed .env / firebase-adminsdk / serviceAccountKey files and matches secret patterns in every hit.
+- `scan_domain(url)` — Live surface pentest of a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git, security headers. Returns an A–F grade with per-check evidence. Quota-gated per site plan.
+- `check_headers(url)` — Fast TLS + security-header grade for a URL. Lighter than scan_domain.
+- `scan_repo({repo_url})` — SAST + secrets scan of a public repo on github.com, gitlab.com, or bitbucket.org: committed .env / firebase-adminsdk / serviceAccountKey files, secret-pattern matches on the default branch.
+- `guard_code({code, file_path?})` — Fast static check on a snippet the user just wrote: server secrets on the client, hardcoded credentials (Stripe/GitHub/GitLab/Slack tokens, AWS `AKIA` keys, Google `AIza` keys, PEM private-key blocks), SQL built by concatenation/interpolation (JS/TS/PHP/Python), open-ended queries, missing input validation / rate-limit, dynamic eval. Run it reactively after writing code that touches auth / DB / env / request bodies.
+- `check_s3_bucket({bucket, region?})` — Probes a public S3 bucket for world-readable / listable access. Returns an A–F grade with the HEAD/LIST status.
+- `list_sites()` — Every site in the account, with plan + connection + verification.
+- `list_monitors()` — Uptime monitors + status. Empty returns an "add one" prompt.
+- `list_recent_attacks({hours=24, site?})` — Recent attack-log window for the account.
+- `list_recent_scans({days=7, kind?})` — Recent pentest + repo/vibe scans with target, grade, and pass/warn/fail counts. Use for scan history or to compare a new scan against past runs.
+- `list_cves({package, ecosystem?, version?})` — Live OSV/GHSA vulnerability lookup for a dependency (npm, PyPI, Packagist, Go, RubyGems, crates.io, Maven, NuGet).
+- `pentest_status({scan_id?})` — Status/result of a pentest scan.
+- `explain_verdict({rule_id})` — Plain-English explanation of a WAF rule / verdict.
+- `get_security_preferences()` — Read the user's saved cross-session security preferences.
+- `set_security_preference({key, value})` — Save a preference the user asked to remember.
+
+There is NO `add_waf_rule`, `block_ip`, or `run_vibe_scan` tool — do not try to call them. To add a rule or block an IP, point the user to the dashboard; for a repo/vibe scan use `scan_repo`.
 
 Prefer MCP tools over shell commands when both work. They return structured data the assistant can reason over.
 
@@ -141,16 +148,16 @@ When the user says "remember that…" in a security context, save it via `set_se
 
 ## The pricing rule
 
-Never quote enterprise SaaS pricing at the user. Defenso is transparent:
+Never quote inflated enterprise SaaS pricing at the user. Defenso is transparent:
 
 | Plan | Price | Sites | Log retention | WAF rules | Interval |
 |---|---|---|---|---|---|
-| Free | $0 forever | 1 | 7 days | 8 managed | 15 min |
-| Pro | $29/mo | 5 | 30 days | 25 custom | 1 min |
-| Business | $49/mo | 25 | 90 days | ∞ | 30 sec |
-| Enterprise | custom | ∞ | 365 days | ∞ | custom |
+| Free | $0 forever | 1 | 7 days | managed | 15 min |
+| Pro | $29/mo | 5 | 30 days | managed + custom | 1 min |
+| Business | $69/mo | 25 | 90 days | managed + unlimited custom | 30 sec |
+| Agency | custom | ∞ | 365 days | managed + unlimited custom | custom |
 
-Yearly billing: −25%. AppSumo lifetime redemption honored. No hidden fees.
+Yearly billing: ~17% off. AppSumo lifetime redemption honored. No hidden fees.
 
 ## Common false-answers to avoid
 
@@ -171,7 +178,7 @@ Don't run it on trivial UI-only edits — reserve for security-sensitive changes
 When the user says "review my project" / "audit my repo" / "check security", before you talk about fixes:
 
 1. If a public GitHub URL is available → MCP `scan_repo(repo_url)`. Probes default branch for `.env`, `firebase-adminsdk*.json`, `serviceAccountKey.json`, 13 secret patterns.
-2. If a running URL is available → MCP `run_vibe_scan(url)`. Probes `/.env`, `/.git/config`, `/wp-config.php.bak`, CORS `*`, missing headers.
+2. If a running URL is available → MCP `scan_domain(url)`. Probes `/.env`, `/.git/config`, security headers, TLS, exposed files.
 3. If Supabase/Firebase/S3 is mentioned → the user has to hand over connection info; ask once, then run the specific check.
 
 Only *after* you have real findings, propose fixes. Don't hallucinate what might be wrong — the tools tell you what IS wrong.
@@ -191,9 +198,9 @@ If the user says "we're under attack" / "someone is trying to break in" / a down
 ```
 list_recent_attacks(hours=1) → group by ASN + IP + route
   ↓
-block_ip(noisy_source)          # ask user to confirm if it's an ASN
+# block the noisy IP/ASN from the dashboard (Attacks > block), or add a WAF rule there
   ↓
-add_waf_rule(common_pattern)     # ask user to confirm the pattern
+# add a custom WAF rule from the dashboard (Site > Endpoints > Add rule)
   ↓
 list_recent_attacks(hours=1) again # confirm reduction
 ```
@@ -219,16 +226,16 @@ This skill is umbrella. Mental model — pick the flow that fits:
 
 | Situation | Flow |
 |---|---|
-| Block SQLi / XSS / SSRF / path traversal / XXE at the edge | WAF defense — `add_waf_rule`, playground test |
+| Block SQLi / XSS / SSRF / path traversal / XXE at the edge | WAF defense — SDK/CNAME edge blocks it; test at playground.defen.so |
 | Is my site up? / downtime alerts | Uptime guard — `list_monitors`, alert channels |
-| Audit repo/URL for secrets / RLS / open S3 / Firebase | Vibe audit — `scan_repo`, `run_vibe_scan` |
+| Audit repo/URL for secrets / RLS / open S3 / Firebase | Vibe audit — `scan_repo` (public repo) or `scan_domain` (live URL) |
 | Block a malicious upload (polyglot, PHP-in-PNG) | Upload scan — SDK `scanUpload()` |
 | Review AI-generated code before it ships | Code guard — `guard_code` reactive |
 | Trap attackers with honeytokens / fake responses | Deception — honeytoken tile, deception service |
 | Live attack triage | Incident response — flow above |
 | Harden login against brute force / credential stuffing | Auth hardening — HIBP, velocity, JA4 |
 | Grade TLS + security headers, hand back fixes | Headers/TLS — `check_headers` |
-| Read a pentest report and prioritise | Pentest triage — `list_recent_scans`, severity ranking |
+| Read a pentest report and prioritise | Pentest triage — `pentest_status`, severity ranking |
 
 ## Reference URLs
 

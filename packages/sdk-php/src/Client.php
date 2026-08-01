@@ -59,15 +59,99 @@ final class Client
      * Inspect a request. Returns a verdict describing the action to take.
      *
      * @param  array<string,mixed>  $request  ['method', 'url', 'headers', 'body'?, 'ip'?]
-     * @return array{action: 'allow'|'block'|'challenge'|'deceive', rule?: string, reason?: string, category?: string}
+     * @return array{action: 'allow'|'block'|'challenge', rule?: string, reason?: string, category?: string}
      */
     public function inspect(array $request): array
     {
-        if ($this->policy === null) {
+        if ($this->policy === null || empty($this->policy['rules'])) {
             return ['action' => 'allow'];
         }
 
-        foreach ($this->policy['rules'] ?? [] as $rule) {
+        // Endpoint rules — per-IP RPS caps + optional regex per URL pattern.
+        // Rules come from /policy under endpoint_rules[]. Rate state is a
+        // filesystem token bucket at /tmp/df_rl_<hash>. Cheap + persistent
+        // across requests (playground is one long-lived vhost).
+        $endpointRules = $this->policy['endpoint_rules'] ?? [];
+        if (! empty($endpointRules)) {
+            $method = strtoupper((string) ($request['method'] ?? 'GET'));
+            $url = (string) ($request['url'] ?? '');
+            $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+            $path = (string) parse_url($url, PHP_URL_PATH);
+            $ip = (string) ($request['ip'] ?? '');
+            foreach ($endpointRules as $er) {
+                if (! empty($er['host']) && strtolower($er['host']) !== $host) {
+                    continue;
+                }
+                $methods = $er['methods'] ?? '*';
+                if ($methods !== '*' && stripos($methods, $method) === false) {
+                    continue;
+                }
+                // Managed rules ship a full regex (path_regex); user rules use
+                // literal path patterns with :id placeholders.
+                $matched = ! empty($er['path_regex'])
+                    ? (@preg_match('#'.str_replace('#', '\\#', (string) $er['path_regex']).'#i', $path) === 1)
+                    : $this->patternMatchesPath((string) ($er['pattern'] ?? ''), $path);
+                if (! $matched) {
+                    continue;
+                }
+                $rps = (int) ($er['rps_per_ip'] ?? 0);
+                // Optional sliding-window limit: max `limit` requests per `window`
+                // seconds. Decouples the decay rate from the threshold so a
+                // brute-force ("8 tries a minute") actually trips — a plain
+                // per-second cap refills as fast as it's checked and never does.
+                $window = (float) ($er['window_seconds'] ?? 0);
+                $limit = (int) ($er['limit'] ?? 0);
+                if (($rps > 0 || ($window > 0 && $limit > 0)) && $ip !== '') {
+                    // Effective threshold + decay rate. With a window, decay is
+                    // limit/window per second; the trip point is `limit`.
+                    $threshold = $window > 0 && $limit > 0 ? $limit : $rps;
+                    $decayPerSec = $window > 0 && $limit > 0 ? ($limit / $window) : $rps;
+
+                    $bucketKey = 'df_rl_'.substr(hash('sha256', ((string) $er['id']).'|'.$ip), 0, 16);
+                    $bucketFile = sys_get_temp_dir().'/'.$bucketKey;
+                    $now = microtime(true);
+                    // Atomic read-modify-write under an exclusive lock so a
+                    // concurrent burst accumulates instead of racing.
+                    $counter = 0.0;
+                    $fh = @fopen($bucketFile, 'c+');
+                    if ($fh !== false) {
+                        @flock($fh, LOCK_EX);
+                        $raw = stream_get_contents($fh);
+                        $state = ['t' => $now, 'n' => 0.0];
+                        $loaded = @json_decode((string) $raw, true);
+                        if (is_array($loaded) && isset($loaded['t'], $loaded['n'])) {
+                            $state = $loaded;
+                        }
+                        $elapsed = max(0, $now - (float) $state['t']);
+                        $state['n'] = max(0.0, (float) $state['n'] - ($elapsed * $decayPerSec));
+                        $state['n'] += 1;
+                        $state['t'] = $now;
+                        $counter = $state['n'];
+                        rewind($fh);
+                        ftruncate($fh, 0);
+                        fwrite($fh, json_encode($state));
+                        fflush($fh);
+                        @flock($fh, LOCK_UN);
+                        fclose($fh);
+                    }
+                    if ($counter > $threshold) {
+                        $verdict = [
+                            'action' => $er['action'] ?? 'block',
+                            'rule' => 'rate_limit:'.$er['id'],
+                            'reason' => 'endpoint '.$er['pattern'].' exceeded '.$threshold.($window > 0 ? ' req / '.$window.'s' : ' req/s').' from IP',
+                            'category' => 'rate_limit',
+                        ];
+                        if ($verdict['action'] !== 'allow') {
+                            $this->queueLog($request, $verdict);
+                        }
+
+                        return $verdict;
+                    }
+                }
+            }
+        }
+
+        foreach ($this->policy['rules'] as $rule) {
             $target = $this->extractTarget($request, $rule['target']);
             if ($target === '') {
                 continue;
@@ -93,30 +177,6 @@ final class Client
             }
         }
 
-        // Deception: if this site is opted in for API deception and the path
-        // looks like an API endpoint, return a 'deceive' verdict so the
-        // middleware can serve a plausible fake 200 instead of hitting the
-        // real 404 (which would confirm the endpoint doesn't exist).
-        $deception = $this->policy['deception'] ?? null;
-        if (is_array($deception) && ! empty($deception['api_hosts'])) {
-            $host = strtolower((string) parse_url((string) ($request['url'] ?? ''), PHP_URL_HOST));
-            $path = (string) parse_url((string) ($request['url'] ?? ''), PHP_URL_PATH);
-            if ($host !== '' && in_array($host, array_map('strtolower', (array) $deception['api_hosts']), true)) {
-                $pat = '#'.($deception['api_path_pattern'] ?? '^/(api|graphql|rest|v[0-9]+)(/|$)').'#i';
-                if (@preg_match($pat, $path) === 1) {
-                    $verdict = [
-                        'action' => 'deceive',
-                        'rule' => 'deception.api',
-                        'reason' => 'API deception: unknown endpoint served plausible fake',
-                        'category' => 'deception',
-                    ];
-                    $this->queueLog($request, $verdict);
-
-                    return $verdict;
-                }
-            }
-        }
-
         return ['action' => 'allow'];
     }
 
@@ -138,7 +198,7 @@ final class Client
                 'version' => (string) ($body['version'] ?? time()),
                 'updated_at' => time(),
                 'rules' => $body['rules'],
-                'deception' => $body['deception'] ?? null,
+                'endpoint_rules' => $body['endpoint_rules'] ?? [],
             ];
             $this->policyLastFetch = time();
         } catch (GuzzleException) {
@@ -168,6 +228,22 @@ final class Client
     /**
      * @param  array<string,mixed>  $request
      */
+    /**
+     * Glob-style path match. ":id", ":uuid", ":slug", ":oid", ":token"
+     * become a wildcard "[^/]+" segment so /api/users/:id matches
+     * /api/users/42.
+     */
+    private function patternMatchesPath(string $pattern, string $path): bool
+    {
+        if ($pattern === '') {
+            return false;
+        }
+        $re = preg_quote($pattern, '#');
+        $re = preg_replace('/\\\\:[a-z]+/', '[^/]+', $re);
+
+        return @preg_match('#^'.$re.'$#', $path) === 1;
+    }
+
     private function extractTarget(array $request, string $target): string
     {
         // Decode percent-encoding + `+` for query/url/body targets so

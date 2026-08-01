@@ -1,0 +1,53 @@
+# Additional scanner / offensive-tool user-agent + probe signatures.
+
+- id: bot.sqlmap
+  category: bot
+  description: sqlmap scanner user-agent
+  pattern: 'sqlmap'
+  flags: i
+  target: headers
+  action: block
+  min_plan: scout
+  priority: 90
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]
+
+- id: bot.nikto-nuclei
+  category: bot
+  description: Nikto / Nuclei / WPScan scanners
+  pattern: '(?:nikto|nuclei|wpscan|acunetix|nessus|openvas|arachni)'
+  flags: i
+  target: headers
+  action: block
+  min_plan: scout
+  priority: 90
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]
+
+- id: bot.headless
+  category: bot
+  description: Headless / automation client user-agent
+  pattern: '(?:headlesschrome|phantomjs|puppeteer|playwright|selenium|python-requests|go-http-client|curl/)'
+  flags: i
+  target: headers
+  action: challenge
+  min_plan: pro
+  priority: 50
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]
+
+- id: bot.empty-ua
+  category: bot
+  description: Missing or empty User-Agent on a write request
+  pattern: '^$'
+  flags: ''
+  target: headers
+  action: challenge
+  min_plan: pro
+  priority: 40
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]

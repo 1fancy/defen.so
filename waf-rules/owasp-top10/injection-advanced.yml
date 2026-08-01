@@ -1,0 +1,66 @@
+# OWASP A03:2021 — Injection (advanced: NoSQL, XXE, template, LDAP)
+
+- id: nosql.operator
+  category: nosql
+  description: MongoDB operator injection ($ne, $gt, $where)
+  pattern: '\$(?:ne|gt|lt|gte|lte|regex|where|exists|in|nin)\b'
+  flags: i
+  target: body
+  action: block
+  min_plan: scout
+  priority: 90
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [943]
+
+- id: xxe.doctype
+  category: xxe
+  description: XML external entity declaration
+  pattern: '<!DOCTYPE[^>]*<!ENTITY|<!ENTITY[^>]+SYSTEM'
+  flags: i
+  target: body
+  action: block
+  min_plan: scout
+  priority: 95
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [611]
+
+- id: ssti.template
+  category: ssti
+  description: Server-side template injection payload ({{7*7}}, ${...})
+  pattern: '\{\{\s*[\d\w]+\s*[*+]\s*[\d\w]+\s*\}\}|\$\{[^}]*\}'
+  flags: i
+  target: query
+  action: challenge
+  min_plan: pro
+  priority: 70
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [1336]
+
+- id: ldap.injection
+  category: ldap
+  description: LDAP filter injection metacharacters
+  pattern: '\)\s*\(\s*[|&]|\*\)\s*\('
+  flags: i
+  target: query
+  action: block
+  min_plan: pro
+  priority: 80
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [90]
+
+- id: log4shell.jndi
+  category: rce
+  description: Log4Shell JNDI lookup (CVE-2021-44228)
+  pattern: '\$\{jndi:(?:ldap|ldaps|rmi|dns|nis|iiop|corba|nds|http):'
+  flags: i
+  target: body
+  action: block
+  min_plan: scout
+  priority: 100
+  mitre_attack: [T1190]
+  owasp: [A03:2021]
+  cwe: [917]

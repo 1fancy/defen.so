@@ -1,0 +1,54 @@
+# OWASP A03:2021 — OS command injection
+# Detects shell metacharacters and common command chains in request input.
+
+- id: cmdi.chain
+  category: cmdi
+  description: Shell command chaining (; && || | with a binary)
+  pattern: '(?:;|\|\||&&|\|)\s*(?:cat|ls|id|whoami|uname|curl|wget|nc|bash|sh|python|perl)\b'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 100
+  mitre_attack: [T1059]
+  owasp: [A03:2021]
+  cwe: [78]
+
+- id: cmdi.substitution
+  category: cmdi
+  description: Command substitution ($(...) or backticks)
+  pattern: '\$\([^)]+\)|`[^`]+`'
+  flags: i
+  target: body
+  action: block
+  min_plan: pro
+  priority: 90
+  mitre_attack: [T1059]
+  owasp: [A03:2021]
+  cwe: [78]
+
+- id: cmdi.sensitive-path
+  category: cmdi
+  description: Read of a sensitive path via command input
+  pattern: '(?:/etc/passwd|/etc/shadow|/proc/self/environ|/root/\.ssh)'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 95
+  mitre_attack: [T1059]
+  owasp: [A03:2021]
+  cwe: [78]
+
+- id: cmdi.reverse-shell
+  category: cmdi
+  description: Reverse-shell one-liner signature
+  pattern: '(?:bash\s+-i|/dev/tcp/|nc\s+-e|mkfifo\s+/tmp)'
+  flags: i
+  target: body
+  action: block
+  min_plan: pro
+  priority: 100
+  mitre_attack: [T1059]
+  owasp: [A03:2021]
+  cwe: [78]

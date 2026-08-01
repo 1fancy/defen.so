@@ -1,0 +1,53 @@
+# Common exposed-path probes vibe-coded apps leak. Path-based, request URI.
+
+- id: expose.git
+  category: exposure
+  description: .git directory / config probe
+  pattern: '/\.git(?:/|$)'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 90
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]
+
+- id: expose.dotenv
+  category: exposure
+  description: .env / .env.* probe
+  pattern: '/\.env(?:\.[a-z]+)?(?:$|\?)'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 95
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]
+
+- id: expose.backup
+  category: exposure
+  description: Backup / dump file probe (.sql, .bak, .zip, dump)
+  pattern: '\.(?:sql|bak|old|swp|dump|tar\.gz|zip)(?:$|\?)'
+  flags: i
+  target: query
+  action: challenge
+  min_plan: pro
+  priority: 60
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]
+
+- id: expose.admin
+  category: exposure
+  description: Common admin / debug endpoint probe
+  pattern: '/(?:wp-admin|phpmyadmin|\.aws/credentials|actuator/env|debug/default/view)'
+  flags: i
+  target: query
+  action: challenge
+  min_plan: pro
+  priority: 55
+  mitre_attack: [T1595]
+  owasp: [A05:2021]
+  cwe: [200]

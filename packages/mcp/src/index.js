@@ -24,10 +24,22 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const API_BASE = process.env.DEFENSO_API || 'https://mcp.defen.so';
 const API_PATH = process.env.DEFENSO_API_PATH || '/api/mcp';
+
+/** Single source of truth for the version — read from package.json so the
+ * server metadata and User-Agent never drift from the published package. */
+function pkgVersion() {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkg = JSON.parse(readFileSync(join(here, '..', 'package.json'), 'utf8'));
+    return pkg?.version || '0.0.0';
+  } catch { return '0.0.0'; }
+}
+const VERSION = pkgVersion();
 
 /** Load token from env, then ~/.defenso/config.json fallback. */
 function loadToken() {
@@ -40,7 +52,7 @@ function loadToken() {
 const TOKEN = loadToken();
 
 const server = new Server(
-  { name: 'defen.so-mcp', version: '0.1.0' },
+  { name: 'defen.so-mcp', version: VERSION },
   { capabilities: { tools: {} } }
 );
 
@@ -54,10 +66,12 @@ const TOOLS = [
   {
     name: 'scan_domain',
     description: [
-      'Run a live surface pentest against a URL — TLS, HSTS, CSP, cookie flags, exposed .env/.git/backup files, security headers. Returns a graded A–F report with per-check evidence.',
+      'Run a live surface pentest against a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git/backup files, leaked Supabase/Firebase/S3 keys, security headers. Returns a graded A-F report.',
       '',
-      'WHEN TO USE: user asks to "audit", "pentest", "scan", or "check the security of" a specific URL and needs *fresh live data*. This tool actually reaches the target.',
-      'WHEN NOT TO USE: for general "how do I secure X" advice, answer with your own knowledge — don\'t burn a scan quota. Also skip if the user only wants headers (use check_headers instead, it\'s cheaper).',
+      'WORKS WITHOUT A TOKEN: with no DEFENSO_TOKEN it returns a free once-a-day teaser scan (grade + top findings) for any public URL — great for a first look. With a token + the site onboarded, it returns the full report saved to history.',
+      '',
+      'WHEN TO USE: user asks to "audit", "pentest", "scan", or "check the security of" a specific URL and needs fresh live data. This tool actually reaches the target.',
+      'WHEN NOT TO USE: for general "how do I secure X" advice, answer with your own knowledge. If the user only wants headers, use check_headers (cheaper).',
     ].join('\n'),
     inputSchema: {
       type: 'object',
@@ -111,6 +125,21 @@ const TOOLS = [
       properties: {
         hours: { type: 'integer', description: 'How far back to look (default 24, max 168)', minimum: 1, maximum: 168 },
         limit: { type: 'integer', description: 'Max rows (default 20, max 100)', minimum: 1, maximum: 100 },
+      },
+    },
+  },
+  {
+    name: 'list_recent_scans',
+    description: [
+      'Return the user\'s recent pentest and repo/vibe scans from the last N days, with target, grade, and pass/warn/fail counts.',
+      '',
+      'WHEN TO USE: user asks "what did I scan recently", "show my last pentest", "history of my scans", or wants to compare a new scan against past results. Live account data.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        days: { type: 'integer', description: 'How far back to look (default 7, max 90)', minimum: 1, maximum: 90 },
+        kind: { type: 'string', description: 'Filter by scan kind', enum: ['pentest', 'vibe', 'all'] },
       },
     },
   },
@@ -269,14 +298,21 @@ function friendlyError(status, body) {
 server.setRequestHandler(CallToolRequestSchema, async (req) => {
   const { name, arguments: args } = req.params;
 
-  if (!TOKEN) {
+  // Tools that need a real account (they read the user's sites/monitors/etc.)
+  // still require a token. But scan_domain works keyless — the server returns a
+  // free once-a-day teaser scan for any public URL — so we let it through even
+  // with no token, and surface that value instead of a hard refusal.
+  const KEYLESS_OK = new Set(['scan_domain']);
+  if (!TOKEN && !KEYLESS_OK.has(name)) {
     return {
       content: [{
         type: 'text',
         text: [
-          'No Defenso token found. Two options:',
+          `"${name}" needs a Defenso account. To connect:`,
           '  1. Run `npx -y @defen.so/mcp link` to connect this device via the browser (no paste).',
-          '  2. Set DEFENSO_TOKEN in your MCP client config (get one at https://app.defen.so/developer).',
+          '  2. Or set DEFENSO_TOKEN in your MCP client config (get one at https://app.defen.so/developer).',
+          '',
+          'Tip: `scan_domain` works right now with no token — it gives a free daily security preview of any public URL.',
         ].join('\n'),
       }],
       isError: true,
@@ -289,7 +325,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${TOKEN}`,
-        'User-Agent': '@defen.so/mcp/0.2.0',
+        'User-Agent': `@defen.so/mcp/${VERSION}`,
       },
       body: JSON.stringify(args ?? {}),
     });

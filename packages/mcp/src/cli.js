@@ -21,9 +21,25 @@ const CONFIG_DIR = join(homedir(), '.defenso');
 const CONFIG_PATH = join(CONFIG_DIR, 'config.json');
 
 function openBrowser(url) {
-  const cmd = platform() === 'darwin' ? 'open' : platform() === 'win32' ? 'start' : 'xdg-open';
+  const isWin = platform() === 'win32';
+  // On Windows `start` is a cmd.exe builtin, not an executable, so spawning it
+  // directly throws ENOENT — it must run through a shell. `start` also treats
+  // the first quoted argument as the window title, so pass an empty title ("")
+  // before the URL. macOS uses `open`, Linux uses `xdg-open`.
+  const cmd = isWin ? 'cmd' : platform() === 'darwin' ? 'open' : 'xdg-open';
+  const args = isWin ? ['/c', 'start', '', url] : [url];
   try {
-    spawn(cmd, [url], { detached: true, stdio: 'ignore' }).unref();
+    const child = spawn(cmd, args, {
+      detached: true,
+      stdio: 'ignore',
+      shell: false,
+      windowsHide: true,
+    });
+    // spawn errors (missing binary, permission) surface via the async 'error'
+    // event, NOT a thrown exception — without this handler an ENOENT would
+    // crash the whole CLI instead of falling back to "copy the URL".
+    child.on('error', () => {});
+    child.unref();
     return true;
   } catch {
     return false;
@@ -181,6 +197,49 @@ launched by an MCP-speaking client like Claude Code, Cursor, or Windsurf.
 `);
 }
 
+/**
+ * When there's no subcommand we normally boot the MCP server on stdio — that's
+ * how Claude Code / Cursor / Windsurf launch us (piped, non-interactive).
+ *
+ * But a human running `npx @defen.so/mcp` in their terminal to "see what it is"
+ * would get a process that silently hangs waiting for MCP protocol on stdin.
+ * That's a confusing first run. So: if stdin is an interactive TTY (a person,
+ * not an MCP client), print a short setup guide instead of hanging.
+ */
+function setupGuide() {
+  console.log('');
+  console.log('  Defenso MCP — security tools for your AI editor');
+  console.log('  ────────────────────────────────────────────────');
+  console.log('');
+  console.log('  This is a Model Context Protocol (MCP) server. It gives Claude Code,');
+  console.log('  Cursor, Windsurf, and VS Code security tools: scan a domain, check');
+  console.log('  headers, scan a repo for leaked secrets, list your sites, and more.');
+  console.log('');
+  console.log('  It is meant to be launched by your editor, not run by hand — so it');
+  console.log('  did NOT start a server just now.');
+  console.log('');
+  console.log('  Set it up in one step:');
+  console.log('');
+  console.log('    1. Sign in and get a token:   npx @defen.so/mcp link');
+  console.log('    2. Add this to your editor\'s MCP config (e.g. ~/.claude/mcp.json):');
+  console.log('');
+  console.log('       {');
+  console.log('         "mcpServers": {');
+  console.log('           "defenso": {');
+  console.log('             "command": "npx",');
+  console.log('             "args": ["-y", "@defen.so/mcp"],');
+  console.log('             "env": { "DEFENSO_TOKEN": "df_live_… (from step 1)" }');
+  console.log('           }');
+  console.log('         }');
+  console.log('       }');
+  console.log('');
+  console.log('  Then restart your editor and ask it to "scan my site with Defenso".');
+  console.log('');
+  console.log('  Commands:  link · whoami · sites · status · logout · help');
+  console.log('  Docs:      https://defen.so/mcp');
+  console.log('');
+}
+
 const cmd = process.argv[2];
 if (cmd === 'link') { await link(); }
 else if (cmd === 'whoami') { await whoami(); }
@@ -188,4 +247,8 @@ else if (cmd === 'sites') { await sites(); }
 else if (cmd === 'status') { await status(); }
 else if (cmd === 'logout') { await logout(); }
 else if (cmd === 'help' || cmd === '--help' || cmd === '-h') { help(); }
+else if (process.stdin.isTTY && process.stdout.isTTY) {
+  // A person ran us in a terminal with no command — guide them, don't hang.
+  setupGuide();
+}
 else { await import('./index.js'); }

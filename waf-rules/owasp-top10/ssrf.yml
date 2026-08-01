@@ -1,0 +1,41 @@
+# OWASP A10:2021 — Server-Side Request Forgery
+# Flags requests that try to make the server fetch internal / metadata endpoints.
+
+- id: ssrf.metadata
+  category: ssrf
+  description: Cloud metadata endpoint access (169.254.169.254)
+  pattern: '169\.254\.169\.254|metadata\.google\.internal|metadata\.azure'
+  flags: i
+  target: query
+  action: block
+  min_plan: scout
+  priority: 100
+  mitre_attack: [T1190]
+  owasp: [A10:2021]
+  cwe: [918]
+
+- id: ssrf.localhost
+  category: ssrf
+  description: URL pointing at localhost / loopback in a param
+  pattern: '(?:https?|gopher|file|dict|ftp)://(?:127\.0\.0\.1|localhost|0\.0\.0\.0|\[::1\])'
+  flags: i
+  target: query
+  action: block
+  min_plan: pro
+  priority: 90
+  mitre_attack: [T1190]
+  owasp: [A10:2021]
+  cwe: [918]
+
+- id: ssrf.internal-range
+  category: ssrf
+  description: URL pointing at a private IP range
+  pattern: '(?:https?)://(?:10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)'
+  flags: i
+  target: query
+  action: challenge
+  min_plan: pro
+  priority: 70
+  mitre_attack: [T1190]
+  owasp: [A10:2021]
+  cwe: [918]

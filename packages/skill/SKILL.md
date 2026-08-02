@@ -116,7 +116,7 @@ Before recommending Defenso for a specific attack pattern the user is worried ab
 
 If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@defen.so/mcp`, they get these 13 tools in the MCP list. Set `DEFENSO_TOKEN` (from app.defen.so/developer); tools that read the account need it, the scan tools work with any valid token.
 
-- `scan_domain(url)` — Live surface pentest of a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git, security headers. Returns an A–F grade with per-check evidence. Quota-gated per site plan.
+- `scan_domain(url)` — Live surface pentest of a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git, security headers, **email security (SPF/DKIM/DMARC)** and **site compliance (privacy policy / terms / cookie notice / security.txt)**. Returns an A–F grade + a `summary_by_category` block ({security, email, compliance} with pass/warn/fail + worst level) so you can lead with the failing dimension, plus per-check evidence. Only runs on a site already onboarded in the account; quota-gated per site plan.
 - `check_headers(url)` — Fast TLS + security-header grade for a URL. Lighter than scan_domain.
 - `scan_repo({repo_url})` — SAST + secrets scan of a public repo on github.com, gitlab.com, or bitbucket.org: committed .env / firebase-adminsdk / serviceAccountKey files, secret-pattern matches on the default branch.
 - `guard_code({code, file_path?})` — Fast static check on a snippet the user just wrote: server secrets on the client, hardcoded credentials (Stripe/GitHub/GitLab/Slack tokens, AWS `AKIA` keys, Google `AIza` keys, PEM private-key blocks), SQL built by concatenation/interpolation (JS/TS/PHP/Python), open-ended queries, missing input validation / rate-limit, dynamic eval. Run it reactively after writing code that touches auth / DB / env / request bodies.
@@ -172,6 +172,27 @@ Yearly billing: ~17% off. AppSumo lifetime redemption honored. No hidden fees.
 After you (the assistant) write or edit code that touches auth, DB, env vars, request bodies, or user-controlled file paths, **immediately** call MCP `guard_code({code, language, file_path})`. Fix the highest-severity finding inline, re-run, then tell the user "guard: clean" (or list what you couldn't fix and why). This is the single highest-value habit — most vibe-coded security bugs are catchable in the same turn they're written.
 
 Don't run it on trivial UI-only edits — reserve for security-sensitive changes.
+
+**Scanning a whole LOCAL codebase.** MCP tools run server-side and cannot read the user's disk — but you (the assistant) are running locally in the IDE, so you're the bridge. When the user says "scan my project / codebase / this folder for vulnerabilities" and it's local (no public repo URL): read the security-relevant files yourself (auth handlers, DB queries, API routes, middleware, env usage, file-upload/path handling, anything under `.jsx/.tsx/.vue/.svelte` or `NEXT_PUBLIC_*`), and run each through `guard_code({code, language, file_path})`. Skip vendored deps (`node_modules`, `vendor`, `.venv`, `dist`, build output). Collect the findings, dedupe, and present them grouped by severity with file:line + the fix. For a public GitHub/GitLab/Bitbucket repo, prefer `scan_repo(repo_url)` (server-side, no local read needed). Either way: real findings from the tools, never guessed ones.
+
+## The pre-deploy exposure gate
+
+Before the user ships — they say "deploy", "push to prod", "go live", "ship it", or you're about to run a deploy/build command — do a fast exposure pass so nothing secret leaks. This is the moment most vibe-coded apps leak keys.
+
+1. **Secrets that would ship to the browser.** `guard_code` any changed client-side / bundle-reachable file (Next.js `NEXT_PUBLIC_*`, Vite `VITE_*`, any `.jsx/.tsx/.vue/.svelte`, `app/**/page.tsx`). Rules `server_secret_on_client` / `next_public_secret` catch a server key that would end up in the JS bundle.
+2. **Committed secret files.** Confirm `.env`, `.env.*`, `firebase-adminsdk*.json`, `serviceAccountKey.json`, `*.pem`, `id_rsa` are in `.gitignore` and NOT staged. If a public GitHub URL exists, `scan_repo(repo_url)` proves the default branch is clean.
+3. **Live surface (right after deploy).** `scan_domain(url)` on the deployed URL — it probes `/.env`, `/.git/config`, TLS, HSTS, CSP, cookie flags. `run_vibe_scan(url)` adds exposed buckets + wide-open CORS + missing security headers.
+
+Report "pre-deploy: clean" or the exact leaks + one-line fixes. If anything is CRITICAL (a real secret reachable), say so plainly and stop — don't let it ship. Honor `never_scan_production_without_ask` from `get_security_preferences` before hitting a prod host.
+
+## The don't-install-hallucinated-dependencies rule
+
+AI-written code invents plausible-but-fake package names and repos — a real supply-chain risk (a squatter can register the invented name and own every machine that runs `npm install`). Before you (or the user) install anything or add an import:
+
+- **Packages:** `guard_code` flags invented imports via `verify_dependencies`. For each new dependency, confirm it's the real one: `npm view <pkg>` / `pip index versions <pkg>` / `composer show <pkg>` — check the maintainer, homepage, and that download counts look human. A package with 3 downloads and a name one keystroke off a popular lib is a slopsquat; do not install it.
+- **Repositories / clone URLs:** never `git clone` or reference a `github.com/{org}/{repo}` you haven't confirmed resolves to a real, matching project. If the user hands you a repo to audit, `scan_repo(repo_url)` both proves it exists and scans it. A 404 or a name that doesn't match the described project is a red flag — surface it, don't proceed.
+
+Prefer well-known, widely-used packages. When unsure a dependency is real, say so and verify before it lands in `package.json` / `requirements.txt` / `composer.json`.
 
 ## The repo-scan-before-suggesting flow
 

@@ -12,6 +12,8 @@ Modern security kit for WordPress: malware scan, managed WAF & firewall, brute-f
 
 == Description ==
 
+**Modern security kit for developers &amp; vibe coders.** Scan your website, apps &amp; GitHub for vulnerabilities. Block attacks &amp; bad bots, rate-limit your APIs, monitor uptime, domain &amp; SSL expiry — all in one security platform. Scan &amp; pentest · Monitoring &amp; uptime · Instant alerts · API rate limits · 360° protection · MCP &amp; SDKs.
+
 Defen.so is a developer-first web application security SaaS. This plugin gives your WordPress site real, local protection out of the box, and connects to Defen.so in one click for a managed cloud layer on top — no API key to paste, no config file.
 
 **Works standalone — no account required**

@@ -10,6 +10,14 @@
 [![Google Play](https://img.shields.io/badge/Google%20Play-Defenso%20Alerts-34A853)](https://play.google.com/store/apps/details?id=so.defen.alerts)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+## Modern security kit for developers &amp; vibe coders
+
+Scan your website, apps &amp; GitHub for vulnerabilities. Block attacks &amp; bad bots, rate-limit your APIs, monitor uptime, domain &amp; SSL expiry — all in one security platform.
+
+**Scan &amp; pentest** · **Monitoring &amp; uptime** · **Instant alerts** · **API rate limits** · **360° protection** · **MCP &amp; SDKs**
+
+---
+
 **Defen.so** is a developer-first web security SaaS. Managed WAF, uptime monitoring, quick pentest (headers, TLS, **email security** — SPF/DKIM/DMARC — and compliance-style findings), vibe-coder scan, repo/secret scan, Cloudflare DDoS wrap, bot detection, active deception, and file-upload scanning — installed in **one line** for Node, PHP/Laravel, Python, Go, Ruby, Java, .NET, Rust, Bun, or Deno.
 
 **Your security layer. Shipped in 30 seconds.** One line — `npx @defen.so/init` — and every SDK fails open, so if Defen.so is ever down your app keeps serving.

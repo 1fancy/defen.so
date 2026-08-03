@@ -4,7 +4,7 @@ Tags: security, waf, firewall, malware scan, brute force, uptime monitor
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Modern security kit for WordPress: malware scan, managed WAF & firewall, brute-f
 
 == Description ==
 
-**Modern security kit for developers &amp; vibe coders.** Scan your website, apps &amp; GitHub for vulnerabilities. Block attacks &amp; bad bots, rate-limit your APIs, monitor uptime, domain &amp; SSL expiry — all in one security platform. Scan &amp; pentest · Monitoring &amp; uptime · Instant alerts · API rate limits · 360° protection · MCP &amp; SDKs.
+**Modern security kit for developers & vibe coders.** Scan your website, apps & GitHub for vulnerabilities. Block attacks & bad bots, rate-limit your APIs, monitor uptime, domain & SSL expiry — all in one security platform. Scan & pentest · Monitoring & uptime · Instant alerts · API rate limits · 360° protection · MCP & SDKs.
 
 Defen.so is a developer-first web application security SaaS. This plugin gives your WordPress site real, local protection out of the box, and connects to Defen.so in one click for a managed cloud layer on top — no API key to paste, no config file.
 
@@ -110,6 +110,10 @@ This plugin connects to external services. Here is exactly what is sent, when, a
 3. Live attack log on the Defen.so dashboard.
 
 == Changelog ==
+
+= 1.2.5 =
+* SEO: refreshed the plugin description with the full feature list (managed WAF, upload scanning, login hardening, malware & file-integrity scans, core-file verification, live attack log).
+* Housekeeping: aligned the internal version constant with the plugin header. No changes to any security module behaviour.
 
 = 1.2.4 =
 * New: the admin screen is now organised into tabs — Overview, Firewall & hardening, Scans, Rate limits, Uptime & alerts, and Activity log — so every tool is one click away instead of one long scroll. The tab you were on is remembered across reloads.

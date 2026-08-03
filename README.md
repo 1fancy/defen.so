@@ -1,20 +1,4 @@
-# Defen.so — modern security kit for developers & vibe coders
-
-> **Scan your website, apps & GitHub for vulnerabilities. Block attacks & bad bots, rate-limit your APIs, monitor uptime, domain & SSL expiry — all in one security platform.**
->
-> 🔎 Scan & pentest · 📈 Monitoring & uptime · 🔔 Instant alerts · 🚦 API rate limits · 🛡️ 360° protection · 🤖 MCP & SDKs
->
-> `npx @defen.so/mcp scan yourdomain.com` — free, no signup.
-
-<p align="center">
-  <img src="https://defen.so/assets/store/hero-1.png" alt="Monitor everything in one place — uptime, APIs, domains & SSL, with real-time alerts everywhere" width="49%">
-  <img src="https://defen.so/assets/store/hero-5.png" alt="Website & apps security scanner — reports you can understand, with a copy-paste AI fix prompt" width="49%">
-</p>
-<p align="center">
-  <img src="https://defen.so/assets/store/hero-3.png" alt="Is your website & app online or slow? 24/7 uptime & performance monitoring" width="32%">
-  <img src="https://defen.so/assets/store/hero-4.png" alt="Protect & rate-limit your API endpoints — stop bots & abuse in 2 minutes" width="32%">
-  <img src="https://defen.so/assets/store/hero-2.png" alt="MCP & security skills for AI coding — vulnerability scanning and secure-development guidance in your CLI" width="32%">
-</p>
+# Defen.so — your security layer. Shipped in 30 seconds.
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![App](https://img.shields.io/badge/app-app.defen.so-0A0A0A)](https://app.defen.so)
@@ -57,9 +41,9 @@ Most small teams ship without a Web Application Firewall in front of their app. 
 
 Defen.so removes three specific frictions:
 
-1. **Install** — one line, one language, 30 seconds.
+1. **Install** — one line, one language, five minutes.
 2. **Downside risk** — every SDK is fail-open. If Defen.so is down, your app keeps serving. You lose protection, not availability.
-3. **Cost** — a real free tier protects a hobby project. Pro is $29/mo per site. No enterprise talk to get started.
+3. **Cost** — free tier protects a real hobby project. Pro is $29/mo per site. No enterprise talk.
 
 ## What's inside
 
@@ -69,14 +53,13 @@ Defen.so removes three specific frictions:
 | Uptime monitoring | 15-min free, 1-min Pro, 30-sec Business. Public status page. Email + Slack + Discord + Telegram + webhook + mobile push on down/up. |
 | Quick pentest | On-demand surface scan: headers, TLS, cookies, exposed `.env` / `.git`, **email security (SPF / DKIM / DMARC)**, and compliance-style findings. A/B/C/D/F grade. |
 | Vibe-coder scan | Catches the mistakes vibe-coded projects tend to ship: exposed secrets, open S3 buckets, Supabase RLS off, wide-open Firebase rules. |
-| Repo / secret scan | Point it at a public `github.com/{org}/{repo}` — probes the default branch for `.env`, service-account JSON, and secret-family patterns. |
 | Cloudflare DDoS wrap | One-click attach + per-site Under-Attack toggle. |
 | Bot detection | UA classification, headless-browser challenges, per-IP rate limits, ASN allowlist for Google/Bing. |
 | Active deception | Serves plausible fakes to verified attackers. Fingerprint logged, real error message hidden. |
 | Upload scanning | MIME + magic bytes + polyglot detection + optional ClamAV. |
 | CVE feed | Live feed from NVD, tagged with which Defen.so rule covers each entry. |
 | Real-time logs | Full context per attack (IP, ASN, country, payload, route, verdict). 7 days free, 30 Pro, 90 Business. |
-| MCP server | Claude Code, Cursor, Windsurf, VS Code get real security tools. Scan, monitor, guard, block from AI chat. |
+| MCP server | Claude Code, Cursor, Windsurf, VS Code get real security tools. Scan, monitor, block from AI chat. |
 | WordPress plugin | [Defen.so Connector](https://wordpress.org/plugins/defen-so-connector/) — local malware scan, file integrity, login hardening, geo-block, activity log with no account; one-click connect for managed WAF + attack log + uptime + CVE lookups. |
 | Mobile app | [Defenso Alerts](https://play.google.com/store/apps/details?id=so.defen.alerts) on Google Play — call-style **Alarm** notifications that ring through silent mode / DND until you acknowledge. iOS coming soon. |
 | Alert integrations | Mobile push, email (primary + 3 CCs), Slack, Discord, Telegram, generic webhook. Fires on down/up, attack burst, plan limit. |
@@ -107,10 +90,8 @@ app.use(defenso({ token: process.env.DEFENSO_TOKEN }))
 
 Framework helpers:
 - Express: `import { defenso } from '@defen.so/sdk-node/express'`
-- Fastify: `import { defensoFastify } from '@defen.so/sdk-node/fastify'`
-- Next.js middleware: `import { defensoNext } from '@defen.so/sdk-node/next'`
-
-Bun and Deno re-export the Node SDK — `import ... from 'npm:@defen.so/sdk-node'`.
+- Fastify: `import { defenso } from '@defen.so/sdk-node/fastify'`
+- Next.js middleware: `import { defenso } from '@defen.so/sdk-node/next'`
 
 </details>
 
@@ -134,9 +115,12 @@ Symfony — register `\Defenso\Middleware\DefensoSymfonyListener` as a kernel ev
 </details>
 
 <details>
-<summary><strong>Python / Go / Ruby / Rust / Java / .NET</strong></summary>
+<summary><strong>Python / Go / Ruby / Java / .NET / Rust</strong></summary>
 
-Every SDK exposes the same `inspect(request) -> { action, rule, reason }` contract and fails open. Scaffolds for these languages live under [`packages/`](./packages) — see [defen.so/install](https://defen.so/install) for the current registry-publish status of each. You can protect any app today with zero code by signing up at [app.defen.so](https://app.defen.so) (uptime + surface scans turn on immediately) or routing traffic through the edge WAF via CNAME on the Business plan.
+Every SDK exposes the same `inspect(request) -> { action, rule, reason }` contract and fails open. Scaffolds for these languages live under [`packages/`](./packages) — see [defen.so/install](https://defen.so/install) for the current registry-publish status of each. You can protect any app today with zero code by:
+
+- Signing up at [app.defen.so](https://app.defen.so) — uptime monitoring and surface scans turn on immediately.
+- On the **Business** plan, routing traffic through the Defen.so edge WAF via CNAME (no code).
 
 </details>
 
@@ -164,7 +148,7 @@ All SDKs live in `packages/`:
 Each SDK:
 - **Fails open** — if the Defen.so API is unreachable, your app keeps serving.
 - **Caches policy** — 5-minute TTL, refreshed in background.
-- **Batches attack logs** — sent asynchronously so the request path stays fast.
+- **Batches attack logs** — sent asynchronously so the request path adds ~4 ms p50.
 - **Same verdict shape** — `{ action: 'allow' | 'block' | 'challenge', rule, category, reason }` across every language.
 
 ## MCP server for AI IDEs
@@ -185,12 +169,13 @@ Live at [mcp.defen.so](https://mcp.defen.so). Install via `~/.claude/mcp.json`:
 }
 ```
 
-Tools: `scan_domain`, `check_headers`, `list_sites`, `list_monitors`, `list_recent_attacks`, `explain_verdict`, `add_waf_rule`, `block_ip`, `run_vibe_scan`, `list_recent_scans`, `get_security_preference`, `set_security_preference`, `guard_code`, `scan_repo`. The MCP calls no LLM of its own — it runs on **your** AI assistant's credits and enforces your per-site plan quotas. See [`packages/mcp`](./packages/mcp) for the full tool reference.
+Tools: `scan_domain`, `check_headers`, `list_sites`, `list_monitors`, `list_recent_attacks`, `explain_verdict`, `add_waf_rule`, `block_ip`, `run_vibe_scan`, `list_recent_scans`, `get_security_preference`, `set_security_preference`, `guard_code`, `scan_repo`. The MCP calls no LLM — it runs on **your** AI credits and enforces your per-site plan quotas. See [`packages/mcp`](./packages/mcp) for the full tool reference.
 
 ## WordPress plugin
 
-[**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) (slug `defen-so-connector`) is **live on the WordPress.org plugin directory**. Source lives in [`packages/wp-plugin`](./packages/wp-plugin).
+[**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) (slug `defen-so-connector`, v1.2.4) is on the WordPress.org plugin directory. Source lives in [`packages/wp-plugin`](./packages/wp-plugin).
 
+- **Tabbed admin** — Overview, Firewall &amp; hardening, Scans, Rate limits, Uptime &amp; alerts, and Activity log, each one click away; the tab you were on is remembered across reloads.
 - **Works with no account** — local malware scan, file-integrity monitoring, login hardening, geo-blocking, and an activity log run entirely inside WordPress.
 - **One-click connect** — link a Defen.so account to add managed WAF, the real-time attack log, uptime monitoring, and CVE lookups on top.
 
@@ -242,7 +227,7 @@ Per-site, transparent:
 | **Business** | $69 / mo | 25 | 50 (30-sec) | ∞ | ∞ | ∞ | 90 days |
 | **Agency / Enterprise** | custom | ∞ | ∞ | ∞ | ∞ | ∞ | 365 days |
 
-Yearly billing: −25%. AppSumo lifetime deals honored. Full pricing at [defen.so/pricing](https://defen.so/pricing).
+Yearly billing: −25%. AppSumo redemption supported. Full pricing at [defen.so/pricing](https://defen.so/pricing).
 
 ## Threats Defen.so stops
 
@@ -271,7 +256,10 @@ Security disclosures: mail `info@defen.so` — please don't file public issues f
 - Free scanner: https://defen.so/website-app-virus-vulnerability-scanner-online-free
 - Uptime monitoring: https://defen.so/website-apps-uptime-monitoring
 - Pricing: https://defen.so/pricing
+- Enterprise: https://defen.so/enterprise
 - Docs: https://defen.so/docs
+- Roadmap: https://defen.so/roadmap
+- Blog: https://defen.so/blog
 - Live CVE feed: https://defen.so/threats
 
 ## License

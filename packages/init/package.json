@@ -1,17 +1,37 @@
 {
   "name": "@defen.so/init",
-  "version": "0.2.0",
-  "description": "One command to install a production Web Application Firewall in any framework. Detects Node / PHP / Python / Ruby / Go / Rust / Java / .NET, installs the right Defenso SDK, wires the middleware, writes DEFENSO_TOKEN to .env. Free forever tier. Fails open. Playground + MCP for Claude Code / Cursor / Windsurf included.",
+  "version": "0.3.1",
+  "description": "One command to install a production Web Application Firewall. Detects Node (Next.js / Express / Fastify), PHP (Laravel / Symfony), and Python (Django / FastAPI / Flask), installs the right Defenso SDK, wires the middleware, writes DEFENSO_TOKEN to .env. $0 to start. Fails open. Playground + MCP for Claude Code / Cursor / Windsurf included.",
   "type": "module",
   "bin": {
     "defenso-init": "./bin/init.js"
   },
   "main": "./bin/init.js",
-  "files": ["bin", "README.md"],
+  "files": [
+    "bin",
+    "skill",
+    "README.md"
+  ],
   "keywords": [
-    "defenso", "defen.so", "waf", "security", "middleware",
-    "next.js", "express", "fastify", "laravel", "symfony", "django", "flask", "fastapi",
-    "vibe-coding", "ai-security", "sdk", "install", "bootstrap", "init"
+    "defenso",
+    "defen.so",
+    "waf",
+    "security",
+    "middleware",
+    "next.js",
+    "express",
+    "fastify",
+    "laravel",
+    "symfony",
+    "django",
+    "flask",
+    "fastapi",
+    "vibe-coding",
+    "ai-security",
+    "sdk",
+    "install",
+    "bootstrap",
+    "init"
   ],
   "author": "Defenso (Next Lab LLC) <info@defen.so> (https://defen.so)",
   "license": "MIT",
@@ -25,5 +45,7 @@
     "url": "git+https://github.com/1fancy/defen.so.git",
     "directory": "packages/init"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin Name: Defen.so Connector — WAF, uptime, upload scanning
- * Plugin URI: https://defen.so/wordpress
+ * Plugin Name: Defen.so Connector
+ * Plugin URI: https://defen.so/wordpress-security-plugin
  * Description: Official Defen.so connector for WordPress. One-click connect to Defen.so, block SQL injection / XSS / bot scanners at the edge, scan every uploaded file for polyglots + malware, watch uptime, and detect brute-force logins. Manage everything from your Defen.so dashboard at https://defen.so.
- * Version: 1.1.0
+ * Version: 1.2.4
  * Author: Defen.so
  * Author URI: https://defen.so
  * License: GPLv2 or later
@@ -12,12 +12,13 @@
  * Text Domain: defen-so-connector
  * Requires at least: 5.8
  * Requires PHP: 7.4
+ * Update URI: false
  */
 if (! defined('ABSPATH')) {
     exit;
 }
 
-define('DEFENSO_VERSION', '1.1.0');
+define('DEFENSO_VERSION', '1.2.4');
 define('DEFENSO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DEFENSO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('DEFENSO_APP_URL', 'https://app.defen.so');
@@ -75,6 +76,9 @@ class Defenso_Connector
         require_once DEFENSO_PLUGIN_DIR.'includes/geo-block.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/login-hardening.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/activity-log.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/hardening.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/core-checksum.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/promo.php';
         if (class_exists('Defenso_Malware_Scan')) {
             Defenso_Malware_Scan::register();
         }
@@ -93,6 +97,15 @@ class Defenso_Connector
         if (class_exists('Defenso_Activity_Log')) {
             Defenso_Activity_Log::register();
         }
+        if (class_exists('Defenso_Hardening')) {
+            Defenso_Hardening::register();
+        }
+        if (class_exists('Defenso_Core_Checksum')) {
+            Defenso_Core_Checksum::register();
+        }
+        if (class_exists('Defenso_Promo')) {
+            Defenso_Promo::register();
+        }
     }
 
     private function init_hooks(): void
@@ -108,12 +121,18 @@ class Defenso_Connector
         add_filter('plugin_action_links_'.plugin_basename(__FILE__), [$this, 'plugin_action_links']);
         add_action('wp_dashboard_setup', [$this, 'register_dashboard_widget']);
 
-        // Runtime protection hooks — only wired when we have a token so a
-        // disconnected plugin has zero runtime overhead.
+        // Local runtime protections — always on, for everyone, no account
+        // needed. These run entirely in the plugin: upload scanning (dangerous
+        // extensions + polyglot detection) and recording failed logins.
+        add_filter('wp_handle_upload_prefilter', [$this, 'scan_upload']);
+        add_action('wp_login_failed', [$this, 'on_login_failed']);
+
+        // Cloud-backed pieces — only when connected to a Defen.so account. The
+        // managed WAF reads a rule policy computed on Defen.so's servers, and
+        // attack-log events are shipped to the dashboard. Both are genuine
+        // external-service functionality, not a local feature behind a gate.
         if (get_option('defenso_api_token')) {
             add_action('init', [$this, 'inspect_request'], 1);
-            add_filter('wp_handle_upload_prefilter', [$this, 'scan_upload']);
-            add_action('wp_login_failed', [$this, 'on_login_failed']);
             add_action('shutdown', [$this, 'flush_attack_log']);
         }
     }
@@ -140,13 +159,13 @@ class Defenso_Connector
         }
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $page = isset($_GET['page']) ? sanitize_key(wp_unslash($_GET['page'])) : '';
-        if ($page === 'defen-so') {
+        if ($page === 'defenso') {
             delete_option('defenso_setup_needed');
 
             return;
         }
         delete_option('defenso_setup_needed');
-        wp_safe_redirect(admin_url('admin.php?page=defen-so&onboarding=1'));
+        wp_safe_redirect(admin_url('admin.php?page=defenso&onboarding=1'));
         exit;
     }
 
@@ -172,11 +191,18 @@ class Defenso_Connector
             update_option('defenso_plan_label', $plan_label);
         }
 
+        // Persist the site's dashboard deep-link so Upgrade / Manage buttons
+        // land on THIS site's page, not the generic app root.
+        $manage_url = isset($_POST['manage_url']) ? esc_url_raw(wp_unslash($_POST['manage_url'])) : '';
+        if ($manage_url !== '' && strpos($manage_url, DEFENSO_APP_URL.'/sites/') === 0) {
+            update_option('defenso_manage_url', $manage_url);
+        }
+
         // Fetch the policy immediately so protection is live from the next request.
         $this->refresh_policy();
         wp_send_json_success([
             'message' => 'Connected',
-            'redirect' => admin_url('admin.php?page=defen-so&connected=1'),
+            'redirect' => admin_url('admin.php?page=defenso&connected=1'),
         ]);
     }
 
@@ -188,6 +214,9 @@ class Defenso_Connector
     {
         if (! current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Permission denied'], 403);
+        }
+        if (! check_ajax_referer('defenso_admin', '_wpnonce', false)) {
+            wp_send_json_error(['message' => 'Invalid nonce'], 403);
         }
         $token = get_option('defenso_api_token');
         if (! $token) {
@@ -233,6 +262,7 @@ class Defenso_Connector
         delete_option('defenso_policy_refreshed_at');
         delete_option('defenso_attack_log_queue');
         delete_option('defenso_plan_label');
+        delete_option('defenso_manage_url');
         delete_option('defenso_verified');
         wp_send_json_success(['message' => 'Disconnected']);
     }
@@ -241,6 +271,9 @@ class Defenso_Connector
     {
         if (! current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Permission denied'], 403);
+        }
+        if (! check_ajax_referer('defenso_admin', '_wpnonce', false)) {
+            wp_send_json_error(['message' => 'Invalid nonce'], 403);
         }
         wp_send_json_success([
             'connected' => (bool) get_option('defenso_api_token'),
@@ -253,7 +286,7 @@ class Defenso_Connector
 
     public function plugin_action_links($links): array
     {
-        $settings = '<a href="'.esc_url(admin_url('admin.php?page=defen-so')).'">'.__('Settings', 'defen-so-connector').'</a>';
+        $settings = '<a href="'.esc_url(admin_url('admin.php?page=defenso')).'">'.__('Settings', 'defen-so-connector').'</a>';
         array_unshift($links, $settings);
 
         return $links;
@@ -324,21 +357,37 @@ class Defenso_Connector
             return;
         }
 
-        $request_url = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '/';
-        $query_string = isset($_SERVER['QUERY_STRING']) ? (string) wp_unslash($_SERVER['QUERY_STRING']) : '';
+        // WAF inspection needs the raw, unaltered request so it can match
+        // attack payloads. Sanitizing here would strip the very characters the
+        // rules look for. The values are only regex-matched against the rule
+        // set below — never stored, echoed, or used in a query.
+        // Sanitize on receipt. The sanitized values are what we ever store or
+        // log; the raw copies below are used ONLY for in-memory WAF regex
+        // matching (never stored/echoed) so an attack payload stays detectable.
+        $request_url = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
+        $query_string = isset($_SERVER['QUERY_STRING']) ? sanitize_text_field(wp_unslash($_SERVER['QUERY_STRING'])) : '';
+        // phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- raw copies for WAF matching only, never stored
+        $request_url_raw = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '/';
+        $query_string_raw = isset($_SERVER['QUERY_STRING']) ? (string) wp_unslash($_SERVER['QUERY_STRING']) : '';
+        // phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         $body_raw = file_get_contents('php://input');
         $headers_line = '';
+        // WAF inspection: match rule patterns against raw request headers. We
+        // wp_unslash() to normalise, but deliberately do NOT sanitize — a WAF
+        // must see the unaltered payload to detect an attack. Nothing here is
+        // stored or echoed; it is only regex-matched against the rule set.
         foreach ($_SERVER as $k => $v) {
             if (strpos($k, 'HTTP_') === 0) {
-                $headers_line .= ' '.(string) $v;
+                $headers_line .= ' '.(string) wp_unslash($v);
             }
         }
 
         foreach ($policy['rules'] as $rule) {
             $target = $rule['target'] ?? 'url';
-            $haystack = $request_url;
+            // Match against the RAW request so attack payloads stay detectable.
+            $haystack = $request_url_raw;
             if ($target === 'query') {
-                $haystack = $query_string;
+                $haystack = $query_string_raw;
             } elseif ($target === 'body') {
                 $haystack = (string) $body_raw;
             } elseif ($target === 'headers') {
@@ -355,7 +404,9 @@ class Defenso_Connector
                     'rule' => $rule['id'] ?? null,
                     'reason' => 'Matched '.($rule['id'] ?? 'rule').' on '.$target,
                 ];
-                $this->queue_attack_log($request_url, $action, $rule['id'] ?? null, $this->current_verdict['reason']);
+                // Store a SANITIZED copy of the path in the attack log (the raw
+                // value above is used only for pattern matching, never stored).
+                $this->queue_attack_log(sanitize_text_field($request_url), $action, $rule['id'] ?? null, $this->current_verdict['reason']);
 
                 if ($action === 'block') {
                     status_header(403);
@@ -469,6 +520,16 @@ class Defenso_Connector
         ]);
     }
 
+    /**
+     * Public entry point for the local firewall/hardening module to record a
+     * block into the attack-log queue, so locally-blocked scanner/exploit hits
+     * surface in the Defen.so dashboard alongside cloud-WAF blocks.
+     */
+    public function log_local_block(string $url, string $rule_id, string $reason): void
+    {
+        $this->queue_attack_log($url, 'block', $rule_id, $reason);
+    }
+
     private function queue_attack_log(string $url, string $action, ?string $rule_id, string $reason): void
     {
         $queue = get_option('defenso_attack_log_queue', []);
@@ -554,7 +615,7 @@ class Defenso_Connector
             'Defen.so',
             'Defen.so',
             'manage_options',
-            'defen-so',
+            'defenso',
             [$this, 'render_admin_page'],
             'dashicons-shield-alt',
             65
@@ -563,7 +624,7 @@ class Defenso_Connector
 
     public function enqueue_admin_scripts($hook): void
     {
-        if (strpos((string) $hook, 'defen-so') === false) {
+        if (strpos((string) $hook, 'defenso') === false) {
             return;
         }
         wp_enqueue_style('defenso-admin', DEFENSO_PLUGIN_URL.'assets/css/admin.css', [], DEFENSO_VERSION);
@@ -597,7 +658,7 @@ class Defenso_Connector
         $queue = get_option('defenso_attack_log_queue', []);
         $rules = is_array(get_option('defenso_policy_cache')) ? count(get_option('defenso_policy_cache')['rules'] ?? []) : 0;
         if (! $connected) {
-            echo '<p>Not connected yet. <a href="'.esc_url(admin_url('admin.php?page=defen-so')).'">Connect this site</a> to enable the WAF, upload scan, and uptime monitor.</p>';
+            echo '<p>Not connected yet. <a href="'.esc_url(admin_url('admin.php?page=defenso')).'">Connect this site</a> to enable the WAF, upload scan, and uptime monitor.</p>';
 
             return;
         }

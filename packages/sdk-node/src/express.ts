@@ -2,7 +2,7 @@
  * Express middleware:
  *
  *   import express from 'express';
- *   import { defenso } from '@defenso/sdk-node/express';
+ *   import { defenso } from '@defen.so/sdk-node/express';
  *
  *   const app = express();
  *   app.use(defenso({ token: process.env.DEFENSO_TOKEN! }));

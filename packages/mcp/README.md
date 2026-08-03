@@ -2,6 +2,14 @@
 
 **Give your AI assistant real web-security tools.** The official [Defenso](https://defen.so) Model Context Protocol server plugs into Claude Code, Cursor, Windsurf, VS Code Copilot, or any assistant that speaks MCP. Deterministic tools, auditable output, safe to run inline — no hallucinated verdicts.
 
+> **Modern security kit for developers & vibe coders.** Scan your website, apps & GitHub for vulnerabilities. Block attacks & bad bots, rate-limit your APIs, monitor uptime, domain & SSL expiry — all in one security platform.
+>
+> 🔎 Scan & pentest · 📈 Monitoring & uptime · 🔔 Instant alerts · 🚦 API rate limits · 🛡️ 360° protection
+
+<p align="center">
+  <img src="https://defen.so/assets/store/hero-2.png" alt="MCP & security skills for AI coding — vulnerability scanning and secure-development guidance in your CLI" width="88%">
+</p>
+
 *Your security layer. Shipped in 30 seconds.*
 
 ```bash

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Activity log. Records last-N admin actions to wp_options and pipes each
  * into the plugin's attack-log queue so the Defen.so dashboard shows
@@ -13,12 +14,9 @@
  *   - switch_theme         (theme switch)
  *   - updated_option       (specific high-risk options: siteurl, home, admin_email)
  *
- * Free tier: last 100 events kept locally. Pro tier: retention extended
- * server-side via the dashboard.
- *
- * @package DefensoConnector
+ * The last 100 events are kept locally for everyone. Connecting a Defen.so
+ * account also streams these events to the dashboard for long-term retention.
  */
-
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -26,6 +24,7 @@ if (! defined('ABSPATH')) {
 class Defenso_Activity_Log
 {
     private const CAP = 100;
+
     private const OPT = 'defenso_activity_log';
 
     public static function register(): void
@@ -43,6 +42,9 @@ class Defenso_Activity_Log
     {
         if (! current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'Permission denied'], 403);
+        }
+        if (! check_ajax_referer('defenso_admin', '_wpnonce', false)) {
+            wp_send_json_error(['message' => 'Invalid nonce'], 403);
         }
         wp_send_json_success([
             'events' => array_slice((array) get_option(self::OPT, []), 0, 30),
@@ -112,7 +114,7 @@ class Defenso_Activity_Log
     }
 
     /**
-     * @param array{kind:string, summary:string, actor?:string} $ev
+     * @param  array{kind:string, summary:string, actor?:string}  $ev
      */
     private static function push(array $ev): void
     {
@@ -130,12 +132,14 @@ class Defenso_Activity_Log
     {
         foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
             if (! empty($_SERVER[$key])) {
-                $ip = trim(explode(',', (string) $_SERVER[$key])[0]);
+                $raw = sanitize_text_field(wp_unslash($_SERVER[$key]));
+                $ip = trim(explode(',', $raw)[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP)) {
                     return $ip;
                 }
             }
         }
+
         return '0.0.0.0';
     }
 }

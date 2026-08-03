@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Defenso\Middleware;
 
 use Defenso\Client;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Symfony HttpKernel listener. Register in services.yaml:

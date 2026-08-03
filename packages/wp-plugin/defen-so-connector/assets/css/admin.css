@@ -22,3 +22,47 @@
 .defenso-footer a { color: #525252; text-decoration: none; }
 .defenso-footer a:hover { text-decoration: underline; }
 .button-hero { padding: 8px 22px !important; height: auto !important; font-size: 14px !important; }
+.defenso-toggle-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 20px; }
+@media (max-width: 720px) { .defenso-toggle-grid { grid-template-columns: 1fr; } }
+.defenso-toggle { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+.defenso-toggle input[type="checkbox"] { margin-top: 3px; }
+.defenso-toggle strong { font-size: 13px; }
+.defenso-promo-card { background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 60%); border-color: #bbf7d0; }
+.defenso-promo-item { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; }
+.defenso-promo-ico { font-size: 18px; line-height: 1.3; }
+
+/* ---- Tabbed admin ---- */
+.defenso-tabs { margin: 18px 0 20px; }
+.defenso-tab { position: relative; }
+.defenso-tab-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 18px; height: 18px; padding: 0 5px; margin-left: 7px;
+    background: #DC2626; color: #fff; font-size: 11px; font-weight: 700;
+    line-height: 1; border-radius: 999px; vertical-align: middle;
+}
+.defenso-panel { margin-top: 4px; }
+
+/* ---- Nice modals + toasts (replace browser alert/confirm) ---- */
+.defenso-toast {
+    position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(12px);
+    background: #111827; color: #fff; font-size: 13px; line-height: 1.4; font-weight: 500;
+    padding: 11px 18px; border-radius: 8px; box-shadow: 0 8px 28px rgba(0,0,0,.25);
+    max-width: 460px; z-index: 100050; opacity: 0; transition: opacity .22s ease, transform .22s ease;
+}
+.defenso-toast.err { background: #B91C1C; }
+.defenso-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.defenso-modal-ov {
+    position: fixed; inset: 0; z-index: 100040; display: flex; align-items: center; justify-content: center;
+    background: rgba(10,10,10,.42); padding: 20px; opacity: 0; transition: opacity .18s ease;
+}
+.defenso-modal-ov.show { opacity: 1; }
+.defenso-modal {
+    width: 100%; max-width: 440px; background: #fff; border-radius: 12px; padding: 24px 26px;
+    box-shadow: 0 24px 64px rgba(0,0,0,.28); transform: translateY(6px); transition: transform .18s ease;
+}
+.defenso-modal-ov.show .defenso-modal { transform: translateY(0); }
+.defenso-modal h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; color: #111827; }
+.defenso-modal p { margin: 0; font-size: 13.5px; color: #4b5563; line-height: 1.55; }
+.defenso-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.defenso-modal-actions .button { border-radius: 7px; }
+.defenso-modal-ok.defenso-danger { background: #DC2626 !important; border-color: #DC2626 !important; color: #fff !important; box-shadow: none; }

@@ -1,0 +1,18 @@
+{
+  "name": "@defen.so/sdk-bun",
+  "version": "0.2.0",
+  "description": "Defenso fail-open WAF SDK for Bun (Bun.serve, Elysia, Hono).",
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "keywords": ["security", "waf", "bun", "middleware", "defenso"],
+  "license": "MIT",
+  "repository": "github:1fancy/defenso",
+  "dependencies": {
+    "@defen.so/sdk-node": "^0.2.0"
+  }
+}

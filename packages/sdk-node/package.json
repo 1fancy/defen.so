@@ -1,6 +1,6 @@
 {
   "name": "@defen.so/sdk-node",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Defenso Node.js SDK — fail-open WAF, bot detection, and attack-log middleware for Express, Fastify, and Next.js. One line, always on. If Defenso is unreachable, your app keeps serving.",
   "type": "module",
   "main": "./dist/index.js",
@@ -24,7 +24,11 @@
       "import": "./dist/next.js"
     }
   },
-  "files": ["dist", "src", "README.md"],
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "node --test test/*.test.js"

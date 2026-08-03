@@ -1,4 +1,20 @@
-# Defen.so — your security layer. Shipped in 30 seconds.
+# Defen.so — modern security kit for developers & vibe coders
+
+> **Scan your website, apps & GitHub for vulnerabilities. Block attacks & bad bots, rate-limit your APIs, monitor uptime, domain & SSL expiry — all in one security platform.**
+>
+> 🔎 Scan & pentest · 📈 Monitoring & uptime · 🔔 Instant alerts · 🚦 API rate limits · 🛡️ 360° protection · 🤖 MCP & SDKs
+>
+> `npx @defen.so/mcp scan yourdomain.com` — free, no signup.
+
+<p align="center">
+  <img src="https://defen.so/assets/store/hero-1.png" alt="Monitor everything in one place — uptime, APIs, domains & SSL, with real-time alerts everywhere" width="49%">
+  <img src="https://defen.so/assets/store/hero-5.png" alt="Website & apps security scanner — reports you can understand, with a copy-paste AI fix prompt" width="49%">
+</p>
+<p align="center">
+  <img src="https://defen.so/assets/store/hero-3.png" alt="Is your website & app online or slow? 24/7 uptime & performance monitoring" width="32%">
+  <img src="https://defen.so/assets/store/hero-4.png" alt="Protect & rate-limit your API endpoints — stop bots & abuse in 2 minutes" width="32%">
+  <img src="https://defen.so/assets/store/hero-2.png" alt="MCP & security skills for AI coding — vulnerability scanning and secure-development guidance in your CLI" width="32%">
+</p>
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![App](https://img.shields.io/badge/app-app.defen.so-0A0A0A)](https://app.defen.so)

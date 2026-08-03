@@ -1,0 +1,9 @@
+{
+  "name": "@defen.so/sdk-deno",
+  "version": "0.2.0",
+  "description": "Defenso fail-open WAF SDK for Deno (Deno.serve, Fresh, Oak).",
+  "exports": "./mod.ts",
+  "imports": {
+    "@defen.so/sdk-node": "npm:@defen.so/sdk-node@^0.2.0"
+  }
+}

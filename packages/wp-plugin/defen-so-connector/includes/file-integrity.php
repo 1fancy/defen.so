@@ -1,19 +1,17 @@
 <?php
+
 /**
  * File-integrity monitor. Records a sha256 baseline of every PHP file in the
  * WP tree (excluding wp-content/cache, wp-content/uploads, and node_modules).
  *
- * Free tier: baseline is stored; user can trigger a compare manually. Pro tier
+ * File integrity: baseline stored locally; anyone can compare manually. A connected account
  * runs a daily cron. Business runs on every request (not implemented here —
  * would need a persistent watcher, out of scope for a wp-cron plugin).
  *
  * Stored in wp_options:
  *   defenso_integrity_baseline  → { path => sha256 } (max 5000 entries)
  *   defenso_integrity_last_diff → { added:[], changed:[], removed:[], ran_at }
- *
- * @package DefensoConnector
  */
-
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -21,6 +19,7 @@ if (! defined('ABSPATH')) {
 class Defenso_File_Integrity
 {
     private const FILE_CAP = 5000;
+
     private const SIZE_CAP = 2_097_152; // 2 MB
 
     public static function register(): void
@@ -79,6 +78,12 @@ class Defenso_File_Integrity
             'ran_at' => time(),
         ];
         update_option('defenso_integrity_last_diff', $diff, false);
+
+        $token = get_option('defenso_api_token');
+        if ($token) {
+            self::report_findings($diff, (string) $token);
+        }
+
         wp_send_json_success($diff);
     }
 
@@ -133,6 +138,66 @@ class Defenso_File_Integrity
             $rel = str_replace($root, '', $path);
             $out[$rel] = hash('sha256', $body);
         }
+
         return $out;
+    }
+
+    /**
+     * Push the integrity diff to Defen.so's /wp/findings endpoint so it surfaces
+     * on the site's Pentest tab. A clean diff → a single pass. Changed or removed
+     * core/plugin files → fail; brand-new files → warn. Fails silently on any
+     * network error so it never breaks the admin scan.
+     *
+     * @param  array{added:array<int,string>,changed:array<int,string>,removed:array<int,string>,counts:array{added:int,changed:int,removed:int}}  $diff
+     */
+    private static function report_findings(array $diff, string $token): void
+    {
+        $api = defined('DEFENSO_API_BASE') ? DEFENSO_API_BASE : 'https://app.defen.so/api';
+        $counts = $diff['counts'] ?? ['added' => 0, 'changed' => 0, 'removed' => 0];
+        $findings = [];
+
+        if (($counts['added'] + $counts['changed'] + $counts['removed']) === 0) {
+            $findings[] = [
+                'title' => 'File integrity: no changes since baseline',
+                'level' => 'pass',
+                'note' => '',
+            ];
+        } else {
+            foreach (array_slice($diff['changed'] ?? [], 0, 100) as $path) {
+                $findings[] = [
+                    'title' => substr('Changed file since baseline: '.(string) $path, 0, 200),
+                    'level' => 'fail',
+                    'note' => 'File contents differ from the recorded sha256 baseline.',
+                ];
+            }
+            foreach (array_slice($diff['removed'] ?? [], 0, 50) as $path) {
+                $findings[] = [
+                    'title' => substr('Removed file since baseline: '.(string) $path, 0, 200),
+                    'level' => 'fail',
+                    'note' => 'File present in the baseline is now missing.',
+                ];
+            }
+            foreach (array_slice($diff['added'] ?? [], 0, 50) as $path) {
+                $findings[] = [
+                    'title' => substr('New file since baseline: '.(string) $path, 0, 200),
+                    'level' => 'warn',
+                    'note' => 'File not present when the baseline was taken.',
+                ];
+            }
+        }
+
+        wp_remote_post($api.'/wp/findings', [
+            'timeout' => 5,
+            'blocking' => false,
+            'headers' => [
+                'Authorization' => 'Bearer '.$token,
+                'Content-Type' => 'application/json',
+                'User-Agent' => 'Defenso-WP/'.DEFENSO_VERSION,
+            ],
+            'body' => wp_json_encode([
+                'wp_url' => get_site_url(),
+                'findings' => array_slice($findings, 0, 200),
+            ]),
+        ]);
     }
 }

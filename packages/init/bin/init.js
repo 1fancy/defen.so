@@ -12,8 +12,9 @@
  * Everything is idempotent: re-running skips already-done steps.
  */
 
-import { readFileSync, existsSync, writeFileSync, appendFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, existsSync, writeFileSync, appendFileSync, mkdirSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { execSync, spawnSync } from 'node:child_process';
 
 const cwd = process.cwd();
@@ -23,6 +24,51 @@ const read = (p) => existsSync(join(cwd, p)) ? readFileSync(join(cwd, p), 'utf8'
 function log(msg) { process.stdout.write(msg + '\n'); }
 function warn(msg) { process.stderr.write('  ! ' + msg + '\n'); }
 function done(msg) { log('  ✓ ' + msg); }
+
+/**
+ * `npx @defen.so/init skill` — install the Defenso skill into this project so
+ * Claude Code / Cursor / Windsurf know what Defenso is (WAF, uptime, pentest,
+ * repo-secret scanning, the MCP tools) and stop hesitating on our commands.
+ * Writes the bundled SKILL.md into .claude/skills/defenso/ and .cursor/rules/.
+ */
+function installSkill() {
+  const here = dirname(fileURLToPath(import.meta.url));
+  const skillSrc = join(here, '..', 'skill', 'SKILL.md');
+  if (!existsSync(skillSrc)) {
+    warn('Bundled skill not found in this package. Reinstall @defen.so/init or see https://defen.so/mcp');
+    process.exit(1);
+  }
+  const body = readFileSync(skillSrc, 'utf8');
+  const targets = [
+    join(cwd, '.claude', 'skills', 'defenso', 'SKILL.md'),
+    join(cwd, '.cursor', 'rules', 'defenso.md'),
+  ];
+  log('');
+  log('  Installing the Defenso skill');
+  log('  ----------------------------');
+  let wrote = 0;
+  for (const target of targets) {
+    try {
+      mkdirSync(dirname(target), { recursive: true });
+      writeFileSync(target, body);
+      done(target.replace(cwd + '/', ''));
+      wrote++;
+    } catch (e) {
+      warn(`Could not write ${target}: ${e.message}`);
+    }
+  }
+  if (wrote > 0) {
+    log('');
+    log('  Done. Your AI editor now knows Defenso — restart it, then ask it to');
+    log('  "add Defenso security to this app" or "scan my repo for leaked secrets".');
+    log('');
+  }
+  process.exit(wrote > 0 ? 0 : 1);
+}
+
+if (process.argv[2] === 'skill') {
+  installSkill();
+}
 
 function detect() {
   if (has('next.config.js') || has('next.config.mjs') || has('next.config.ts')) return 'next';
@@ -65,7 +111,18 @@ function writeEnv() {
 }
 
 function run(cmd, args) {
-  const r = spawnSync(cmd, args, { cwd, stdio: 'inherit' });
+  // On Windows, npm / composer / git are .cmd/.bat shims, not .exe files, so
+  // spawnSync(cmd, ...) without a shell throws ENOENT. Run through a shell on
+  // Windows so the PATHEXT resolution finds them.
+  const r = spawnSync(cmd, args, {
+    cwd,
+    stdio: 'inherit',
+    shell: process.platform === 'win32',
+  });
+  if (r.error) {
+    warn(`Could not run ${cmd}. Is it installed and on your PATH?`);
+    return false;
+  }
   if (r.status !== 0) {
     warn(`${cmd} ${args.join(' ')} failed`);
     return false;
@@ -112,19 +169,37 @@ switch (framework) {
     break;
   }
   case 'laravel': {
-    if (!run('composer', ['require', 'defenso/sdk-php'])) process.exit(1);
-    log('  Register the middleware in bootstrap/app.php:');
-    log('    ->withMiddleware(function ($middleware) {');
-    log('        $middleware->append(\\Defenso\\Laravel\\DefensoMiddleware::class);');
-    log('    })');
+    if (!run('composer', ['require', 'defenso/sdk-php'])) {
+      warn('composer require defenso/sdk-php did not resolve on this machine.');
+      log('  Protect a PHP/Laravel app today — no code needed:');
+      log('    1. Sign up at https://app.defen.so and add your site.');
+      log('    2. Uptime monitoring + surface scans turn on immediately, zero code.');
+      log('    3. On the Business plan you can also route traffic through the');
+      log('       Defenso edge WAF via CNAME — full WAF with no code.');
+      log('  (Laravel/Symfony SDK middleware install: https://defen.so/install)');
+    } else {
+      log('  Register the middleware in bootstrap/app.php:');
+      log('    ->withMiddleware(function ($middleware) {');
+      log('        $middleware->append(\\Defenso\\Middleware\\DefensoLaravelMiddleware::class);');
+      log('    })');
+    }
     break;
   }
   case 'symfony': {
-    if (!run('composer', ['require', 'defenso/sdk-php'])) process.exit(1);
-    log('  Register the listener in config/services.yaml:');
-    log('    services:');
-    log('      Defenso\\Symfony\\DefensoListener:');
-    log('        tags: [{ name: kernel.event_subscriber }]');
+    if (!run('composer', ['require', 'defenso/sdk-php'])) {
+      warn('composer require defenso/sdk-php did not resolve on this machine.');
+      log('  Protect a PHP/Symfony app today — no code needed:');
+      log('    1. Sign up at https://app.defen.so and add your site.');
+      log('    2. Uptime monitoring + surface scans turn on immediately, zero code.');
+      log('    3. On the Business plan you can also route traffic through the');
+      log('       Defenso edge WAF via CNAME — full WAF with no code.');
+      log('  (Laravel/Symfony SDK middleware install: https://defen.so/install)');
+    } else {
+      log('  Register the listener in config/services.yaml:');
+      log('    services:');
+      log('      Defenso\\Middleware\\DefensoSymfonyListener:');
+      log('        tags: [{ name: kernel.event_subscriber }]');
+    }
     break;
   }
   case 'django':

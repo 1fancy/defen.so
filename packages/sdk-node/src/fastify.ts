@@ -2,7 +2,7 @@
  * Fastify plugin:
  *
  *   import Fastify from 'fastify';
- *   import { defensoFastify } from '@defenso/sdk-node/fastify';
+ *   import { defensoFastify } from '@defen.so/sdk-node/fastify';
  *
  *   const app = Fastify();
  *   await app.register(defensoFastify, { token: process.env.DEFENSO_TOKEN! });

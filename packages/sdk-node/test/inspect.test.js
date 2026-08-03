@@ -48,3 +48,15 @@ test('inspect fails open when no policy loaded', () => {
     assert.equal(verdict.action, 'allow');
     client.dispose();
 });
+
+test('ipMatches: exact, cidr, and non-matches', async () => {
+    const { ipMatches } = await import('../dist/index.js');
+    assert.equal(ipMatches('203.0.113.9', '203.0.113.9'), true);
+    assert.equal(ipMatches('203.0.113.9', '203.0.113.0/24'), true);
+    assert.equal(ipMatches('203.0.114.9', '203.0.113.0/24'), false);
+    assert.equal(ipMatches('10.1.2.3', '10.0.0.0/8'), true);
+    assert.equal(ipMatches('11.1.2.3', '10.0.0.0/8'), false);
+    assert.equal(ipMatches('::1', '::1'), true);
+    assert.equal(ipMatches('::1', '10.0.0.0/8'), false);
+    assert.equal(ipMatches('203.0.113.9', 'garbage'), false);
+});

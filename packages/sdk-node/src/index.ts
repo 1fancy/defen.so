@@ -20,9 +20,20 @@ export interface DefensoRule {
     category: string;
 }
 
+export interface DefensoEndpointRule {
+    id: number;
+    host?: string;
+    pattern: string; // /api/users/:id
+    methods: string; // GET,POST or *
+    rps_per_ip: number;
+    action: DefensoAction;
+}
+
 export interface DefensoPolicy {
     version: string;
     rules: DefensoRule[];
+    endpointRules: DefensoEndpointRule[];
+    blockedIps: Array<{ ip: string; host: string | null }>;
     updatedAt: number;
 }
 
@@ -84,6 +95,7 @@ export class DefensoClient {
     private policy: DefensoPolicy | null = null;
     private policyLastFetch = 0;
     private logQueue: AttackLog[] = [];
+    private rateBuckets = new Map<string, { t: number; n: number }>();
     private logTimer: ReturnType<typeof setInterval> | null = null;
 
     constructor(options: DefensoOptions) {
@@ -108,6 +120,64 @@ export class DefensoClient {
     inspect(req: DefensoRequestShape): DefensoVerdict {
         if (!this.policy || this.policy.rules.length === 0) {
             return { action: 'allow' };
+        }
+
+        // Blocked IPs — user-authored blocks (exact IP or CIDR) checked first.
+        // A host-scoped block only fires when the request Host matches.
+        if (this.policy.blockedIps?.length && req.ip) {
+            const host = String(req.headers?.host ?? '').split(':')[0];
+            for (const b of this.policy.blockedIps) {
+                if (b.host && b.host !== host) continue;
+                if (ipMatches(req.ip, b.ip)) {
+                    const verdict: DefensoVerdict = {
+                        action: 'block',
+                        reason: `IP ${req.ip} is on your block list`,
+                    };
+                    this.queueLog({ at: Date.now(), verdict, request: { method: req.method, url: req.url, ip: req.ip } });
+                    return verdict;
+                }
+            }
+        }
+
+        // Endpoint rules — per-IP token bucket in memory. Runs BEFORE the WAF
+        // rule loop so rate-limits fire even when no WAF rule matches. Bucket
+        // state is a Map keyed on (rule_id + ip); state persists in memory
+        // for the process lifetime.
+        if (this.policy.endpointRules?.length && req.ip) {
+            const method = String(req.method || 'GET').toUpperCase();
+            let host = '';
+            let path = '';
+            try {
+                const parsed = new URL(req.url);
+                host = parsed.hostname.toLowerCase();
+                path = parsed.pathname;
+            } catch {
+                path = req.url;
+            }
+            for (const er of this.policy.endpointRules) {
+                if (er.host && er.host.toLowerCase() !== host) continue;
+                if (er.methods !== '*' && !er.methods.toUpperCase().includes(method)) continue;
+                if (!this.pathMatchesPattern(er.pattern, path)) continue;
+                if (er.rps_per_ip > 0) {
+                    const key = `${er.id}|${req.ip}`;
+                    const now = Date.now() / 1000;
+                    const state = this.rateBuckets.get(key) || { t: now, n: 0 };
+                    const elapsed = Math.max(0, now - state.t);
+                    state.n = Math.max(0, state.n - elapsed * er.rps_per_ip) + 1;
+                    state.t = now;
+                    this.rateBuckets.set(key, state);
+                    if (state.n > er.rps_per_ip) {
+                        const verdict: DefensoVerdict = {
+                            action: er.action,
+                            reason: `endpoint ${er.pattern} exceeded ${er.rps_per_ip} req/s from IP`,
+                        };
+                        if (er.action !== 'allow') {
+                            this.queueLog({ at: Date.now(), verdict, request: { method: req.method, url: req.url, ip: req.ip } });
+                        }
+                        return verdict;
+                    }
+                }
+            }
         }
 
         for (const rule of this.policy.rules) {
@@ -145,7 +215,7 @@ export class DefensoClient {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer ${this.token}`,
-                    'User-Agent': `@defenso/sdk-node/${'0.1.0'}`,
+                    'User-Agent': `@defen.so/sdk-node/${'0.1.0'}`,
                 },
                 signal: controller.signal,
             });
@@ -155,7 +225,12 @@ export class DefensoClient {
                 return;
             }
 
-            const body = (await response.json()) as { version: string; rules: Array<Omit<DefensoRule, 'pattern'> & { pattern: string; flags?: string }> };
+            const body = (await response.json()) as {
+                version: string;
+                rules: Array<Omit<DefensoRule, 'pattern'> & { pattern: string; flags?: string }>;
+                endpoint_rules?: DefensoEndpointRule[];
+                blocked_ips?: Array<{ ip: string; host: string | null }>;
+            };
             this.policy = {
                 version: body.version,
                 updatedAt: Date.now(),
@@ -166,6 +241,8 @@ export class DefensoClient {
                     target: r.target,
                     category: r.category,
                 })),
+                endpointRules: body.endpoint_rules ?? [],
+                blockedIps: body.blocked_ips ?? [],
             };
             this.policyLastFetch = Date.now();
         } catch {
@@ -182,6 +259,21 @@ export class DefensoClient {
             this.logTimer = null;
         }
         void this.flushLogs();
+    }
+
+    /**
+     * Glob-style path match. ":id", ":uuid", ":slug", ":oid", ":token"
+     * become a wildcard "[^/]+" segment so /api/users/:id matches
+     * /api/users/42.
+     */
+    private pathMatchesPattern(pattern: string, path: string): boolean {
+        if (!pattern) return false;
+        const re = pattern.replace(/[.+*?^$(){}|[\]\\]/g, '\\$&').replace(/\\:[a-z]+/g, '[^/]+');
+        try {
+            return new RegExp(`^${re}$`).test(path);
+        } catch {
+            return false;
+        }
     }
 
     private extractTarget(req: DefensoRequestShape, target: DefensoRule['target']): string {
@@ -225,7 +317,7 @@ export class DefensoClient {
                 headers: {
                     Authorization: `Bearer ${this.token}`,
                     'Content-Type': 'application/json',
-                    'User-Agent': `@defenso/sdk-node/${'0.1.0'}`,
+                    'User-Agent': `@defen.so/sdk-node/${'0.1.0'}`,
                 },
                 body: JSON.stringify({ logs: batch }),
             });
@@ -247,4 +339,32 @@ export function getDefenso(): DefensoClient {
         throw new Error('[defenso] initDefenso() must be called first');
     }
     return sharedClient;
+}
+
+/**
+ * Match a client IP against a block entry: exact address, or IPv4 CIDR.
+ * IPv6 entries match exactly only (v6 CIDR support is a follow-up).
+ */
+export function ipMatches(clientIp: string, entry: string): boolean {
+    if (clientIp === entry) return true;
+    const slash = entry.indexOf('/');
+    if (slash === -1 || entry.includes(':') || clientIp.includes(':')) return false;
+    const bits = parseInt(entry.slice(slash + 1), 10);
+    if (Number.isNaN(bits) || bits < 0 || bits > 32) return false;
+    const toInt = (ip: string): number | null => {
+        const parts = ip.split('.');
+        if (parts.length !== 4) return null;
+        let n = 0;
+        for (const p of parts) {
+            const v = parseInt(p, 10);
+            if (Number.isNaN(v) || v < 0 || v > 255) return null;
+            n = (n << 8) | v;
+        }
+        return n >>> 0;
+    };
+    const client = toInt(clientIp);
+    const base = toInt(entry.slice(0, slash));
+    if (client === null || base === null) return false;
+    const mask = bits === 0 ? 0 : (~0 << (32 - bits)) >>> 0;
+    return (client & mask) === (base & mask);
 }

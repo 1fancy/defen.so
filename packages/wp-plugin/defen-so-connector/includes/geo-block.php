@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Geo-block. Rejects requests from country codes the site owner listed.
  * Runs on `init` (priority 1), before the WAF, so blocked countries never
@@ -9,14 +10,11 @@
  *   2. Free ip-api.com lookup (cached 24h per /24) — falls back to allow on
  *      network failure so we never block due to our own outage.
  *
- * Free tier: 1 country in the blocklist. Pro tier: unlimited.
+ * Local country blocking works for everyone with no limit. Paid plans add the server-side edge WAF + ASN blocking.
  *
  * Blocklist stored in wp_options['defenso_geo_blocklist'] as an array of
  * 2-letter uppercase country codes.
- *
- * @package DefensoConnector
  */
-
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -47,13 +45,9 @@ class Defenso_Geo_Block
         }
         $codes = array_values(array_unique($codes));
 
-        $plan = strtolower((string) get_option('defenso_plan_label', 'Free'));
-        if ($plan === 'free' && count($codes) > 1) {
-            wp_send_json_error([
-                'message' => 'Free tier: 1 country max. Upgrade for unlimited geo-block.',
-                'upgrade_url' => 'https://app.defen.so',
-            ], 429);
-        }
+        // Local country blocking is plugin code — it works for everyone, with
+        // no account and no plan. (Paid plans add the server-side edge WAF and
+        // ASN-level blocking on top, which run on Defen.so infrastructure.)
         update_option('defenso_geo_blocklist', $codes, false);
         wp_send_json_success(['blocklist' => $codes]);
     }
@@ -85,12 +79,12 @@ class Defenso_Geo_Block
     private static function resolve_country(): ?string
     {
         if (isset($_SERVER['HTTP_CF_IPCOUNTRY'])) {
-            $c = strtoupper((string) $_SERVER['HTTP_CF_IPCOUNTRY']);
+            $c = strtoupper(sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_IPCOUNTRY'])));
             if (preg_match('/^[A-Z]{2}$/', $c)) {
                 return $c;
             }
         }
-        $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : '';
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
         if (! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
             return null;
         }
@@ -106,14 +100,17 @@ class Defenso_Geo_Block
         ]);
         if (is_wp_error($response)) {
             set_transient($key, '__null__', 3600);
+
             return null;
         }
         $body = trim((string) wp_remote_retrieve_body($response));
         if (preg_match('/^[A-Z]{2}$/', $body)) {
             set_transient($key, $body, 86400);
+
             return $body;
         }
         set_transient($key, '__null__', 3600);
+
         return null;
     }
 }

@@ -3,7 +3,7 @@
  *
  *   // middleware.ts
  *   import { NextResponse } from 'next/server';
- *   import { defensoNext } from '@defenso/sdk-node/next';
+ *   import { defensoNext } from '@defen.so/sdk-node/next';
  *
  *   const inspect = defensoNext({ token: process.env.DEFENSO_TOKEN! });
  *   export function middleware(req: Request) {

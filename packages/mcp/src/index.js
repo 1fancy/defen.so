@@ -65,6 +65,7 @@ const server = new Server(
 const TOOLS = [
   {
     name: 'scan_domain',
+    annotations: { title: 'Scan a domain (pentest)', readOnlyHint: true },
     description: [
       'Run a live surface pentest against a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git/backup files, leaked Supabase/Firebase/S3 keys, security headers. Returns a graded A-F report.',
       '',
@@ -83,8 +84,10 @@ const TOOLS = [
   },
   {
     name: 'check_headers',
+    annotations: { title: 'Check security headers', readOnlyHint: true },
     description: [
       'Fetch a URL and return the response security-header set (HSTS, CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) plus server banner. Deterministic, ~1 second.',
+      'WORKS WITHOUT A TOKEN: this is a public probe (anything curl can do), so it runs keyless — 20 checks/day per IP without a DEFENSO_TOKEN, 200/day with one.',
       '',
       'WHEN TO USE: user asks about the *current* security header state of a specific site. Faster and lighter than scan_domain.',
       'WHEN NOT TO USE: to explain what a header does — answer that from your own knowledge.',
@@ -97,6 +100,7 @@ const TOOLS = [
   },
   {
     name: 'list_sites',
+    annotations: { title: 'List your sites', readOnlyHint: true },
     description: [
       'List every site registered under the authenticated Defenso account, with plan, connection method, and CNAME status.',
       '',
@@ -106,6 +110,7 @@ const TOOLS = [
   },
   {
     name: 'list_monitors',
+    annotations: { title: 'List uptime monitors', readOnlyHint: true },
     description: [
       'List every uptime monitor the calling account owns, with current status (up/down), last checked timestamp, and 24h uptime %.',
       '',
@@ -115,6 +120,7 @@ const TOOLS = [
   },
   {
     name: 'list_recent_attacks',
+    annotations: { title: 'List recent attacks', readOnlyHint: true },
     description: [
       'Return the most recent WAF and honeypot events from the last N hours, with rule, IP, path, action.',
       '',
@@ -130,6 +136,7 @@ const TOOLS = [
   },
   {
     name: 'list_recent_scans',
+    annotations: { title: 'List recent scans', readOnlyHint: true },
     description: [
       'Return the user\'s recent pentest and repo/vibe scans from the last N days, with target, grade, and pass/warn/fail counts.',
       '',
@@ -145,6 +152,7 @@ const TOOLS = [
   },
   {
     name: 'explain_verdict',
+    annotations: { title: 'Explain a WAF verdict', readOnlyHint: true },
     description: [
       'Given a Defenso attack-log verdict ID or rule ID, return the pattern, target, action, plan tier, and one-paragraph explanation with reproduction and mitigation.',
       '',
@@ -161,24 +169,44 @@ const TOOLS = [
   },
   {
     name: 'scan_repo',
+    annotations: { title: 'Scan a public repo', readOnlyHint: true },
     description: [
       'Scan a public GitHub repo for committed secrets, exposed .env / firebase-adminsdk / serviceAccountKey files, and other SAST-style leaks. Reads the default branch via GitHub raw-content endpoints — no clone, no auth needed.',
       '',
-      'WHEN TO USE: user asks "is my repo leaking anything", "did we commit an .env", or is pointing at a specific github.com/{org}/{repo} URL. Also great before a public repo goes public.',
+      'WHEN TO USE: user asks "is my repo leaking anything", "did we commit an .env", or is pointing at a specific repo URL on github.com, gitlab.com, or bitbucket.org. Also great before a public repo goes public.',
       'WHEN NOT TO USE: for the user\'s running website — use scan_domain instead. For a private repo — this endpoint has no token so it will get a 404.',
     ].join('\n'),
     inputSchema: {
       type: 'object',
       properties: {
-        repo_url: { type: 'string', description: 'https://github.com/{org}/{repo} — public repo only' },
+        repo_url: { type: 'string', description: 'Public repo URL on github.com, gitlab.com, or bitbucket.org' },
       },
       required: ['repo_url'],
     },
   },
   {
+    name: 'run_vibe_scan',
+    annotations: { title: 'Run a vibe-coder scan', readOnlyHint: true },
+    description: [
+      'Run a vibe-coder scan against a LIVE URL: exposed secrets in the served bundle, open S3 buckets, wide-open Supabase RLS / Firebase rules, and other misconfigurations vibe-coded apps ship by default. Pro-tier — plan-gated per site.',
+      '',
+      'WHEN TO USE: user asks "is my deployed app leaking anything", "scan my live site for exposed keys / open buckets", right after a deploy.',
+      'WHEN NOT TO USE: for a GitHub repo (use scan_repo). For a general header/TLS grade (use scan_domain). Requires a token on a plan that includes vibe scans.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        url: { type: 'string', description: 'The live URL to scan (e.g. https://myapp.com)' },
+      },
+      required: ['url'],
+    },
+  },
+  {
     name: 'guard_code',
+    annotations: { title: 'Guard a code snippet', readOnlyHint: true },
     description: [
       'Run a fast pattern check on a code snippet the user just wrote (or is about to write) and return security findings: server secrets on the client, hardcoded API keys, SQL concatenation, unbounded queries, missing input validation, unrate-limited auth routes, dynamic eval.',
+      'WORKS WITHOUT A TOKEN: this is pure static analysis on code the caller already has — nothing leaves as account data — so it runs keyless (30 checks/day per IP without a DEFENSO_TOKEN, 500/day with one). Great for a first-touch security pass with zero signup.',
       '',
       'WHEN TO USE: after writing anything that touches auth, DB, env vars, request bodies, or is in a client-side file. Also whenever the user pastes a chunk of code and asks "is this safe?".',
       'WHEN NOT TO USE: as a substitute for a full pentest — this is heuristic, not exhaustive. Use scan_domain for the running app.',
@@ -195,6 +223,7 @@ const TOOLS = [
   },
   {
     name: 'get_security_preferences',
+    annotations: { title: 'Read security preferences', readOnlyHint: true },
     description: [
       'Return the user\'s account-scoped security preferences. These are instructions the user wants YOU (the AI) to remember and honor every session — e.g. "never scan a production site without asking", "always block .env probes".',
       '',
@@ -205,6 +234,7 @@ const TOOLS = [
   },
   {
     name: 'set_security_preference',
+    annotations: { title: 'Save a security preference', destructiveHint: true },
     description: [
       'Save a single security preference on the user\'s account so it persists across sessions and devices. Use short snake_case keys (e.g. never_scan_production_without_ask). Value is stored verbatim as JSON.',
       '',
@@ -222,8 +252,9 @@ const TOOLS = [
   },
   {
     name: 'check_s3_bucket',
+    annotations: { title: 'Check an S3 bucket', readOnlyHint: true },
     description: [
-      'Probe a public AWS S3 bucket for open ACLs. HEAD + anonymous ListBucket only — no AWS credentials required, no writes. Flags AllUsers / AuthenticatedUsers grants and whether the bucket allows anonymous listing.',
+      'Probe a public AWS S3 bucket for open ACLs. HEAD + anonymous ListBucket only — no AWS credentials required, no writes. Flags AllUsers / AuthenticatedUsers grants and whether the bucket allows anonymous listing. WORKS WITHOUT A TOKEN: keyless (15 probes/day per IP without a DEFENSO_TOKEN, 60/day with one).',
       '',
       'WHEN TO USE: user says "is my S3 bucket public", "check this bucket", or pastes a bucket URL. Also part of the vibe-audit runbook.',
       'WHEN NOT TO USE: for private buckets that require authentication — this endpoint has no AWS creds so it will just report "not reachable".',
@@ -239,6 +270,7 @@ const TOOLS = [
   },
   {
     name: 'list_cves',
+    annotations: { title: 'List CVEs', readOnlyHint: true },
     description: [
       'Look up known CVEs affecting a package via osv.dev (Open Source Vulnerabilities). Returns the 30 most-recent vulnerabilities with severity, affected version ranges, and advisory URLs.',
       '',
@@ -256,7 +288,48 @@ const TOOLS = [
     },
   },
   {
+    name: 'add_waf_rule',
+    annotations: { title: 'Add a WAF rule', destructiveHint: true },
+    description: [
+      'PRO TIER + DESTRUCTIVE-ADJACENT: create a custom WAF rule on the user\'s account. The rule joins the policy every Defenso SDK enforces, live within ~5 minutes. ALWAYS show the user the exact pattern, target and action and get an explicit yes before calling.',
+      '',
+      'WHEN TO USE: the user asks to block a specific attack pattern, path or payload across their sites ("block anything hitting /wp-admin", "block requests containing this payload").',
+      'WHEN NOT TO USE: for blocking a single IP — use block_ip. For per-endpoint rate limits — those are endpoint rules in the dashboard.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pattern: { type: 'string', description: 'Regular expression the rule matches (case-insensitive), e.g. "/wp-admin" or "union\\\\s+select"' },
+        target: { type: 'string', enum: ['url', 'body', 'headers', 'query'], description: 'Which part of the request the pattern runs against' },
+        action: { type: 'string', enum: ['block', 'challenge', 'allow'], description: 'What happens on match' },
+        category: { type: 'string', description: 'Optional short category slug, e.g. "custom" or "scanner"' },
+        description: { type: 'string', description: 'Optional human note stored with the rule' },
+      },
+      required: ['pattern', 'target', 'action'],
+    },
+  },
+  {
+    name: 'block_ip',
+    annotations: { title: 'Block an IP or ASN', destructiveHint: true },
+    description: [
+      'PRO TIER + DESTRUCTIVE-ADJACENT: block an IPv4/IPv6 address or CIDR range across the user\'s sites (or one site via site_id). Enforced by every SDK within ~5 minutes. ALWAYS confirm the exact IP/range with the user before calling — a wrong CIDR can block real users.',
+      '',
+      'WHEN TO USE: the user says "block this IP", typically after seeing it in list_recent_attacks.',
+      'WHEN NOT TO USE: ASN-wide blocks (not supported yet — block the specific ranges), or attack patterns — use add_waf_rule for those.',
+    ].join('\n'),
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ip_or_asn: { type: 'string', description: 'IPv4/IPv6 address or CIDR, e.g. "203.0.113.9" or "203.0.113.0/24"' },
+        note: { type: 'string', description: 'Optional note about why this was blocked' },
+        site_id: { type: 'string', description: 'Optional site nano ID to scope the block to one site; omit for all sites' },
+      },
+      required: ['ip_or_asn'],
+    },
+  },
+  {
     name: 'pentest_status',
+    annotations: { title: 'Check pentest status', readOnlyHint: true },
     description: [
       'Look up the status of a pentest run on the user\'s account. Without run_id, returns the most-recent scan across all sites. With run_id, returns that specific scan\'s state — useful for polling while a long scan runs.',
       '',
@@ -302,7 +375,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   // still require a token. But scan_domain works keyless — the server returns a
   // free once-a-day teaser scan for any public URL — so we let it through even
   // with no token, and surface that value instead of a hard refusal.
-  const KEYLESS_OK = new Set(['scan_domain']);
+  const KEYLESS_OK = new Set(['scan_domain', 'guard_code', 'check_headers', 'check_s3_bucket']);
   if (!TOKEN && !KEYLESS_OK.has(name)) {
     return {
       content: [{

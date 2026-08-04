@@ -1,14 +1,14 @@
 === Defen.so Connector ===
 Contributors: defenso
-Tags: security, waf, firewall, malware scan, brute force, uptime monitor
+Tags: security, malware scanner, firewall, uptime monitor, brute force
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.7
+Stable tag: 1.2.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Modern security kit for WordPress: malware scan, managed WAF & firewall, brute-force protection, uptime & SSL monitoring, and instant alerts — one-click connect.
+Security scanner, malware scan, firewall (WAF), brute-force protection, and uptime + SSL monitoring for WordPress — free, no account needed, one-click connect.
 
 == Description ==
 
@@ -110,6 +110,12 @@ This plugin connects to external services. Here is exactly what is sent, when, a
 3. Live attack log on the Defen.so dashboard.
 
 == Changelog ==
+
+= 1.2.9 =
+* Listing: refreshed the plugin tags and short description so people searching WordPress.org for "security scanner", "malware scanner", "firewall" and "uptime monitor" can find it. No functional changes.
+
+= 1.2.8 =
+* Maintenance release: republish to WordPress.org (registry was serving an older build). No functional changes since 1.2.7.
 
 = 1.2.7 =
 * New: Spanish (es_ES) and French (fr_FR) translations — the admin screen is now fully localised, with the plugin loading its text domain from /languages.

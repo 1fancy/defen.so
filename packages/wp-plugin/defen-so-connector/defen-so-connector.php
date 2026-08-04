@@ -4,7 +4,7 @@
  * Plugin Name: Defen.so Connector
  * Plugin URI: https://defen.so/wordpress-security-plugin
  * Description: Official Defen.so connector for WordPress. One-click connect to Defen.so, block SQL injection / XSS / bot scanners at the edge, scan every uploaded file for polyglots + malware, watch uptime, and detect brute-force logins. Manage everything from your Defen.so dashboard at https://defen.so.
- * Version: 1.2.7
+ * Version: 1.2.9
  * Author: Defen.so
  * Author URI: https://defen.so
  * License: GPLv2 or later
@@ -19,7 +19,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('DEFENSO_VERSION', '1.2.7');
+define('DEFENSO_VERSION', '1.2.9');
 define('DEFENSO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DEFENSO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('DEFENSO_APP_URL', 'https://app.defen.so');

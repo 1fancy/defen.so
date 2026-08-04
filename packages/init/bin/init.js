@@ -174,7 +174,7 @@ switch (framework) {
       log('  Protect a PHP/Laravel app today — no code needed:');
       log('    1. Sign up at https://app.defen.so and add your site.');
       log('    2. Uptime monitoring + surface scans turn on immediately, zero code.');
-      log('    3. On the Business plan you can also route traffic through the');
+      log('    3. On the Max plan you can also route traffic through the');
       log('       Defenso edge WAF via CNAME — full WAF with no code.');
       log('  (Laravel/Symfony SDK middleware install: https://defen.so/install)');
     } else {
@@ -191,7 +191,7 @@ switch (framework) {
       log('  Protect a PHP/Symfony app today — no code needed:');
       log('    1. Sign up at https://app.defen.so and add your site.');
       log('    2. Uptime monitoring + surface scans turn on immediately, zero code.');
-      log('    3. On the Business plan you can also route traffic through the');
+      log('    3. On the Max plan you can also route traffic through the');
       log('       Defenso edge WAF via CNAME — full WAF with no code.');
       log('  (Laravel/Symfony SDK middleware install: https://defen.so/install)');
     } else {

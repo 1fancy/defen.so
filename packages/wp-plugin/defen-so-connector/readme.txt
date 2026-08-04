@@ -4,7 +4,7 @@ Tags: security, waf, firewall, malware scan, brute force, uptime monitor
 Requires at least: 5.8
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.2.5
+Stable tag: 1.2.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ You do not need a Defen.so account to use the plugin. These features run entirel
 
 * **Upload scanning** — every uploaded file is checked for dangerous extensions and polyglots (magic bytes that disagree with the declared type). Runs on every upload for everyone.
 * **Login hardening** — per-IP brute-force rate limiting with adjustable attempt count + window, optional reCAPTCHA v3, optional TOTP 2FA.
-* **Firewall-lite** — blocks known-bad scanner user-agents (sqlmap, nikto, wpscan, nuclei…) and common exploit request patterns (path traversal, LFI/RFI wrappers, code-in-querystring, wp-config &amp; dotfile probes).
+* **Firewall-lite** — blocks known-bad scanner user-agents (sqlmap, nikto, wpscan, nuclei…) and common exploit request patterns (path traversal, LFI/RFI wrappers, code-in-querystring, wp-config & dotfile probes).
 * **WordPress hardening** — one-click toggles: block username enumeration (?author= and REST /users), hide the WP version, disable the theme/plugin file editor (DISALLOW_FILE_EDIT), disable XML-RPC, comment/pingback hardening, and security response headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, optional HSTS).
 * **Geo-block** — reject requests from any list of countries.
 * **Local malware scan** — heuristic sweep of your PHP/JS files for common webshell / obfuscation patterns.
@@ -39,7 +39,7 @@ Connecting a free Defen.so account adds the managed cloud layer — none of it t
 * **Attack log + uptime monitor** — blocked events (including upload blocks) streamed to your dashboard; edge uptime checks.
 * **CVE vulnerability lookup** — checks your installed plugins/themes against the live CVE feed.
 
-Paid plans (Pro $29/mo, Business $69/mo per site) increase the server-side quotas — monitor interval, log retention, custom-rule count, scan frequency — all of which run on Defen.so infrastructure, not by unlocking code in this plugin.
+Higher plans increase the server-side quotas — monitor interval, log retention, custom-rule count, scan frequency — all of which run on Defen.so infrastructure, not by unlocking code in this plugin.
 
 **One-click connect**
 
@@ -101,7 +101,7 @@ This plugin connects to external services. Here is exactly what is sent, when, a
 * What it is: the official WordPress.org checksums API, the same one WP-CLI uses to verify core-file integrity.
 * When data is sent: only when you click "Verify core files" in the plugin. Nothing is sent automatically.
 * What is sent: your WordPress version number and locale only — no site content, no personal data.
-* Terms &amp; Privacy: https://wordpress.org/about/privacy/
+* Terms & Privacy: https://wordpress.org/about/privacy/
 
 == Screenshots ==
 
@@ -110,6 +110,16 @@ This plugin connects to external services. Here is exactly what is sent, when, a
 3. Live attack log on the Defen.so dashboard.
 
 == Changelog ==
+
+= 1.2.7 =
+* New: Spanish (es_ES) and French (fr_FR) translations — the admin screen is now fully localised, with the plugin loading its text domain from /languages.
+* Every user-facing admin string is now translatable (translators can add more languages via the bundled .pot template).
+
+= 1.2.6 =
+* New: three screenshots on the plugin listing (Overview, Firewall & hardening, Uptime & alerts) so you can see the admin before installing.
+* Fixed: stray HTML entities in the readme description and changelog now render as plain text.
+* Cleaner links: the admin footer and rate-limit panel link straight to defen.so instead of a pricing page.
+* Housekeeping: version constant aligned with the plugin header. No changes to any security module behaviour.
 
 = 1.2.5 =
 * SEO: refreshed the plugin description with the full feature list (managed WAF, upload scanning, login hardening, malware & file-integrity scans, core-file verification, live attack log).
@@ -138,7 +148,7 @@ This plugin connects to external services. Here is exactly what is sent, when, a
 * Housekeeping: version + metadata alignment; no functional changes to security modules.
 
 = 1.2.0 =
-* New **Firewall-lite** (free, local): blocks known-bad scanner user-agents and common exploit request patterns (path traversal, LFI/RFI wrappers, code-in-querystring, wp-config &amp; dotfile probes) before they reach WordPress. Blocked hits show in your Defen.so dashboard when connected.
+* New **Firewall-lite** (free, local): blocks known-bad scanner user-agents and common exploit request patterns (path traversal, LFI/RFI wrappers, code-in-querystring, wp-config & dotfile probes) before they reach WordPress. Blocked hits show in your Defen.so dashboard when connected.
 * New **WordPress hardening** panel (free, local): one-click toggles for username-enumeration blocking (?author= + REST /users), hide WP version, disable the theme/plugin file editor, disable XML-RPC, comment/pingback hardening, and security response headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, optional HSTS). Safe defaults on for new installs.
 * New **Core-file checksum verification** (free, local): checks WordPress core files against the official WordPress.org checksum manifest and flags any modified or missing core file.
 * New **Exposed-file check** (free, local): probes for publicly-reachable secrets (.env, .git, wp-config backups, DB dumps, debug logs).

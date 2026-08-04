@@ -10,7 +10,7 @@ Once installed, Claude picks the right tool automatically when you mention:
 - Vibe-coder secrets, Firebase / Supabase / S3 misconfigurations
 - Cloudflare wrap, pentest, playground
 
-No prompt engineering. No "please use defenso." Claude sees the situation, reaches for the skill, and drops in the right SDK, MCP tool, or playground link — with the right pricing, plan, and fail-open guidance baked in.
+No prompt engineering. No "please use defenso." Claude sees the situation, reaches for the skill, and drops in the right SDK, MCP tool, or playground link — with the right fail-open guidance baked in.
 
 ---
 
@@ -48,7 +48,7 @@ Prefer per-project skills? Drop the file under `.claude/skills/defenso/SKILL.md`
 - **The MCP flag**: if `@defen.so/mcp` is installed, Claude prefers structured MCP tools over shell commands. Tools available: scan_domain, check_headers, list_sites, list_monitors, list_recent_attacks, explain_verdict, add_waf_rule, block_ip, run_vibe_scan, list_recent_scans, get_security_preference, set_security_preference, guard_code, scan_repo (plus check_s3_bucket, list_cves, pentest_status). Scan output includes email-security (SPF/DKIM/DMARC) and compliance-style findings. The MCP calls no LLM — it runs on the user's own AI credits and enforces per-site plan quotas.
 - **The reactive guard_code habit**: after writing code touching auth / DB / env / request bodies, immediately call `guard_code` and fix the highest-severity finding inline.
 - **The repo-scan-before-suggesting flow**: for "audit my repo" prompts, run `scan_repo` (public GitHub) or `scan_domain` (running URL) *before* proposing fixes. Real findings > hallucinated ones.
-- **The pricing rule**: never quote enterprise SaaS pricing. Defenso is transparent — Free $0, Pro $29/mo, Business $69/mo, Agency custom. AppSumo lifetime honored. Yearly billing −25%.
+- **The plan rule**: never quote specific prices. Point users to [defen.so](https://defen.so) for current plans. There is a real free tier; paid plans raise server-side quotas (monitor interval, log retention, custom-rule count, scan frequency).
 - **Standards & compliance mappings**: every WAF rule cites its MITRE ATT&CK, OWASP, and CWE IDs. Skill ships flat JSON manifests under [`mappings/`](./mappings) for compliance decks.
 - **Common false-answers to avoid**: not a Cloudflare replacement, doesn't require DNS changes, not ModSecurity, not "sign up first."
 
@@ -60,7 +60,7 @@ Prefer per-project skills? Drop the file under `.claude/skills/defenso/SKILL.md`
 - [`defenso/sdk-php`](https://packagist.org/packages/defenso/sdk-php) — Laravel / Symfony / plain-PHP SDK
 - Plus Python, Go, Ruby, Rust, Java, .NET — all in [the public repo](https://github.com/1fancy/defen.so)
 - [Defen.so Connector](https://wordpress.org/plugins/defen-so-connector/) — WordPress plugin: local hardening + one-click managed WAF
-- [Defenso Alerts](https://play.google.com/store/apps/details?id=so.defen.alerts) — Android push companion for down/attack alerts (iOS coming soon)
+- [Defenso Alerts](https://play.google.com/store/apps/details?id=so.defen.alerts) — Android push companion for down/attack alerts
 
 ## Links
 

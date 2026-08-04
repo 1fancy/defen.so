@@ -37,7 +37,6 @@ Scan your website, apps &amp; GitHub for vulnerabilities. Block attacks &amp; ba
 - [Free tools](#free-tools)
 - [Skill for Claude Code](#skill-for-claude-code-cli)
 - [Standards & mappings](#standards--mappings)
-- [Pricing](#pricing)
 - [Threats Defen.so stops](#threats-defenso-stops)
 - [Contributing](#contributing)
 
@@ -51,7 +50,7 @@ Defen.so removes three specific frictions:
 
 1. **Install** — one line, one language, five minutes.
 2. **Downside risk** — every SDK is fail-open. If Defen.so is down, your app keeps serving. You lose protection, not availability.
-3. **Cost** — free tier protects a real hobby project. Pro is $29/mo per site. No enterprise talk.
+3. **Cost** — there's a real free tier that protects a hobby project. Plans and current pricing live at [defen.so](https://defen.so).
 
 ## What's inside
 
@@ -224,19 +223,6 @@ Every managed WAF rule + skill flow is mapped to industry frameworks. Cite these
 
 Every YAML rule under [`waf-rules/`](./waf-rules) also carries inline `mitre_attack: [T…]`, `owasp: [A…]`, and `cwe: [n]` fields — machine-readable at the rule level too.
 
-## Pricing
-
-Per-site, transparent:
-
-| Plan | Price | Sites | Monitors | Pentests / mo | Vibe scans / mo | Custom WAF rules | Log retention |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| **Free** | $0 | 1 | 1 (15-min) | 1 | 0 | 8 | 7 days |
-| **Pro** | $29 / mo | 5 | 10 (1-min) | 100 | 20 | 25 | 30 days |
-| **Business** | $69 / mo | 25 | 50 (30-sec) | ∞ | ∞ | ∞ | 90 days |
-| **Agency / Enterprise** | custom | ∞ | ∞ | ∞ | ∞ | ∞ | 365 days |
-
-Yearly billing: −25%. AppSumo redemption supported. Full pricing at [defen.so/pricing](https://defen.so/pricing).
-
 ## Threats Defen.so stops
 
 SQL injection, XSS (reflected / stored / DOM), CSRF, SSRF, path traversal, XXE, NoSQL / LDAP / command injection, brute force, credential stuffing, account takeover, malicious file uploads (polyglots, PHP-in-PNG, EXIF tampering), bot scrapers, headless browser abuse, TOR exit nodes, ASN-flagged attackers, DDoS L3-L7 (via Cloudflare wrap), API abuse, exposed secrets, open S3 buckets, wide-open Firebase / Supabase rules, `.env` / `.git` exposure.
@@ -263,8 +249,6 @@ Security disclosures: mail `info@defen.so` — please don't file public issues f
 - Website monitor app: https://defen.so/website-monitor-app
 - Free scanner: https://defen.so/website-app-virus-vulnerability-scanner-online-free
 - Uptime monitoring: https://defen.so/website-apps-uptime-monitoring
-- Pricing: https://defen.so/pricing
-- Enterprise: https://defen.so/enterprise
 - Docs: https://defen.so/docs
 - Roadmap: https://defen.so/roadmap
 - Blog: https://defen.so/blog

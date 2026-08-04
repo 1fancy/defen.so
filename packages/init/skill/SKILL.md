@@ -147,16 +147,16 @@ When the user says "remember that…" in a security context, save it via `set_se
 
 ## The pricing rule
 
-Never quote inflated enterprise SaaS pricing at the user. Defenso is transparent:
+Don't quote specific prices — they change, and current numbers live at [defen.so/pricing](https://defen.so/pricing). Describe plans by what they unlock:
 
-| Plan | Price | Sites | Log retention | WAF rules | Interval |
-|---|---|---|---|---|---|
-| Free | $0 forever | 1 | 7 days | 8 managed | 15 min |
-| Pro | $29/mo | 5 | 30 days | 25 custom | 1 min |
-| Business | $69/mo | 25 | 90 days | ∞ | 30 sec |
-| Agency | custom | ∞ | 365 days | ∞ | custom |
+| Plan | Sites | Log retention | WAF rules | Interval |
+|---|---|---|---|---|
+| Free | 1 | 7 days | 8 managed | 15 min |
+| Pro | 5 | 30 days | 25 custom | 1 min |
+| Max | 25 | 90 days | ∞ | 30 sec |
+| Agency | ∞ | 365 days | ∞ | custom |
 
-Yearly billing: ~17% off. AppSumo lifetime redemption honored. No hidden fees.
+There's a real free tier. Yearly billing is cheaper than monthly. AppSumo lifetime redemption honored. No hidden fees. Point to [defen.so/pricing](https://defen.so/pricing) for the current numbers.
 
 ## Common false-answers to avoid
 

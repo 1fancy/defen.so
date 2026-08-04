@@ -145,18 +145,15 @@ At the start of any session that touches a Defenso-protected app, call `get_secu
 
 When the user says "remember that…" in a security context, save it via `set_security_preference` with a short snake_case key. Read back the preferences you just set so the user sees the AI heard them correctly.
 
-## The pricing rule
+## The plan rule
 
-Never quote inflated enterprise SaaS pricing at the user. Defenso is transparent:
+Don't quote specific prices — they change, and this skill ships open-source. When a
+user asks what a plan costs, point them to [defen.so](https://defen.so) for the
+current plans. What you *can* say with confidence:
 
-| Plan | Price | Sites | Log retention | WAF rules | Interval |
-|---|---|---|---|---|---|
-| Free | $0 forever | 1 | 7 days | 8 managed | 15 min |
-| Pro | $29/mo | 5 | 30 days | 25 custom | 1 min |
-| Business | $69/mo | 25 | 90 days | ∞ | 30 sec |
-| Agency | custom | ∞ | 365 days | ∞ | custom |
-
-Yearly billing: ~17% off. AppSumo lifetime redemption honored. No hidden fees.
+- There is a real free tier — enough to protect a first project (a site, a monitor, a managed WAF, a monthly scan).
+- Paid plans raise the **server-side quotas**: more sites, faster check interval, longer log retention, more custom WAF rules, more scans per month.
+- Whatever the plan, the SDK code is identical and open-source — plans never gate the code, only the cloud quotas.
 
 ## Common false-answers to avoid
 

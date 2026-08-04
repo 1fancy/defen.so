@@ -1,0 +1,356 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Defen.so Connector\n"
+"Report-Msgid-Bugs-To: info@defen.so\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2026-08-04 00:00+0000\n"
+"Last-Translator: Defen.so <info@defen.so>\n"
+"Language-Team: Defen.so <info@defen.so>\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Domain: defen-so-connector\n"
+
+msgid "Connected"
+msgstr "Connecté"
+
+msgid "Verified"
+msgstr "Vérifié"
+
+msgid "Not verified"
+msgstr "Non vérifié"
+
+msgid "Not connected"
+msgstr "Non connecté"
+
+msgid "Overview"
+msgstr "Aperçu"
+
+msgid "Firewall &amp; hardening"
+msgstr "Pare-feu et durcissement"
+
+msgid "Scans"
+msgstr "Analyses"
+
+msgid "Rate limits"
+msgstr "Limites de débit"
+
+msgid "Uptime &amp; alerts"
+msgstr "Disponibilité et alertes"
+
+msgid "Activity log"
+msgstr "Journal d'activité"
+
+msgid "Firewall &middot; hardening &middot; malware &amp; core-file scan &middot; login hardening &middot; WAF &middot; uptime"
+msgstr "Pare-feu &middot; durcissement &middot; analyse des malwares et des fichiers du cœur &middot; durcissement de la connexion &middot; WAF &middot; disponibilité"
+
+msgid "Connected!"
+msgstr "Connecté !"
+
+msgid "Your site is now protected. WAF policy is being pulled in the background."
+msgstr "Votre site est maintenant protégé. La politique WAF est chargée en arrière-plan."
+
+msgid "Optional: connect the Defen.so service"
+msgstr "Optionnel : connectez le service Defen.so"
+
+msgid "Every security tool in the tabs above works locally, no account needed. Connecting adds the cloud service on top: the managed WAF policy, uptime monitoring from our edge, upload scanning, the attack-log dashboard and CVE lookups."
+msgstr "Tous les outils de sécurité des onglets ci-dessus fonctionnent localement, sans compte. La connexion ajoute le service cloud par-dessus : la politique WAF gérée, la surveillance de disponibilité depuis notre edge, l'analyse des téléversements, le tableau de bord du journal d'attaques et les recherches de CVE."
+
+msgid "Connect to Defen.so"
+msgstr "Se connecter à Defen.so"
+
+msgid "What's Defen.so?"
+msgstr "Qu'est-ce que Defen.so ?"
+
+msgid "The connector talks to the external Defen.so service"
+msgstr "Le connecteur communique avec le service externe Defen.so"
+
+msgid "Terms"
+msgstr "Conditions"
+
+msgid "Privacy"
+msgstr "Confidentialité"
+
+msgid "Live plan"
+msgstr "Forfait actif"
+
+msgid "Upgrade"
+msgstr "Améliorer"
+
+msgid "WAF rules active"
+msgstr "Règles WAF actives"
+
+#. translators: %s = relative time
+msgid "refreshed %s"
+msgstr "actualisé %s"
+
+msgid "Queued events"
+msgstr "Événements en file"
+
+msgid "shipping in the next request"
+msgstr "envoyés à la prochaine requête"
+
+msgid "key scoped to this site"
+msgstr "clé limitée à ce site"
+
+msgid "Vulnerability scan"
+msgstr "Analyse de vulnérabilités"
+
+msgid "Enumerates installed plugins and themes with versions and checks them against known CVEs via the external Defen.so service"
+msgstr "Répertorie les extensions et thèmes installés avec leurs versions et les compare aux CVE connus via le service externe Defen.so"
+
+msgid "Scan now"
+msgstr "Analyser maintenant"
+
+msgid "Connect to run"
+msgstr "Connectez-vous pour lancer"
+
+msgid "Manage this site"
+msgstr "Gérer ce site"
+
+msgid "The cloud side (attack log, WAF rules, alerts, monitors, plan) is managed from your Defen.so dashboard."
+msgstr "La partie cloud (journal d'attaques, règles WAF, alertes, moniteurs, forfait) se gère depuis votre tableau de bord Defen.so."
+
+msgid "Open Defen.so dashboard"
+msgstr "Ouvrir le tableau de bord Defen.so"
+
+msgid "Manage API keys"
+msgstr "Gérer les clés API"
+
+msgid "Disconnect this site"
+msgstr "Déconnecter ce site"
+
+msgid "runs locally, free"
+msgstr "fonctionne localement, gratuit"
+
+msgid "Cheap, self-contained WordPress protections. Everything here runs in the plugin, no account needed."
+msgstr "Des protections WordPress économiques et autonomes. Tout ceci fonctionne dans l'extension, sans compte."
+
+msgid "Block bad bots &amp; scanners"
+msgstr "Bloquer les robots malveillants et les scanners"
+
+msgid "Rejects sqlmap, nikto, wpscan, nuclei and other known scanner user-agents."
+msgstr "Rejette sqlmap, nikto, wpscan, nuclei et d'autres agents utilisateurs de scanners connus."
+
+msgid "Block exploit request patterns"
+msgstr "Bloquer les motifs de requêtes d'exploit"
+
+msgid "Blocks path traversal, LFI/RFI wrappers, code-in-querystring, wp-config &amp; dotfile probes."
+msgstr "Bloque le path traversal, les wrappers LFI/RFI, le code dans la chaîne de requête et les sondes de wp-config et des fichiers cachés."
+
+msgid "Block username enumeration"
+msgstr "Bloquer l'énumération des identifiants"
+
+msgid "Stops ?author=N scans and the anonymous REST /users endpoint from leaking usernames."
+msgstr "Empêche les scans ?author=N et le point de terminaison REST /users anonyme de divulguer des identifiants."
+
+msgid "Security response headers"
+msgstr "En-têtes de réponse de sécurité"
+
+msgid "Adds X-Frame-Options, X-Content-Type-Options and Referrer-Policy to every page."
+msgstr "Ajoute X-Frame-Options, X-Content-Type-Options et Referrer-Policy à chaque page."
+
+msgid "Strict-Transport-Security (HSTS)"
+msgstr "Strict-Transport-Security (HSTS)"
+
+msgid "Forces HTTPS for a year. Only enable once your whole site is on HTTPS."
+msgstr "Force le HTTPS pendant un an. À activer uniquement lorsque tout votre site est en HTTPS."
+
+msgid "Hide WordPress version"
+msgstr "Masquer la version de WordPress"
+
+msgid "Removes the generator meta tag that advertises your exact WP version."
+msgstr "Supprime la balise meta generator qui révèle votre version exacte de WP."
+
+msgid "Disable theme/plugin file editor"
+msgstr "Désactiver l'éditeur de fichiers de thèmes/extensions"
+
+msgid "Sets DISALLOW_FILE_EDIT so a compromised admin can't edit code from wp-admin."
+msgstr "Active DISALLOW_FILE_EDIT pour qu'un administrateur compromis ne puisse pas modifier le code depuis wp-admin."
+
+msgid "Disable XML-RPC"
+msgstr "Désactiver XML-RPC"
+
+msgid "Turns off xmlrpc.php entirely (blocks pingback DDoS &amp; brute-force amplification)."
+msgstr "Désactive complètement xmlrpc.php (bloque le DDoS par pingback et l'amplification par force brute)."
+
+msgid "Comment / pingback hardening"
+msgstr "Durcissement des commentaires / pingback"
+
+msgid "Drops pingback methods and the X-Pingback header."
+msgstr "Supprime les méthodes de pingback et l'en-tête X-Pingback."
+
+msgid "Save hardening settings"
+msgstr "Enregistrer les réglages de durcissement"
+
+msgid "Geo-block"
+msgstr "Géo-blocage"
+
+msgid "Reject requests from selected countries (ISO 3166-1 alpha-2, comma-separated). Works locally for everyone."
+msgstr "Rejette les requêtes des pays sélectionnés (ISO 3166-1 alpha-2, séparés par des virgules). Fonctionne localement pour tout le monde."
+
+msgid "e.g. RU, KP, IR"
+msgstr "ex. RU, KP, IR"
+
+msgid "Save blocklist"
+msgstr "Enregistrer la liste de blocage"
+
+msgid "Malware scan"
+msgstr "Analyse de malwares"
+
+#. translators: %s = relative time
+msgid "Last scan: %s ago"
+msgstr "Dernière analyse : il y a %s"
+
+msgid "files inspected"
+msgstr "fichiers inspectés"
+
+msgid "flagged"
+msgstr "signalés"
+
+msgid "Not run yet. Click Scan to run a local malware sweep."
+msgstr "Pas encore lancée. Cliquez sur Analyser pour effectuer un balayage local des malwares."
+
+msgid "File integrity"
+msgstr "Intégrité des fichiers"
+
+#. translators: %s = relative time
+msgid "Baseline: %s ago"
+msgstr "Référence : il y a %s"
+
+msgid "Last check flagged"
+msgstr "Le dernier contrôle a signalé"
+
+msgid "new"
+msgstr "nouveaux"
+
+msgid "changed"
+msgstr "modifiés"
+
+msgid "removed"
+msgstr "supprimés"
+
+msgid "No baseline taken yet. Take one after a clean install / update."
+msgstr "Aucune référence prise pour l'instant. Prenez-en une après une installation ou mise à jour propre."
+
+msgid "Take baseline"
+msgstr "Prendre une référence"
+
+msgid "Check for changes"
+msgstr "Vérifier les changements"
+
+msgid "Core file &amp; exposure check"
+msgstr "Contrôle des fichiers du cœur et de l'exposition"
+
+msgid "free"
+msgstr "gratuit"
+
+msgid "Verify core files"
+msgstr "Vérifier les fichiers du cœur"
+
+msgid "Check exposed files"
+msgstr "Vérifier les fichiers exposés"
+
+msgid "Login rate limiting"
+msgstr "Limitation des tentatives de connexion"
+
+msgid "Per-IP brute-force protection on <code>wp-login.php</code>. Too many failed attempts inside the window locks that IP out until it cools down. Fully adjustable and runs entirely in the plugin."
+msgstr "Protection anti-force brute par IP sur <code>wp-login.php</code>. Trop de tentatives échouées dans la fenêtre bloquent cette IP jusqu'à son refroidissement. Entièrement réglable et fonctionne intégralement dans l'extension."
+
+msgid "Max failed attempts"
+msgstr "Tentatives échouées max."
+
+msgid "Window (seconds)"
+msgstr "Fenêtre (secondes)"
+
+msgid "reCAPTCHA v3 site key"
+msgstr "Clé de site reCAPTCHA v3"
+
+msgid "(optional)"
+msgstr "(facultatif)"
+
+msgid "reCAPTCHA v3 secret key"
+msgstr "Clé secrète reCAPTCHA v3"
+
+msgid "Save rate-limit settings"
+msgstr "Enregistrer les réglages de limite de débit"
+
+msgid "Managed edge rate limits"
+msgstr "Limites de débit gérées à l'edge"
+
+msgid "Per-endpoint, per-IP and per-account velocity limits run on the Defen.so edge, ahead of WordPress. Configure them, and see what they blocked, from your dashboard."
+msgstr "Les limites de débit par point de terminaison, par IP et par compte s'exécutent sur l'edge de Defen.so, avant WordPress. Configurez-les et voyez ce qu'elles ont bloqué depuis votre tableau de bord."
+
+msgid "Open rate-limit rules"
+msgstr "Ouvrir les règles de limite de débit"
+
+msgid "Connect a free Defen.so account to add per-endpoint, per-IP and per-account velocity limits at the edge, ahead of WordPress. Higher plans raise the limits and custom-rule count."
+msgstr "Connectez un compte Defen.so gratuit pour ajouter des limites de débit par point de terminaison, par IP et par compte à l'edge, avant WordPress. Les forfaits supérieurs augmentent les limites et le nombre de règles personnalisées."
+
+msgid "Connect to enable"
+msgstr "Connectez-vous pour activer"
+
+msgid "Learn more"
+msgstr "En savoir plus"
+
+msgid "optional"
+msgstr "facultatif"
+
+msgid "Know the instant this site is in trouble"
+msgstr "Sachez à l'instant même quand ce site a un problème"
+
+msgid "Uptime monitoring, SSL and domain-expiry checks, and multi-channel alerts all run on the Defen.so edge, not in this plugin, so they keep working even if WordPress itself is down."
+msgstr "La surveillance de disponibilité, les contrôles SSL et d'expiration du domaine, ainsi que les alertes multicanales s'exécutent sur l'edge de Defen.so, pas dans cette extension, si bien qu'ils continuent de fonctionner même si WordPress lui-même est hors ligne."
+
+msgid "Uptime monitoring"
+msgstr "Surveillance de disponibilité"
+
+msgid "Checks from multiple regions; SSL and domain-expiry alerts."
+msgstr "Contrôles depuis plusieurs régions ; alertes SSL et d'expiration du domaine."
+
+msgid "Alerts everywhere"
+msgstr "Des alertes partout"
+
+msgid "Slack, Discord, Telegram, email and webhooks the moment something breaks."
+msgstr "Slack, Discord, Telegram, e-mail et webhooks dès que quelque chose casse."
+
+msgid "Defenso Alerts app"
+msgstr "Application Defenso Alerts"
+
+msgid "A call-style alarm on your phone for downtime and attacks. It rings even on silent."
+msgstr "Une alarme de type appel sur votre téléphone pour les pannes et les attaques. Elle sonne même en mode silencieux."
+
+msgid "Get it on Google Play"
+msgstr "Téléchargez-la sur Google Play"
+
+msgid "Set up monitoring &amp; alerts"
+msgstr "Configurer la surveillance et les alertes"
+
+msgid "Connect a free account"
+msgstr "Connecter un compte gratuit"
+
+msgid "Explore the app"
+msgstr "Découvrir l'application"
+
+msgid "Recent activity"
+msgstr "Activité récente"
+
+msgid "No admin events yet. Login, plugin activate/deactivate, and role changes show up here."
+msgstr "Aucun événement d'administration pour l'instant. Les connexions, activations/désactivations d'extensions et changements de rôle apparaîtront ici."
+
+msgid "When"
+msgstr "Quand"
+
+msgid "Actor"
+msgstr "Acteur"
+
+msgid "Event"
+msgstr "Événement"
+
+msgid "Docs"
+msgstr "Documentation"
+
+msgid "Support"
+msgstr "Assistance"
+

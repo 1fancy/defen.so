@@ -8,7 +8,7 @@
 - **Fails open** — if Defenso is unreachable, your app keeps serving
 - ~0.1 ms in-process latency (rules cached, evaluation is local)
 - Attack events queued and flushed in the background
-- $0 to start · Pro $29/mo per site
+- Free to start — get a token at [app.defen.so](https://app.defen.so/developer)
 
 ## Install
 
@@ -136,7 +136,7 @@ This SDK is the in-process WAF layer. It plugs into the same account that powers
 - **[Playground](https://playground.defen.so)** — fire attacks at a live SDK-protected origin and see what got blocked.
 - **[MCP for Claude Code / Cursor / Windsurf / VS Code](https://mcp.defen.so)** — give your AI IDE real security tools.
 - **[Defen.so Connector for WordPress](https://wordpress.org/plugins/defen-so-connector/)** — local hardening + one-click managed WAF for WP sites.
-- **[Defenso Alerts on Google Play](https://play.google.com/store/apps/details?id=so.defen.alerts)** — call-style **Alarm** notifications that ring through silent mode / DND until you acknowledge, plus per-site per-event Off/Notification/Alarm and Slack/Discord/Telegram/email/webhook fan-out ([defen.so/website-monitor-app](https://defen.so/website-monitor-app); iOS coming soon).
+- **[Defenso Alerts on Google Play](https://play.google.com/store/apps/details?id=so.defen.alerts)** — call-style **Alarm** notifications that ring through silent mode / DND until you acknowledge, plus per-site per-event Off/Notification/Alarm and Slack/Discord/Telegram/email/webhook fan-out ([defen.so/website-monitor-app](https://defen.so/website-monitor-app)).
 
 ## Links
 
@@ -144,7 +144,6 @@ This SDK is the in-process WAF layer. It plugs into the same account that powers
 - App: [app.defen.so](https://app.defen.so)
 - Source (monorepo): [github.com/1fancy/defen.so](https://github.com/1fancy/defen.so/tree/main/packages/sdk-node)
 - Issues: [github.com/1fancy/defen.so/issues](https://github.com/1fancy/defen.so/issues)
-- Pricing: [defen.so/pricing](https://defen.so/pricing)
 - Contact: info@defen.so
 
 ## License

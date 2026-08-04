@@ -6,7 +6,7 @@
 npx @defen.so/init
 ```
 
-$0 to start. Pro $29/mo per site. Powered by [Defenso](https://defen.so) — the security layer built for indie developers, vibe coders, AI-first shipping teams, and small startups shipping fast.
+Free to start. Powered by [Defenso](https://defen.so) — the security layer built for indie developers, vibe coders, AI-first shipping teams, and small startups shipping fast.
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![App](https://img.shields.io/badge/app-app.defen.so-0A0A0A)](https://app.defen.so)
@@ -25,7 +25,6 @@ $0 to start. Pro $29/mo per site. Powered by [Defenso](https://defen.so) — the
 - [Framework support](#framework-support)
 - [How the underlying SDK works](#how-the-underlying-sdk-works)
 - [Comparison with other tools](#comparison-with-other-tools)
-- [Pricing](#pricing)
 - [Uptime monitoring, alerts, pentest, vibe-coder scan](#everything-else-you-get)
 - [MCP server for Claude Code, Cursor, Windsurf, VS Code](#mcp-server-for-ai-ides)
 - [Playground: live attack sandbox](#live-sdk-playground)
@@ -155,25 +154,11 @@ Different tools solve different parts of the problem. Here's how Defenso fits wi
 | Uptime monitoring included | ✅ 30s-15min | ❌ | ❌ | ❌ | ❌ |
 | Pentest scanner included | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Vibe-coder / secret scanner | ✅ | ❌ | ❌ | ❌ | ❌ |
-| $0 tier for real projects | ✅ | Free plan basic | Pay per request | Free (self-host) | Included |
+| Real free tier for real projects | ✅ | Free plan basic | Pay per request | Free (self-host) | Included |
 | Fails open on our incident | ✅ by design | N/A (edge) | N/A (edge) | Config-dependent | Yes |
 | MCP for AI IDEs | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Price for one site | $0 or $29/mo | $0 or $20+/mo | $5-20/mo + $ per rule | Free (you host) | Included with Vercel |
 
 **Defenso complements Cloudflare** — most Defenso customers run both. Cloudflare handles L3/L4 DDoS + TLS termination at the edge. Defenso runs in your app process (or optionally at our edge via CNAME) doing L7 rule matching, deception, custom rules, and detailed logging.
-
-## Pricing
-
-Per-site, transparent, no sales calls:
-
-| Plan | Price | Monitors | Interval | Pentests / mo | Vibe scans / mo | Custom WAF rules | Log retention |
-|---|---|---|---|---|---|---|---|
-| **$0 to start** | $0 | 1 | 15 min | 1 | 0 | — | 7 days |
-| **Pro** | $29/mo | 4 (+3 extra) | near-instant | 100 | 20 | 25 | 30 days |
-| **Business** | $69/mo | 7 (+6 extra) | 30 sec | ∞ | ∞ | ∞ | 90 days |
-| **Agency / Enterprise** | custom | ∞ | custom | ∞ | ∞ | ∞ | 365 days |
-
-Per site. Yearly billing saves **35%**. AppSumo lifetime redemption supported. Full pricing: [defen.so/pricing](https://defen.so/pricing).
 
 ## Everything else you get
 
@@ -182,7 +167,7 @@ Per site. Yearly billing saves **35%**. AppSumo lifetime redemption supported. F
 **Uptime monitoring**
 
 - Auto-created when you add a site — no forms
-- Check interval scales with plan: 15 min on $0, near-instant on Pro, 30 sec on Business
+- Check interval scales with your plan: from 15 min on the free tier down to 30 sec on higher plans
 - Latency tier per check: Fast (< 300 ms), OK (< 900 ms), Slow (< 2 s), Bad (≥ 2 s)
 - Only 2xx/3xx counts as up — no "warning" state on a 500 for two hours
 - Public status page every site gets, embeddable
@@ -194,13 +179,13 @@ Per site. Yearly billing saves **35%**. AppSumo lifetime redemption supported. F
 
 - Grade A-F on TLS, headers, cookies, exposed `.env` / `.git`, WordPress probes, common misconfigurations
 - One-click from your dashboard, or auto-run weekly (Sunday 3 AM)
-- The $0 tier gets 1/month; Pro 100/month; Business unlimited
+- Monthly scan count scales with your plan (unlimited on higher plans)
 
 **Vibe-coder scan**
 
 - Catches mistakes AI-generated projects tend to ship: hardcoded secrets, open S3 buckets, Supabase RLS off, wide-open Firebase rules, committed `.env`
 - Auto-run weekly (Monday 4 AM)
-- The $0 tier gets 0; Pro 20/month; Business unlimited
+- Monthly scan count scales with your plan (unlimited on higher plans)
 
 **Live CVE feed**
 
@@ -238,7 +223,7 @@ Now Claude can say *"hey, this endpoint you just wrote has an SQL injection surf
 
 ## Live SDK playground
 
-[playground.defen.so](https://playground.defen.so) is a hosted attack sandbox running the PHP SDK in front of a real Defenso Business-tier account. Fire SQL injection, XSS, path traversal, XXE, NoSQL, brute force, or bot-UA attacks at it — the response tells you exactly what the WAF blocked, deceived, or missed. Every attack is logged in the dashboard as a real event. Rate-limited so you can't abuse it.
+[playground.defen.so](https://playground.defen.so) is a hosted attack sandbox running the PHP SDK in front of a real Defenso paid-tier account. Fire SQL injection, XSS, path traversal, XXE, NoSQL, brute force, or bot-UA attacks at it — the response tells you exactly what the WAF blocked, deceived, or missed. Every attack is logged in the dashboard as a real event. Rate-limited so you can't abuse it.
 
 Perfect for evaluating whether Defenso would catch the specific attack pattern you're worried about before you install it.
 
@@ -315,7 +300,7 @@ Delete the middleware line the CLI added, then uninstall the SDK (`npm rm @defen
 
 If you have **multiple sites**, the token you use determines which account the traffic gets attributed to. One token per account; sites are distinguished by the `Host` header of each request.
 
-If you're on **Pro or Business**, unlock:
+If you're on **Pro or Max**, unlock:
 - Custom WAF rules editor at [app.defen.so](https://app.defen.so)
 - CNAME edge proxying (put Defenso in front of your origin at the DNS level)
 - Slack Connect for direct alerts to a shared channel
@@ -336,7 +321,7 @@ If you're on **Pro or Business**, unlock:
 | `io.defenso:sdk` | Maven Central | Java 17+ | 🚧 in development |
 | `Defenso` | NuGet | .NET 8+ | 🚧 in development |
 
-Beyond the SDKs, Defenso also ships the [**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) WordPress plugin (local hardening + one-click managed WAF) and the [**Defenso Alerts**](https://play.google.com/store/apps/details?id=so.defen.alerts) Android app (push the moment a site goes down or is attacked; iOS coming soon).
+Beyond the SDKs, Defenso also ships the [**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) WordPress plugin (local hardening + one-click managed WAF) and the [**Defenso Alerts**](https://play.google.com/store/apps/details?id=so.defen.alerts) Android app (push the moment a site goes down or is attacked).
 
 ## Links
 
@@ -347,7 +332,6 @@ Beyond the SDKs, Defenso also ships the [**Defen.so Connector**](https://wordpre
 - **WordPress plugin**: [Defen.so Connector](https://wordpress.org/plugins/defen-so-connector/)
 - **Mobile app (Google Play)**: [Defenso Alerts](https://play.google.com/store/apps/details?id=so.defen.alerts)
 - **Documentation**: [defen.so/docs](https://defen.so/docs)
-- **Pricing**: [defen.so/pricing](https://defen.so/pricing)
 - **Uptime monitoring**: [defen.so/uptime](https://defen.so/uptime)
 - **Threat coverage map**: [defen.so/threats](https://defen.so/threats)
 - **Live CVE feed**: [defen.so/threats](https://defen.so/threats)

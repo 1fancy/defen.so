@@ -4,12 +4,13 @@
  * Plugin Name: Defen.so Connector
  * Plugin URI: https://defen.so/wordpress-security-plugin
  * Description: Official Defen.so connector for WordPress. One-click connect to Defen.so, block SQL injection / XSS / bot scanners at the edge, scan every uploaded file for polyglots + malware, watch uptime, and detect brute-force logins. Manage everything from your Defen.so dashboard at https://defen.so.
- * Version: 1.2.5
+ * Version: 1.2.7
  * Author: Defen.so
  * Author URI: https://defen.so
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: defen-so-connector
+ * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Update URI: false
@@ -18,7 +19,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-define('DEFENSO_VERSION', '1.2.5');
+define('DEFENSO_VERSION', '1.2.7');
 define('DEFENSO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DEFENSO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('DEFENSO_APP_URL', 'https://app.defen.so');
@@ -110,6 +111,7 @@ class Defenso_Connector
 
     private function init_hooks(): void
     {
+        add_action('init', [$this, 'load_textdomain']);
         add_action('rest_api_init', [$this, 'register_rest_routes']);
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_scripts']);
@@ -135,6 +137,14 @@ class Defenso_Connector
             add_action('init', [$this, 'inspect_request'], 1);
             add_action('shutdown', [$this, 'flush_attack_log']);
         }
+    }
+
+    /**
+     * Load the plugin's translations (ships es_ES + fr_FR, extensible).
+     */
+    public function load_textdomain(): void
+    {
+        load_plugin_textdomain('defen-so-connector', false, dirname(plugin_basename(__FILE__)).'/languages');
     }
 
     public static function activate(): void

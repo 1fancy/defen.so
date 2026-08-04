@@ -1,0 +1,353 @@
+# Copyright (C) Defen.so
+# This file is distributed under the same license as the Defen.so Connector plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Defen.so Connector\n"
+"Report-Msgid-Bugs-To: info@defen.so\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: Defen.so <info@defen.so>\n"
+"X-Domain: defen-so-connector\n"
+
+msgid "Connected"
+msgstr ""
+
+msgid "Verified"
+msgstr ""
+
+msgid "Not verified"
+msgstr ""
+
+msgid "Not connected"
+msgstr ""
+
+msgid "Overview"
+msgstr ""
+
+msgid "Firewall &amp; hardening"
+msgstr ""
+
+msgid "Scans"
+msgstr ""
+
+msgid "Rate limits"
+msgstr ""
+
+msgid "Uptime &amp; alerts"
+msgstr ""
+
+msgid "Activity log"
+msgstr ""
+
+msgid "Firewall &middot; hardening &middot; malware &amp; core-file scan &middot; login hardening &middot; WAF &middot; uptime"
+msgstr ""
+
+msgid "Connected!"
+msgstr ""
+
+msgid "Your site is now protected. WAF policy is being pulled in the background."
+msgstr ""
+
+msgid "Optional: connect the Defen.so service"
+msgstr ""
+
+msgid "Every security tool in the tabs above works locally, no account needed. Connecting adds the cloud service on top: the managed WAF policy, uptime monitoring from our edge, upload scanning, the attack-log dashboard and CVE lookups."
+msgstr ""
+
+msgid "Connect to Defen.so"
+msgstr ""
+
+msgid "What's Defen.so?"
+msgstr ""
+
+msgid "The connector talks to the external Defen.so service"
+msgstr ""
+
+msgid "Terms"
+msgstr ""
+
+msgid "Privacy"
+msgstr ""
+
+msgid "Live plan"
+msgstr ""
+
+msgid "Upgrade"
+msgstr ""
+
+msgid "WAF rules active"
+msgstr ""
+
+#. translators: %s = relative time
+msgid "refreshed %s"
+msgstr ""
+
+msgid "Queued events"
+msgstr ""
+
+msgid "shipping in the next request"
+msgstr ""
+
+msgid "key scoped to this site"
+msgstr ""
+
+msgid "Vulnerability scan"
+msgstr ""
+
+msgid "Enumerates installed plugins and themes with versions and checks them against known CVEs via the external Defen.so service"
+msgstr ""
+
+msgid "Scan now"
+msgstr ""
+
+msgid "Connect to run"
+msgstr ""
+
+msgid "Manage this site"
+msgstr ""
+
+msgid "The cloud side (attack log, WAF rules, alerts, monitors, plan) is managed from your Defen.so dashboard."
+msgstr ""
+
+msgid "Open Defen.so dashboard"
+msgstr ""
+
+msgid "Manage API keys"
+msgstr ""
+
+msgid "Disconnect this site"
+msgstr ""
+
+msgid "runs locally, free"
+msgstr ""
+
+msgid "Cheap, self-contained WordPress protections. Everything here runs in the plugin, no account needed."
+msgstr ""
+
+msgid "Block bad bots &amp; scanners"
+msgstr ""
+
+msgid "Rejects sqlmap, nikto, wpscan, nuclei and other known scanner user-agents."
+msgstr ""
+
+msgid "Block exploit request patterns"
+msgstr ""
+
+msgid "Blocks path traversal, LFI/RFI wrappers, code-in-querystring, wp-config &amp; dotfile probes."
+msgstr ""
+
+msgid "Block username enumeration"
+msgstr ""
+
+msgid "Stops ?author=N scans and the anonymous REST /users endpoint from leaking usernames."
+msgstr ""
+
+msgid "Security response headers"
+msgstr ""
+
+msgid "Adds X-Frame-Options, X-Content-Type-Options and Referrer-Policy to every page."
+msgstr ""
+
+msgid "Strict-Transport-Security (HSTS)"
+msgstr ""
+
+msgid "Forces HTTPS for a year. Only enable once your whole site is on HTTPS."
+msgstr ""
+
+msgid "Hide WordPress version"
+msgstr ""
+
+msgid "Removes the generator meta tag that advertises your exact WP version."
+msgstr ""
+
+msgid "Disable theme/plugin file editor"
+msgstr ""
+
+msgid "Sets DISALLOW_FILE_EDIT so a compromised admin can't edit code from wp-admin."
+msgstr ""
+
+msgid "Disable XML-RPC"
+msgstr ""
+
+msgid "Turns off xmlrpc.php entirely (blocks pingback DDoS &amp; brute-force amplification)."
+msgstr ""
+
+msgid "Comment / pingback hardening"
+msgstr ""
+
+msgid "Drops pingback methods and the X-Pingback header."
+msgstr ""
+
+msgid "Save hardening settings"
+msgstr ""
+
+msgid "Geo-block"
+msgstr ""
+
+msgid "Reject requests from selected countries (ISO 3166-1 alpha-2, comma-separated). Works locally for everyone."
+msgstr ""
+
+msgid "e.g. RU, KP, IR"
+msgstr ""
+
+msgid "Save blocklist"
+msgstr ""
+
+msgid "Malware scan"
+msgstr ""
+
+#. translators: %s = relative time
+msgid "Last scan: %s ago"
+msgstr ""
+
+msgid "files inspected"
+msgstr ""
+
+msgid "flagged"
+msgstr ""
+
+msgid "Not run yet. Click Scan to run a local malware sweep."
+msgstr ""
+
+msgid "File integrity"
+msgstr ""
+
+#. translators: %s = relative time
+msgid "Baseline: %s ago"
+msgstr ""
+
+msgid "Last check flagged"
+msgstr ""
+
+msgid "new"
+msgstr ""
+
+msgid "changed"
+msgstr ""
+
+msgid "removed"
+msgstr ""
+
+msgid "No baseline taken yet. Take one after a clean install / update."
+msgstr ""
+
+msgid "Take baseline"
+msgstr ""
+
+msgid "Check for changes"
+msgstr ""
+
+msgid "Core file &amp; exposure check"
+msgstr ""
+
+msgid "free"
+msgstr ""
+
+msgid "Verify core files"
+msgstr ""
+
+msgid "Check exposed files"
+msgstr ""
+
+msgid "Login rate limiting"
+msgstr ""
+
+msgid "Per-IP brute-force protection on <code>wp-login.php</code>. Too many failed attempts inside the window locks that IP out until it cools down. Fully adjustable and runs entirely in the plugin."
+msgstr ""
+
+msgid "Max failed attempts"
+msgstr ""
+
+msgid "Window (seconds)"
+msgstr ""
+
+msgid "reCAPTCHA v3 site key"
+msgstr ""
+
+msgid "(optional)"
+msgstr ""
+
+msgid "reCAPTCHA v3 secret key"
+msgstr ""
+
+msgid "Save rate-limit settings"
+msgstr ""
+
+msgid "Managed edge rate limits"
+msgstr ""
+
+msgid "Per-endpoint, per-IP and per-account velocity limits run on the Defen.so edge, ahead of WordPress. Configure them, and see what they blocked, from your dashboard."
+msgstr ""
+
+msgid "Open rate-limit rules"
+msgstr ""
+
+msgid "Connect a free Defen.so account to add per-endpoint, per-IP and per-account velocity limits at the edge, ahead of WordPress. Higher plans raise the limits and custom-rule count."
+msgstr ""
+
+msgid "Connect to enable"
+msgstr ""
+
+msgid "Learn more"
+msgstr ""
+
+msgid "optional"
+msgstr ""
+
+msgid "Know the instant this site is in trouble"
+msgstr ""
+
+msgid "Uptime monitoring, SSL and domain-expiry checks, and multi-channel alerts all run on the Defen.so edge, not in this plugin, so they keep working even if WordPress itself is down."
+msgstr ""
+
+msgid "Uptime monitoring"
+msgstr ""
+
+msgid "Checks from multiple regions; SSL and domain-expiry alerts."
+msgstr ""
+
+msgid "Alerts everywhere"
+msgstr ""
+
+msgid "Slack, Discord, Telegram, email and webhooks the moment something breaks."
+msgstr ""
+
+msgid "Defenso Alerts app"
+msgstr ""
+
+msgid "A call-style alarm on your phone for downtime and attacks. It rings even on silent."
+msgstr ""
+
+msgid "Get it on Google Play"
+msgstr ""
+
+msgid "Set up monitoring &amp; alerts"
+msgstr ""
+
+msgid "Connect a free account"
+msgstr ""
+
+msgid "Explore the app"
+msgstr ""
+
+msgid "Recent activity"
+msgstr ""
+
+msgid "No admin events yet. Login, plugin activate/deactivate, and role changes show up here."
+msgstr ""
+
+msgid "When"
+msgstr ""
+
+msgid "Actor"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "Docs"
+msgstr ""
+
+msgid "Support"
+msgstr ""

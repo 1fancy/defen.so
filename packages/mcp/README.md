@@ -16,7 +16,7 @@
 npx -y @defen.so/mcp
 ```
 
-$0 to start. Pro $29/mo per site.
+Free to start — get a token at [app.defen.so](https://app.defen.so/developer).
 
 Scans run through this server surface not just header/TLS grade but **email-security (SPF / DKIM / DMARC)** and compliance-style findings too.
 
@@ -36,7 +36,6 @@ Scans run through this server surface not just header/TLS grade but **email-secu
 - [Real workflow examples](#real-workflow-examples)
 - [CLI](#cli)
 - [Comparison with other AI security integrations](#comparison-with-other-ai-security-integrations)
-- [Pricing](#pricing)
 - [Companion packages](#companion-packages)
 - [FAQ](#faq)
 - [Links](#links)
@@ -115,7 +114,7 @@ Command palette → *MCP: Add Server* → paste the block. Or edit `~/.vscode/mc
 
 ## Tools exposed
 
-| Tool | $0 | Pro | Business | What it does |
+| Tool | Free | Pro | Max | What it does |
 |---|---|---|---|---|
 | `scan_domain` | ✅ 10/mo | ✅ 100/mo | ✅ ∞ | Quick pentest surface scan of any public URL. Returns grade A-F + failing checks — headers, TLS, cookies, exposed `.env`/`.git`, **email security (SPF / DKIM / DMARC)**, and compliance-style findings. |
 | `check_headers` | ✅ | ✅ | ✅ | TLS grade, HSTS, CSP, X-Frame-Options, Referrer-Policy, Permissions-Policy in one call. |
@@ -243,23 +242,10 @@ defenso logout     # remove ~/.defenso/config.json
 | Runs pentest scanner | ✅ | ⚠️ SAST only | ✅ | ⚠️ SAST only |
 | Runs vibe-coder / secret scan | ✅ | ✅ | ⚠️ | ✅ |
 | Uptime monitoring | ✅ | ❌ | ❌ | ❌ |
-| $0 tier | ✅ | ⚠️ Limited | ✅ | ⚠️ Limited |
+| Free tier | ✅ | ⚠️ Limited | ✅ | ⚠️ Limited |
 | Zero-config on install | ✅ | ⚠️ | ⚠️ | ⚠️ |
 
 Defenso is the only MCP-integrated tool that combines *runtime* protection with the AI's *design-time* knowledge.
-
-## Pricing
-
-Per-site, transparent:
-
-| Plan | Price | MCP tool access |
-|---|---|---|
-| **$0 to start** | $0 | Read tools + 1 pentest/day + 7-day log lookback |
-| **Pro** | $29/mo | Everything on $0 + 25 custom WAF rules + 30-day log lookback |
-| **Business** | $69/mo | Everything Pro + unlimited rules + unlimited scans + 90-day log lookback + SIEM webhook |
-| **Agency** | custom | Everything Business + dedicated regions + SSO + on-call + 365-day retention |
-
-Per site. Yearly billing saves 35%. Full pricing: [defen.so/pricing](https://defen.so/pricing).
 
 ## Companion packages
 
@@ -271,7 +257,7 @@ Per site. Yearly billing saves 35%. Full pricing: [defen.so/pricing](https://def
 
 Python, Go, Ruby, Rust, Java, and .NET SDKs are in development — scaffolds live in the [public repo](https://github.com/1fancy/defen.so), not yet published to their registries.
 
-Beyond the registries: the [**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) WordPress plugin (local hardening + one-click managed WAF, live on WordPress.org) and the [**Defenso Alerts**](https://play.google.com/store/apps/details?id=so.defen.alerts) mobile app ([defen.so/website-monitor-app](https://defen.so/website-monitor-app) — call-style **Alarm** notifications that ring through silent mode / DND until acknowledged, per-site per-event Off/Notification/Alarm; iOS coming soon) round out the ecosystem.
+Beyond the registries: the [**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) WordPress plugin (local hardening + one-click managed WAF, live on WordPress.org) and the [**Defenso Alerts**](https://play.google.com/store/apps/details?id=so.defen.alerts) mobile app ([defen.so/website-monitor-app](https://defen.so/website-monitor-app) — call-style **Alarm** notifications that ring through silent mode / DND until acknowledged, per-site per-event Off/Notification/Alarm) round out the ecosystem.
 
 ## Environment
 
@@ -304,7 +290,7 @@ No. Only `add_waf_rule`, `block_ip`, and `set_security_preference` write anythin
 <details>
 <summary><strong>What about rate limits?</strong></summary>
 
-Same as the Defenso API: read tools 120/hour per IP, write tools plan-gated. `scan_domain` uses a separate MCP-scan quota — metered apart from the dashboard pentest quota because these scans run on your own AI/compute ($0 tier 10/mo, Pro 100/mo, Business ∞).
+Same as the Defenso API: read tools 120/hour per IP, write tools plan-gated. `scan_domain` uses a separate MCP-scan quota — metered apart from the dashboard pentest quota because these scans run on your own AI/compute. The monthly quota scales with your plan (Free / Pro / Max).
 </details>
 
 <details>

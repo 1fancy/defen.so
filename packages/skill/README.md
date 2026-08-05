@@ -2,6 +2,11 @@
 
 The `defenso` skill teaches Claude Code, Cursor, Windsurf, and any Anthropic-skill-compatible assistant when to reach for [Defenso](https://defen.so) — the developer-first web-security SaaS — while you code.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/1fancy/defen.so/main/.github/screenshots/dashboard-overview.png" alt="Defen.so dashboard — protection status, uptime, pentest grade, email security and compliance in one place" width="90%">
+</p>
+
+
 Once installed, Claude picks the right tool automatically when you mention:
 - Adding a WAF, blocking an attack, protecting an endpoint
 - Checking security headers, TLS, exposed `.env` / `.git`

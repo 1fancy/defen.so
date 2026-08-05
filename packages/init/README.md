@@ -14,6 +14,10 @@ Free to start. Powered by [Defenso](https://defen.so) — the security layer bui
 [![Playground](https://img.shields.io/badge/playground-playground.defen.so-38BDF8)](https://playground.defen.so)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/1fancy/defen.so/main/.github/screenshots/dashboard-overview.png" alt="Defen.so dashboard — one place for protection status, uptime, pentest grade, email security and compliance, with instant phone alerts" width="90%">
+</p>
+
 ---
 
 ## Table of contents

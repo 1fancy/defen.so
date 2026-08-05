@@ -24,6 +24,22 @@ Scan your website, apps &amp; GitHub for vulnerabilities. Block attacks &amp; ba
 
 ---
 
+## See it in action
+
+One dashboard for a site's whole security posture — protection status, uptime, pentest grade, email security (SPF/DKIM/DMARC) and compliance — with instant alerts to your phone, Slack, Telegram, Discord, email or a webhook.
+
+![Defen.so dashboard — site overview with protection status, uptime, pentest grade, email security and compliance](https://raw.githubusercontent.com/1fancy/defen.so/main/.github/screenshots/dashboard-overview.png)
+
+**Uptime & performance** — response-time trend, uptime %, P95 and an incident timeline for every page and API you watch.
+
+![Defen.so uptime and performance monitoring — response-time chart, uptime percentages and incident timeline](https://raw.githubusercontent.com/1fancy/defen.so/main/.github/screenshots/uptime-performance.png)
+
+**API rate-limits & rules** — your SDK auto-detects endpoints from real traffic; approve per-endpoint rate caps and WAF rules, or dismiss the ones you don't need.
+
+![Defen.so API rate-limits and WAF rules — auto-detected endpoints with per-endpoint rate caps](https://raw.githubusercontent.com/1fancy/defen.so/main/.github/screenshots/api-rate-limits.png)
+
+---
+
 ## Table of contents
 
 - [Why Defen.so](#why-defenso)

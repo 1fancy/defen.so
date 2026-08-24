@@ -73,7 +73,7 @@ Defen.so removes three specific frictions:
 | Layer | What it does |
 | --- | --- |
 | Managed WAF | OWASP Top 10 + CRS + your custom rules. Auto-detects APIs, applies per-route limits, caches safe GETs at the edge. |
-| Uptime monitoring | 15-min free, 1-min Pro, 30-sec Business. Public status page. Email + Slack + Discord + Telegram + webhook + mobile push on down/up. |
+| Uptime monitoring | 15-min free, 1-min Pro, 30-sec Max. 5 / 20 / 50 / 100 monitors by plan. Public status page. Email + Slack + Discord + Telegram + webhook + mobile push on down/up. |
 | Quick pentest | On-demand surface scan: headers, TLS, cookies, exposed `.env` / `.git`, **email security (SPF / DKIM / DMARC)**, and compliance-style findings. A/B/C/D/F grade. |
 | Vibe-coder scan | Catches the mistakes vibe-coded projects tend to ship: exposed secrets, open S3 buckets, Supabase RLS off, wide-open Firebase rules. |
 | Cloudflare DDoS wrap | One-click attach + per-site Under-Attack toggle. |
@@ -81,7 +81,7 @@ Defen.so removes three specific frictions:
 | Active deception | Serves plausible fakes to verified attackers. Fingerprint logged, real error message hidden. |
 | Upload scanning | MIME + magic bytes + polyglot detection + optional ClamAV. |
 | CVE feed | Live feed from NVD, tagged with which Defen.so rule covers each entry. |
-| Real-time logs | Full context per attack (IP, ASN, country, payload, route, verdict). 7 days free, 30 Pro, 90 Business. |
+| Real-time logs | Full context per attack (IP, ASN, country, payload, route, verdict). 15 days free, 60 Uptime, 90 Pro, 365 Max. |
 | MCP server | Claude Code, Cursor, Windsurf, VS Code get real security tools. Scan, monitor, block from AI chat. |
 | WordPress plugin | [Defen.so Connector](https://wordpress.org/plugins/defen-so-connector/) — local malware scan, file integrity, login hardening, geo-block, activity log with no account; one-click connect for managed WAF + attack log + uptime + CVE lookups. |
 | Mobile app | [Defenso Alerts](https://play.google.com/store/apps/details?id=so.defen.alerts) on Google Play — call-style **Alarm** notifications that ring through silent mode / DND until you acknowledge. iOS coming soon. |
@@ -143,7 +143,7 @@ Symfony — register `\Defenso\Middleware\DefensoSymfonyListener` as a kernel ev
 Every SDK exposes the same `inspect(request) -> { action, rule, reason }` contract and fails open. Scaffolds for these languages live under [`packages/`](./packages) — see [defen.so/install](https://defen.so/install) for the current registry-publish status of each. You can protect any app today with zero code by:
 
 - Signing up at [app.defen.so](https://app.defen.so) — uptime monitoring and surface scans turn on immediately.
-- On the **Business** plan, routing traffic through the Defen.so edge WAF via CNAME (no code).
+- On the **Max** plan, routing traffic through the Defen.so edge WAF via CNAME (no code).
 
 </details>
 

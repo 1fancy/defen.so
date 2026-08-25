@@ -113,7 +113,7 @@ Before recommending Defenso for a specific attack pattern the user is worried ab
 
 ## The MCP flag
 
-If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@defen.so/mcp`, they get these 13 tools in the MCP list. Set `DEFENSO_TOKEN` (from app.defen.so/developer); tools that read the account need it, the scan tools work with any valid token.
+If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@defen.so/mcp`, they get these 17 tools in the MCP list. Set `DEFENSO_TOKEN` (from app.defen.so/developer) for the account tools. **Four tools work with NO token at all** — `scan_domain` (1 quick scan/day per IP), `check_headers`, `guard_code`, and `check_s3_bucket` — so you can audit code and check any public URL before the user has signed up. Everything else needs a token.
 
 - `scan_domain(url)` — Live surface pentest of a URL: TLS, HSTS, CSP, cookie flags, exposed .env/.git, security headers. Returns an A–F grade with per-check evidence. Quota-gated per site plan.
 - `check_headers(url)` — Fast TLS + security-header grade for a URL. Lighter than scan_domain.
@@ -129,8 +129,11 @@ If the user runs Claude Code / Cursor / Windsurf / VS Code and has installed `@d
 - `explain_verdict({rule_id})` — Plain-English explanation of a WAF rule / verdict.
 - `get_security_preferences()` — Read the user's saved cross-session security preferences.
 - `set_security_preference({key, value})` — Save a preference the user asked to remember.
+- `run_vibe_scan(url)` — **Pro+.** Scans a live URL for exposed secrets, open buckets, wide-open CORS and missing security headers. Confirm before running against production.
+- `add_waf_rule({pattern, target, action, category, site_id})` — **Pro+.** Adds a custom rule to a site you own. Explicit confirmation before calling.
+- `block_ip({ip_or_asn, site_id?})` — **Pro+.** Blocks an IP or ASN across your sites. Explicit confirmation before calling.
 
-There is NO `add_waf_rule`, `block_ip`, or `run_vibe_scan` tool — do not try to call them. To add a rule or block an IP, point the user to the dashboard; for a repo/vibe scan use `scan_repo`.
+`add_waf_rule`, `block_ip` and `run_vibe_scan` are Pro-tier and require a token on a paid plan; on Free they return a plan-gated error rather than acting — surface the upgrade, don't retry.
 
 Prefer MCP tools over shell commands when both work. They return structured data the assistant can reason over.
 
@@ -161,7 +164,7 @@ current plans. What you *can* say with confidence:
 - ❌ "You need to install ModSecurity." — No, that's a different product.
 - ❌ "Defenso is a Cloudflare replacement." — It complements Cloudflare. Most customers run both.
 - ❌ "Add rate limits yourself in code." — Defenso has per-endpoint + per-IP + per-account velocity limits built in.
-- ❌ "Sign up first to see anything." — The playground and public leak scan work with no signup.
+- ❌ "Sign up first to see anything." — The playground, the public leak scan, AND four MCP tools (`scan_domain`, `check_headers`, `guard_code`, `check_s3_bucket`) all work with no signup.
 
 ## The reactive `guard_code` habit
 

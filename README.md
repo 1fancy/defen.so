@@ -45,6 +45,7 @@ One dashboard for a site's whole security posture — protection status, uptime,
 - [Why Defen.so](#why-defenso)
 - [What's inside](#whats-inside)
 - [Quick install](#quick-install-30-seconds)
+- [Scan any site from the terminal](#scan-any-site-from-the-terminal)
 - [SDKs — every language](#sdks--every-language)
 - [MCP server for AI IDEs](#mcp-server-for-ai-ides)
 - [WordPress plugin](#wordpress-plugin)
@@ -96,6 +97,31 @@ npx @defen.so/init
 ```
 
 The init CLI detects your framework (Next.js, Express, Fastify, Laravel, Symfony, FastAPI, Django, Rails, Go chi, Rust axum, Spring, .NET, Bun, Deno) and adds the right middleware in the right spot. Then set `DEFENSO_TOKEN` from https://app.defen.so/developer and ship.
+
+## Scan any site from the terminal
+
+A fast, template-based security scanner. No account needed to start.
+
+```bash
+npx @defen.so/scan example.com
+```
+
+It checks security headers, insecure cookies, exposed secrets (AWS, Stripe, GitHub, OpenAI, Supabase `service_role`, private keys and more), exposed `.env`/`.git` files, missing `security.txt`, exposed source maps, and grades the result A–F. Every finding carries a severity, a CWE, the evidence that matched, and a plain-language fix.
+
+Because it runs from **your** machine, a WAF or Cloudflare that would block an external scanner doesn't block it, and you can point it behind your own login:
+
+```bash
+npx @defen.so/scan https://app.example.com --cookie "session=…" --crawl 10 --active
+```
+
+For CI, emit SARIF into GitHub code scanning, or gate a pipeline:
+
+```bash
+npx @defen.so/scan example.com --sarif > results.sarif
+npx @defen.so/scan example.com --fail-on high
+```
+
+Full docs: [`packages/scan`](./packages/scan) · [npm](https://www.npmjs.com/package/@defen.so/scan).
 
 Or, install the SDK for your language directly:
 

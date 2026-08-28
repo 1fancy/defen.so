@@ -1,0 +1,43 @@
+{
+  "name": "@defen.so/scan",
+  "version": "0.2.0",
+  "description": "Fast, template-based web security scanner for CI and the terminal. Scan any URL for exposed secrets, weak security headers, missing HSTS/CSP, insecure cookies, exposed .env/.git and TLS issues — graded, with SARIF and JSON output for GitHub code scanning. Zero config, no account to start.",
+  "type": "module",
+  "bin": {
+    "defenso-scan": "./src/cli.js"
+  },
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "templates",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "security",
+    "scanner",
+    "vulnerability-scanner",
+    "pentest",
+    "security-headers",
+    "secrets-scanner",
+    "sarif",
+    "ci",
+    "devsecops",
+    "csp",
+    "hsts",
+    "cli",
+    "defenso"
+  ],
+  "author": "Defen.so — Next Lab LLC",
+  "license": "MIT",
+  "homepage": "https://defen.so/online-website-security-scanner",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/1fancy/defen.so"
+  }
+}

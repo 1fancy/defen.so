@@ -129,7 +129,7 @@ Command palette → *MCP: Add Server* → paste the block. Or edit `~/.vscode/mc
 | `scan_repo` | ✅ | ✅ | ✅ | Bring-your-own-repo SAST + secrets scan of a public `github.com/{org}/{repo}`. Probes the default branch for `.env`, `firebase-adminsdk*.json`, `serviceAccountKey.json` and 13 secret-family patterns; cross-references pinned deps against OSV (known CVEs); flags **dead/unused dependencies** and **inert MCP config**, typosquatted/hallucinated packages, insecure Dockerfiles, and CI-workflow secret leaks. High-signal **dangerous-sink** detection catches the AI-slop patterns a linter waves through: `eval()`/shell-exec on request data, disabled TLS verification, wide-open CORS, debug mode left on, unsafe deserialization (`pickle.loads`/`unserialize`/`yaml.load`), and raw-HTML XSS sinks. Static only — never runs the repo. |
 | `guard_code` | ✅ | ✅ | ✅ | Reactive SAST on a code snippet. Catches hardcoded secrets (Stripe/GitHub/GitLab/Slack tokens, AWS `AKIA` keys, Google `AIza` keys, PEM private keys), SQL string concat, missing input validation, missing rate limits on auth, client-side authorization, prompt injection, wildcard permissions, open CORS, **disabled TLS verification**, **unsafe deserialization**, dynamic eval, and XSS sinks. Run after every security-sensitive edit. |
 | `check_s3_bucket` | ✅ | ✅ | ✅ | Probe a public S3 bucket for world-readable / world-listable access. Returns a grade + the HEAD/LIST status. |
-| `get_security_preference` | ✅ | ✅ | ✅ | Read the user's saved cross-session preferences (e.g. `never_scan_production_without_ask`, `always_block_env_probes`). |
+| `get_security_preferences` | ✅ | ✅ | ✅ | Read the user's saved cross-session preferences (e.g. `never_scan_production_without_ask`, `always_block_env_probes`). |
 | `set_security_preference` | ✅ | ✅ | ✅ | Save a preference the user asked the AI to remember across sessions. |
 | `list_cves` | ✅ 100/day | ✅ 100/day | ✅ 100/day | Look up known CVEs affecting a package via osv.dev. Supports npm, PyPI, Packagist, Go, RubyGems, crates.io, Maven, NuGet. |
 | `pentest_status` | ✅ | ✅ | ✅ | Status of a pentest run (or the most recent one). Useful for polling while a long scan runs. |
@@ -251,6 +251,7 @@ Defenso is the only MCP-integrated tool that combines *runtime* protection with 
 
 | Package | Registry | Purpose |
 |---|---|---|
+| [`@defen.so/scan`](https://www.npmjs.com/package/@defen.so/scan) | npm | Template-based CLI scanner. `npx @defen.so/scan <url>` — runs from your machine (no WAF to configure), SARIF for CI |
 | [`@defen.so/init`](https://www.npmjs.com/package/@defen.so/init) | npm | One-command bootstrap that installs the right Defenso SDK for your framework |
 | [`@defen.so/sdk-node`](https://www.npmjs.com/package/@defen.so/sdk-node) | npm | Node / Bun / Deno WAF SDK |
 | [`defenso/sdk-php`](https://packagist.org/packages/defenso/sdk-php) | Packagist | PHP 8.2+ SDK (Laravel, Symfony, plain PHP) |
@@ -290,13 +291,13 @@ No. Only `add_waf_rule`, `block_ip`, and `set_security_preference` write anythin
 <details>
 <summary><strong>What about rate limits?</strong></summary>
 
-Same as the Defenso API: read tools 120/hour per IP, write tools plan-gated. `scan_domain` uses a separate MCP-scan quota — metered apart from the dashboard pentest quota because these scans run on your own AI/compute. The monthly quota scales with your plan (Free / Pro / Max).
+Same as the Defenso API: read tools are capped per-day per IP (resets midnight UTC), write tools plan-gated. `scan_domain` uses a separate MCP-scan quota — metered apart from the dashboard pentest quota because these scans run on your own AI/compute. The monthly quota scales with your plan (Free / Pro / Max).
 </details>
 
 <details>
 <summary><strong>Can I use it without a Defenso account?</strong></summary>
 
-`scan_domain` and `check_headers` work in "anonymous" mode with reduced quota (1 scan/day per IP, no history). Everything else requires a token.
+Four tools work with no token at all: `scan_domain` (1 quick scan/day per IP, top findings only), `check_headers`, `guard_code`, and `check_s3_bucket` — each with a reduced per-day guest cap. Everything else requires a token.
 </details>
 
 ## Links

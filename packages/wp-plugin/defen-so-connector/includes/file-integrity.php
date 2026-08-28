@@ -53,9 +53,25 @@ class Defenso_File_Integrity
         if (! check_ajax_referer('defenso_admin', '_wpnonce', false)) {
             wp_send_json_error(['message' => 'Invalid nonce'], 403);
         }
+        if (empty((array) get_option('defenso_integrity_baseline', []))) {
+            wp_send_json_error(['message' => 'No baseline taken yet. Take a baseline first.'], 400);
+        }
+        wp_send_json_success(self::run_diff());
+    }
+
+    /**
+     * Compute the file-change diff vs the stored baseline, persist it, report to
+     * the account, and return it. Shared by ajax_diff + the background scanner
+     * so "which files changed that shouldn't have" is always current. Returns an
+     * empty diff when no baseline exists.
+     *
+     * @return array{added:array,changed:array,removed:array,counts:array,ran_at:int}
+     */
+    public static function run_diff(): array
+    {
         $baseline = (array) get_option('defenso_integrity_baseline', []);
         if (empty($baseline)) {
-            wp_send_json_error(['message' => 'No baseline taken yet. Take a baseline first.'], 400);
+            return ['added' => [], 'changed' => [], 'removed' => [], 'counts' => ['added' => 0, 'changed' => 0, 'removed' => 0], 'ran_at' => time()];
         }
         $current = self::snapshot();
         $added = array_diff_key($current, $baseline);
@@ -84,7 +100,7 @@ class Defenso_File_Integrity
             self::report_findings($diff, (string) $token);
         }
 
-        wp_send_json_success($diff);
+        return $diff;
     }
 
     /**

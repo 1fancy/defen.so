@@ -1,0 +1,339 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Defen.so Connector\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Settings"
+msgstr "Configurações"
+
+msgid "Saving…"
+msgstr "Salvando…"
+
+msgid "Saved"
+msgstr "Salvo"
+
+msgid "Remove"
+msgstr "Remover"
+
+msgid "No rules yet. Add one to start throttling a path."
+msgstr "Nenhuma regra ainda. Adicione uma para começar a limitar um caminho."
+
+msgid "Connect free to enable more rules"
+msgstr "Conecte gratuitamente para ativar mais regras"
+
+msgid "Permission denied"
+msgstr "Permissão negada"
+
+msgid "Invalid nonce"
+msgstr "nonce inválido"
+
+msgid "Connected"
+msgstr "Conectado"
+
+msgid "Verified"
+msgstr "Verificado"
+
+msgid "Not verified"
+msgstr "Não verificado"
+
+msgid "Not connected"
+msgstr "Não conectado"
+
+msgid "Connected!"
+msgstr "Conectado!"
+
+msgid "Overview"
+msgstr "Visão geral"
+
+msgid "Firewall &amp; hardening"
+msgstr "Firewall &amp; proteção reforçada"
+
+msgid "Scans"
+msgstr "Verificações"
+
+msgid "Rate limits"
+msgstr "Limites de taxa"
+
+msgid "Uptime &amp; alerts"
+msgstr "Disponibilidade &amp; alertas"
+
+msgid "Activity log"
+msgstr "Registro de atividades"
+
+msgid "Optional: connect the Defen.so service"
+msgstr "Opcional: conecte o serviço Defen.so"
+
+msgid "Connect to Defen.so"
+msgstr "Conectar ao Defen.so"
+
+msgid "What's Defen.so?"
+msgstr "O que é o Defen.so?"
+
+msgid "The connector talks to the external Defen.so service"
+msgstr "O conector se comunica com o serviço externo Defen.so"
+
+msgid "Terms"
+msgstr "Termos"
+
+msgid "Privacy"
+msgstr "Privacidade"
+
+msgid "Live plan"
+msgstr "Plano ativo"
+
+msgid "Upgrade"
+msgstr "Fazer upgrade"
+
+msgid "WAF rules active"
+msgstr "Regras do WAF ativas"
+
+msgid "refreshed %s"
+msgstr "atualizado %s"
+
+msgid "Queued events"
+msgstr "Eventos na fila"
+
+msgid "shipping in the next request"
+msgstr "enviados na próxima requisição"
+
+msgid "key scoped to this site"
+msgstr "chave restrita a este site"
+
+msgid "Vulnerability scan"
+msgstr "Verificação de vulnerabilidades"
+
+msgid "Scan now"
+msgstr "Verificar agora"
+
+msgid "Connect to run"
+msgstr "Conecte para executar"
+
+msgid "Manage this site"
+msgstr "Gerenciar este site"
+
+msgid "Open Defen.so dashboard"
+msgstr "Abrir painel do Defen.so"
+
+msgid "Manage API keys"
+msgstr "Gerenciar chaves de API"
+
+msgid "Disconnect this site"
+msgstr "Desconectar este site"
+
+msgid "Block bad bots &amp; scanners"
+msgstr "Bloquear bots e scanners maliciosos"
+
+msgid "Block exploit request patterns"
+msgstr "Bloquear padrões de requisições de exploração"
+
+msgid "Block username enumeration"
+msgstr "Bloquear enumeração de nomes de usuário"
+
+msgid "Security response headers"
+msgstr "Cabeçalhos de resposta de segurança"
+
+msgid "Strict-Transport-Security (HSTS)"
+msgstr "Strict-Transport-Security (HSTS)"
+
+msgid "Forces HTTPS for a year. Only enable once your whole site is on HTTPS."
+msgstr "Força HTTPS por um ano. Só ative quando todo o seu site estiver em HTTPS."
+
+msgid "Hide WordPress version"
+msgstr "Ocultar versão do WordPress"
+
+msgid "Removes the generator meta tag that advertises your exact WP version."
+msgstr "Remove a meta tag generator que expõe a versão exata do seu WP."
+
+msgid "Disable theme/plugin file editor"
+msgstr "Desativar editor de arquivos de tema/plugin"
+
+msgid "Disable XML-RPC"
+msgstr "Desativar XML-RPC"
+
+msgid "Comment / pingback hardening"
+msgstr "Proteção de comentários / pingback"
+
+msgid "Drops pingback methods and the X-Pingback header."
+msgstr "Remove os métodos de pingback e o cabeçalho X-Pingback."
+
+msgid "runs locally, free"
+msgstr "roda localmente, grátis"
+
+msgid "Save hardening settings"
+msgstr "Salvar configurações de proteção"
+
+msgid "Geo-block"
+msgstr "Bloqueio geográfico"
+
+msgid "e.g. RU, KP, IR"
+msgstr "ex.: RU, KP, IR"
+
+msgid "Save blocklist"
+msgstr "Salvar lista de bloqueio"
+
+msgid "Malware scan"
+msgstr "Verificação de malware"
+
+msgid "Last scan: %1$s ago"
+msgstr "Última verificação: há %1$s"
+
+msgid "files inspected"
+msgstr "arquivos inspecionados"
+
+msgid "flagged"
+msgstr "sinalizados"
+
+msgid "Not run yet. Click Scan to run a local malware sweep."
+msgstr "Ainda não executada. Clique em Verificar para fazer uma varredura local de malware."
+
+msgid "File integrity"
+msgstr "Integridade de arquivos"
+
+msgid "Baseline: %s ago"
+msgstr "Linha de base: há %s"
+
+msgid "Last check flagged"
+msgstr "Última verificação sinalizou"
+
+msgid "new"
+msgstr "novos"
+
+msgid "changed"
+msgstr "alterados"
+
+msgid "removed"
+msgstr "removidos"
+
+msgid "No baseline taken yet. Take one after a clean install / update."
+msgstr "Nenhuma linha de base registrada ainda. Registre uma após uma instalação / atualização limpa."
+
+msgid "Take baseline"
+msgstr "Registrar linha de base"
+
+msgid "Check for changes"
+msgstr "Verificar alterações"
+
+msgid "Core file &amp; exposure check"
+msgstr "Verificação de arquivos do núcleo &amp; exposição"
+
+msgid "free"
+msgstr "grátis"
+
+msgid "Verify core files"
+msgstr "Verificar arquivos do núcleo"
+
+msgid "Check exposed files"
+msgstr "Verificar arquivos expostos"
+
+msgid "Login rate limiting"
+msgstr "Limite de tentativas de login"
+
+msgid "Max failed attempts"
+msgstr "Máximo de tentativas malsucedidas"
+
+msgid "Window (seconds)"
+msgstr "Janela (segundos)"
+
+msgid "reCAPTCHA v3 site key"
+msgstr "Chave de site do reCAPTCHA v3"
+
+msgid "(optional)"
+msgstr "(opcional)"
+
+msgid "reCAPTCHA v3 secret key"
+msgstr "Chave secreta do reCAPTCHA v3"
+
+msgid "Save rate-limit settings"
+msgstr "Salvar configurações de limite de taxa"
+
+msgid "Path rate limiting"
+msgstr "Limite de taxa por caminho"
+
+msgid "Path or pattern"
+msgstr "Caminho ou padrão"
+
+msgid "Requests"
+msgstr "Requisições"
+
+msgid "Per (seconds)"
+msgstr "Por (segundos)"
+
+msgid "On"
+msgstr "Ativo"
+
+msgid "+ Add rule"
+msgstr "+ Adicionar regra"
+
+msgid "Save rules"
+msgstr "Salvar regras"
+
+msgid "You have used all %d free local rules."
+msgstr "Você usou todas as %d regras locais gratuitas."
+
+msgid "Connect free to unlock more"
+msgstr "Conecte gratuitamente para desbloquear mais"
+
+msgid "Managed edge rate limits"
+msgstr "Limites de taxa gerenciados na borda"
+
+msgid "Open rate-limit rules"
+msgstr "Abrir regras de limite de taxa"
+
+msgid "Connect to enable"
+msgstr "Conecte para ativar"
+
+msgid "Learn more"
+msgstr "Saiba mais"
+
+msgid "optional"
+msgstr "opcional"
+
+msgid "Know the instant this site is in trouble"
+msgstr "Saiba no instante em que este site tiver problemas"
+
+msgid "Uptime monitoring"
+msgstr "Monitoramento de disponibilidade"
+
+msgid "Checks from multiple regions; SSL and domain-expiry alerts."
+msgstr "Verificações de várias regiões; alertas de SSL e de expiração de domínio."
+
+msgid "Alerts everywhere"
+msgstr "Alertas em todos os lugares"
+
+msgid "Defenso Alerts app"
+msgstr "Defenso Alerts app"
+
+msgid "Get it on Google Play"
+msgstr "Disponível no Google Play"
+
+msgid "Set up monitoring &amp; alerts"
+msgstr "Configurar monitoramento &amp; alertas"
+
+msgid "Connect a free account"
+msgstr "Conectar uma conta gratuita"
+
+msgid "Explore the app"
+msgstr "Explorar o app"
+
+msgid "Recent activity"
+msgstr "Atividade recente"
+
+msgid "When"
+msgstr "Quando"
+
+msgid "Actor"
+msgstr "Autor"
+
+msgid "Event"
+msgstr "Evento"
+
+msgid "Docs"
+msgstr "Documentação"
+
+msgid "Support"
+msgstr "Suporte"
+

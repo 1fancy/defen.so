@@ -1,0 +1,339 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Defen.so Connector\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Saving…"
+msgstr "Сохранение…"
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "No rules yet. Add one to start throttling a path."
+msgstr "Пока нет правил. Добавьте правило, чтобы начать ограничивать путь."
+
+msgid "Connect free to enable more rules"
+msgstr "Подключитесь бесплатно, чтобы включить больше правил"
+
+msgid "Permission denied"
+msgstr "Доступ запрещён"
+
+msgid "Invalid nonce"
+msgstr "Неверный nonce"
+
+msgid "Connected"
+msgstr "Подключено"
+
+msgid "Verified"
+msgstr "Подтверждено"
+
+msgid "Not verified"
+msgstr "Не подтверждено"
+
+msgid "Not connected"
+msgstr "Не подключено"
+
+msgid "Connected!"
+msgstr "Подключено!"
+
+msgid "Overview"
+msgstr "Обзор"
+
+msgid "Firewall &amp; hardening"
+msgstr "Файрвол &amp; усиление защиты"
+
+msgid "Scans"
+msgstr "Проверки"
+
+msgid "Rate limits"
+msgstr "Ограничение запросов"
+
+msgid "Uptime &amp; alerts"
+msgstr "Мониторинг &amp; оповещения"
+
+msgid "Activity log"
+msgstr "Журнал действий"
+
+msgid "Optional: connect the Defen.so service"
+msgstr "Необязательно: подключите сервис Defen.so"
+
+msgid "Connect to Defen.so"
+msgstr "Подключить к Defen.so"
+
+msgid "What's Defen.so?"
+msgstr "Что такое Defen.so?"
+
+msgid "The connector talks to the external Defen.so service"
+msgstr "Коннектор взаимодействует с внешним сервисом Defen.so"
+
+msgid "Terms"
+msgstr "Условия"
+
+msgid "Privacy"
+msgstr "Конфиденциальность"
+
+msgid "Live plan"
+msgstr "Активный тариф"
+
+msgid "Upgrade"
+msgstr "Улучшить"
+
+msgid "WAF rules active"
+msgstr "Активные правила WAF"
+
+msgid "refreshed %s"
+msgstr "обновлено %s"
+
+msgid "Queued events"
+msgstr "События в очереди"
+
+msgid "shipping in the next request"
+msgstr "будут отправлены в следующем запросе"
+
+msgid "key scoped to this site"
+msgstr "ключ ограничен этим сайтом"
+
+msgid "Vulnerability scan"
+msgstr "Проверка уязвимостей"
+
+msgid "Scan now"
+msgstr "Проверить сейчас"
+
+msgid "Connect to run"
+msgstr "Подключитесь для запуска"
+
+msgid "Manage this site"
+msgstr "Управление этим сайтом"
+
+msgid "Open Defen.so dashboard"
+msgstr "Открыть панель Defen.so"
+
+msgid "Manage API keys"
+msgstr "Управление API-ключами"
+
+msgid "Disconnect this site"
+msgstr "Отключить этот сайт"
+
+msgid "Block bad bots &amp; scanners"
+msgstr "Блокировать вредоносных ботов &amp; сканеры"
+
+msgid "Block exploit request patterns"
+msgstr "Блокировать эксплойт-шаблоны запросов"
+
+msgid "Block username enumeration"
+msgstr "Блокировать перебор имён пользователей"
+
+msgid "Security response headers"
+msgstr "Заголовки безопасности ответа"
+
+msgid "Strict-Transport-Security (HSTS)"
+msgstr "Strict-Transport-Security (HSTS)"
+
+msgid "Forces HTTPS for a year. Only enable once your whole site is on HTTPS."
+msgstr "Принудительно включает HTTPS на год. Включайте только после того, как весь сайт переведён на HTTPS."
+
+msgid "Hide WordPress version"
+msgstr "Скрыть версию WordPress"
+
+msgid "Removes the generator meta tag that advertises your exact WP version."
+msgstr "Удаляет мета-тег generator, который раскрывает точную версию WP."
+
+msgid "Disable theme/plugin file editor"
+msgstr "Отключить редактор файлов тем/плагинов"
+
+msgid "Disable XML-RPC"
+msgstr "Отключить XML-RPC"
+
+msgid "Comment / pingback hardening"
+msgstr "Усиление защиты комментариев / уведомлений"
+
+msgid "Drops pingback methods and the X-Pingback header."
+msgstr "Отключает методы pingback и заголовок X-Pingback."
+
+msgid "runs locally, free"
+msgstr "работает локально, бесплатно"
+
+msgid "Save hardening settings"
+msgstr "Сохранить настройки защиты"
+
+msgid "Geo-block"
+msgstr "Гео-блокировка"
+
+msgid "e.g. RU, KP, IR"
+msgstr "напр. RU, KP, IR"
+
+msgid "Save blocklist"
+msgstr "Сохранить список блокировки"
+
+msgid "Malware scan"
+msgstr "Проверка на вредоносное ПО"
+
+msgid "Last scan: %1$s ago"
+msgstr "Последняя проверка: %1$s назад"
+
+msgid "files inspected"
+msgstr "файлов проверено"
+
+msgid "flagged"
+msgstr "отмечено"
+
+msgid "Not run yet. Click Scan to run a local malware sweep."
+msgstr "Ещё не запускалось. Нажмите «Проверить», чтобы выполнить локальную проверку на вредоносное ПО."
+
+msgid "File integrity"
+msgstr "Целостность файлов"
+
+msgid "Baseline: %s ago"
+msgstr "Эталон: %s назад"
+
+msgid "Last check flagged"
+msgstr "Последняя проверка отметила"
+
+msgid "new"
+msgstr "новых"
+
+msgid "changed"
+msgstr "изменённых"
+
+msgid "removed"
+msgstr "удалённых"
+
+msgid "No baseline taken yet. Take one after a clean install / update."
+msgstr "Эталон ещё не создан. Создайте его после чистой установки / обновления."
+
+msgid "Take baseline"
+msgstr "Создать эталон"
+
+msgid "Check for changes"
+msgstr "Проверить изменения"
+
+msgid "Core file &amp; exposure check"
+msgstr "Проверка файлов ядра &amp; уязвимостей доступа"
+
+msgid "free"
+msgstr "бесплатно"
+
+msgid "Verify core files"
+msgstr "Проверить файлы ядра"
+
+msgid "Check exposed files"
+msgstr "Проверить открытые файлы"
+
+msgid "Login rate limiting"
+msgstr "Ограничение попыток входа"
+
+msgid "Max failed attempts"
+msgstr "Макс. число неудачных попыток"
+
+msgid "Window (seconds)"
+msgstr "Окно (секунды)"
+
+msgid "reCAPTCHA v3 site key"
+msgstr "Ключ сайта reCAPTCHA v3"
+
+msgid "(optional)"
+msgstr "(необязательно)"
+
+msgid "reCAPTCHA v3 secret key"
+msgstr "Секретный ключ reCAPTCHA v3"
+
+msgid "Save rate-limit settings"
+msgstr "Сохранить настройки ограничения запросов"
+
+msgid "Path rate limiting"
+msgstr "Ограничение запросов по пути"
+
+msgid "Path or pattern"
+msgstr "Путь или шаблон"
+
+msgid "Requests"
+msgstr "Запросы"
+
+msgid "Per (seconds)"
+msgstr "За период (секунды)"
+
+msgid "On"
+msgstr "Вкл."
+
+msgid "+ Add rule"
+msgstr "+ Добавить правило"
+
+msgid "Save rules"
+msgstr "Сохранить правила"
+
+msgid "You have used all %d free local rules."
+msgstr "Вы использовали все %d бесплатных локальных правил."
+
+msgid "Connect free to unlock more"
+msgstr "Подключитесь бесплатно, чтобы открыть больше"
+
+msgid "Managed edge rate limits"
+msgstr "Управляемое ограничение запросов на границе сети"
+
+msgid "Open rate-limit rules"
+msgstr "Открыть правила ограничения запросов"
+
+msgid "Connect to enable"
+msgstr "Подключитесь для включения"
+
+msgid "Learn more"
+msgstr "Подробнее"
+
+msgid "optional"
+msgstr "необязательно"
+
+msgid "Know the instant this site is in trouble"
+msgstr "Узнавайте в тот же момент, когда с сайтом проблемы"
+
+msgid "Uptime monitoring"
+msgstr "Мониторинг доступности"
+
+msgid "Checks from multiple regions; SSL and domain-expiry alerts."
+msgstr "Проверки из нескольких регионов; оповещения об истечении SSL и домена."
+
+msgid "Alerts everywhere"
+msgstr "Оповещения везде"
+
+msgid "Defenso Alerts app"
+msgstr "Defenso Alerts app"
+
+msgid "Get it on Google Play"
+msgstr "Доступно в Google Play"
+
+msgid "Set up monitoring &amp; alerts"
+msgstr "Настроить мониторинг &amp; оповещения"
+
+msgid "Connect a free account"
+msgstr "Подключить бесплатный аккаунт"
+
+msgid "Explore the app"
+msgstr "Обзор приложения"
+
+msgid "Recent activity"
+msgstr "Недавняя активность"
+
+msgid "When"
+msgstr "Когда"
+
+msgid "Actor"
+msgstr "Инициатор"
+
+msgid "Event"
+msgstr "Событие"
+
+msgid "Docs"
+msgstr "Документация"
+
+msgid "Support"
+msgstr "Поддержка"
+

@@ -288,6 +288,106 @@ jQuery(function ($) {
             .fail(function () { $('#defenso-geo-status').text('Network error.').css('color', '#991B1B'); });
     });
 
+    /* ---------- Local path rate limiting ---------- */
+    (function () {
+        var $card = $('#defenso-rl-card');
+        if (! $card.length) { return; }
+        var connected = $card.data('connected') === 1 || $card.data('connected') === '1';
+        var freeMax = parseInt($card.data('free'), 10) || 3;
+        var rules = Array.isArray(window.defensoRlRules) ? window.defensoRlRules.slice() : [];
+
+        function enabledCount() {
+            var n = 0;
+            rules.forEach(function (r) { if (r.enabled) { n++; } });
+            return n;
+        }
+        function capReached() { return ! connected && enabledCount() >= freeMax; }
+
+        function esc(s) { return $('<div>').text(s == null ? '' : String(s)).html(); }
+
+        function render() {
+            var $tb = $('#defenso-rl-rows').empty();
+            if (! rules.length) {
+                $tb.append('<tr class="defenso-rl-empty"><td colspan="5" style="color:#9ca3af; padding:14px 8px;">' +
+                    esc(DefensoAdmin.i18n && DefensoAdmin.i18n.rl_empty ? DefensoAdmin.i18n.rl_empty : 'No rules yet. Add one to start throttling a path.') + '</td></tr>');
+            }
+            rules.forEach(function (r, i) {
+                var $tr = $('<tr></tr>');
+                $tr.append('<td><input type="text" class="rl-pattern" value="' + esc(r.pattern) + '" placeholder="/wp-login.php" style="width:100%; font-family:Consolas,Monaco,monospace; font-size:12px; padding:5px 8px;"></td>');
+                $tr.append('<td><input type="number" class="rl-limit" min="1" max="100000" value="' + (parseInt(r.limit, 10) || 60) + '" style="width:80px; padding:5px 8px;"></td>');
+                $tr.append('<td><input type="number" class="rl-window" min="1" max="3600" value="' + (parseInt(r.window, 10) || 60) + '" style="width:90px; padding:5px 8px;"></td>');
+                $tr.append('<td style="text-align:center;"><input type="checkbox" class="rl-enabled"' + (r.enabled ? ' checked' : '') + '></td>');
+                $tr.append('<td style="text-align:right;"><button type="button" class="button-link rl-del" style="color:#b91c1c;">' +
+                    esc(DefensoAdmin.i18n && DefensoAdmin.i18n.remove ? DefensoAdmin.i18n.remove : 'Remove') + '</button></td>');
+                $tr.data('i', i);
+                $tb.append($tr);
+            });
+            // Upsell visibility + disable extra checkboxes when capped.
+            $('#defenso-rl-upsell').toggle(capReached());
+            if (capReached()) {
+                $('#defenso-rl-rows tr').each(function () {
+                    var i = $(this).data('i');
+                    if (typeof i === 'number' && ! rules[i].enabled) {
+                        $(this).find('.rl-enabled').prop('disabled', true).attr('title',
+                            DefensoAdmin.i18n && DefensoAdmin.i18n.rl_locked ? DefensoAdmin.i18n.rl_locked : 'Connect free to enable more rules');
+                    }
+                });
+            }
+        }
+
+        function readBack() {
+            $('#defenso-rl-rows tr').each(function () {
+                var i = $(this).data('i');
+                if (typeof i !== 'number' || ! rules[i]) { return; }
+                rules[i].pattern = $(this).find('.rl-pattern').val();
+                rules[i].limit = parseInt($(this).find('.rl-limit').val(), 10) || 60;
+                rules[i].window = parseInt($(this).find('.rl-window').val(), 10) || 60;
+                rules[i].enabled = $(this).find('.rl-enabled').is(':checked');
+            });
+        }
+
+        $('#defenso-rl-add').on('click', function () {
+            readBack();
+            rules.push({ pattern: '', limit: 60, window: 60, enabled: ! capReached() });
+            render();
+        });
+
+        $('#defenso-rl-rows').on('click', '.rl-del', function () {
+            var i = $(this).closest('tr').data('i');
+            readBack();
+            if (typeof i === 'number') { rules.splice(i, 1); render(); }
+        });
+
+        // Re-evaluate the cap live when a checkbox is toggled.
+        $('#defenso-rl-rows').on('change', '.rl-enabled', function () {
+            readBack();
+            render();
+        });
+
+        $('#defenso-rl-save').on('click', function () {
+            readBack();
+            var clean = rules.filter(function (r) { return r.pattern && r.pattern.trim() !== ''; });
+            $('#defenso-rl-status').text(DefensoAdmin.i18n && DefensoAdmin.i18n.saving ? DefensoAdmin.i18n.saving : 'Saving…').css('color', '#525252');
+            $.post(DefensoAdmin.ajax_url, {
+                action: 'defenso_rl_save',
+                rules: JSON.stringify(clean),
+                _wpnonce: DefensoAdmin.admin_nonce
+            }).done(function (r) {
+                if (r && r.success) {
+                    rules = Array.isArray(r.data.rules) ? r.data.rules : [];
+                    render();
+                    $('#defenso-rl-status').text(DefensoAdmin.i18n && DefensoAdmin.i18n.saved ? DefensoAdmin.i18n.saved : 'Saved').css('color', '#166534');
+                } else {
+                    $('#defenso-rl-status').text((r && r.data && r.data.message) || 'Save failed.').css('color', '#991B1B');
+                }
+            }).fail(function () {
+                $('#defenso-rl-status').text('Network error.').css('color', '#991B1B');
+            });
+        });
+
+        render();
+    })();
+
     /* ---------- Login hardening ---------- */
     $('#defenso-login-save').on('click', function () {
         $('#defenso-login-status').text('Saving…').css('color', '#525252');
@@ -418,4 +518,115 @@ jQuery(function ($) {
         refreshSiteInfo();
         setInterval(refreshSiteInfo, 30000);
     }
+
+    /* ---- Background full scan: progress bar, non-blocking, polls status ---- */
+    (function () {
+        var $btn = $('#defenso-bgscan');
+        var $wrap = $('#defenso-bgscan-wrap');
+        var $bar = $('#defenso-bgscan-bar');
+        var $pct = $('#defenso-bgscan-pct');
+        var $phase = $('#defenso-bgscan-phase');
+        if (!$btn.length) { return; }
+        var poll = null;
+
+        function paint(s) {
+            var p = Math.max(0, Math.min(100, parseInt(s.pct || 0, 10)));
+            $bar.css('width', p + '%');
+            $pct.text(p + '%');
+            $phase.text(s.phase || '');
+        }
+        function stopPolling() { if (poll) { clearInterval(poll); poll = null; } }
+        function finish(s) {
+            stopPolling();
+            $btn.prop('disabled', false).text('Run full scan again');
+            var msg = 'Scan complete — ' + (s.files_seen || 0) + ' files checked, ' +
+                (s.flagged || 0) + ' flagged' + (s.changed ? ', ' + s.changed + ' file change(s)' : '') + '.';
+            defToast(msg, (s.flagged || 0) > 0);
+            // Refresh the findings list from the stored results.
+            $.post(DefensoAdmin.ajax_url, { action: 'defenso_malware_findings', _wpnonce: DefensoAdmin.admin_nonce })
+                .done(function (r) { if (r && r.success && r.data.findings) { renderFindings(r.data.findings); } });
+        }
+        function tick() {
+            $.post(DefensoAdmin.ajax_url, { action: 'defenso_bgscan_status', _wpnonce: DefensoAdmin.admin_nonce })
+                .done(function (r) {
+                    if (!r || !r.success) { return; }
+                    var s = r.data;
+                    paint(s);
+                    if (s.state === 'done') { finish(s); }
+                    else if (s.state === 'error') { stopPolling(); $btn.prop('disabled', false).text('Run full scan'); defToast('Scan error. Try the quick sweep.', true); }
+                });
+        }
+        $btn.on('click', function () {
+            $btn.prop('disabled', true).text('Scanning…');
+            $wrap.show();
+            paint({ pct: 2, phase: 'Starting…' });
+            $.post(DefensoAdmin.ajax_url, { action: 'defenso_bgscan_start', _wpnonce: DefensoAdmin.admin_nonce })
+                .done(function (r) {
+                    if (r && r.success) {
+                        paint(r.data);
+                        stopPolling();
+                        poll = setInterval(tick, 2500);
+                    } else {
+                        $btn.prop('disabled', false).text('Run full scan');
+                        defToast((r && r.data && r.data.message) || 'Could not start the scan.', true);
+                    }
+                })
+                .fail(function () { $btn.prop('disabled', false).text('Run full scan'); defToast('Network error starting the scan.', true); });
+        });
+        // If a scan is already running when the page loads (e.g. weekly cron), show it.
+        $.post(DefensoAdmin.ajax_url, { action: 'defenso_bgscan_status', _wpnonce: DefensoAdmin.admin_nonce })
+            .done(function (r) {
+                if (r && r.success && (r.data.state === 'running' || r.data.state === 'queued')) {
+                    $wrap.show(); paint(r.data); $btn.prop('disabled', true).text('Scanning…'); poll = setInterval(tick, 2500);
+                }
+            });
+    })();
+
+    /* ---- File-change detection: baseline + diff ---- */
+    (function () {
+        var $bl = $('#defenso-fi-baseline');
+        var $diff = $('#defenso-fi-diff');
+        var $list = $('#defenso-fi-list');
+        if (!$bl.length) { return; }
+
+        function renderDiff(d) {
+            $('#defenso-fi-added').text((d.counts && d.counts.added) || 0);
+            $('#defenso-fi-changed').text((d.counts && d.counts.changed) || 0);
+            $('#defenso-fi-removed').text((d.counts && d.counts.removed) || 0);
+            var rows = [];
+            (d.changed || []).forEach(function (f) { rows.push(['CHANGED', '#92400E', '#FEF3C7', f]); });
+            (d.added || []).forEach(function (f) { rows.push(['ADDED', '#1e40af', '#EFF6FF', f]); });
+            (d.removed || []).forEach(function (f) { rows.push(['REMOVED', '#991B1B', '#FEE2E2', f]); });
+            if (!rows.length) {
+                $list.html('<p style="margin-top:12px;color:#166534;">No unexpected file changes since the baseline. </p>');
+                return;
+            }
+            var html = rows.slice(0, 100).map(function (r) {
+                return '<div style="display:flex;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;">' +
+                    '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:' + r[2] + ';color:' + r[1] + ';">' + r[0] + '</span>' +
+                    '<code style="font-size:11.5px;color:#0a0a0a;background:transparent;">' + escapeHtml(r[3]) + '</code></div>';
+            }).join('');
+            $list.html(html);
+        }
+        $bl.on('click', function () {
+            $bl.prop('disabled', true).text('Taking baseline…');
+            $.post(DefensoAdmin.ajax_url, { action: 'defenso_integrity_baseline', _wpnonce: DefensoAdmin.admin_nonce })
+                .done(function (r) {
+                    if (r && r.success) { defToast('Baseline saved (' + (r.data.files || 0) + ' files). '); $diff.prop('disabled', false); }
+                    else { defToast((r && r.data && r.data.message) || 'Could not take baseline.', true); }
+                })
+                .fail(function () { defToast('Network error.', true); })
+                .always(function () { $bl.prop('disabled', false).text('Take / refresh baseline'); });
+        });
+        $diff.on('click', function () {
+            $diff.prop('disabled', true).text('Checking…');
+            $.post(DefensoAdmin.ajax_url, { action: 'defenso_integrity_diff', _wpnonce: DefensoAdmin.admin_nonce })
+                .done(function (r) {
+                    if (r && r.success) { renderDiff(r.data); }
+                    else { defToast((r && r.data && r.data.message) || 'Check failed.', true); }
+                })
+                .fail(function () { defToast('Network error.', true); })
+                .always(function () { $diff.prop('disabled', false).text('Check for changes now'); });
+        });
+    })();
 });

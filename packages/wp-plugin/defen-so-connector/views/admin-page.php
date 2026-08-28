@@ -28,6 +28,8 @@ $defenso_login_window = (int) get_option('defenso_login_window', 900);
 $defenso_recaptcha_site = (string) get_option('defenso_recaptcha_site_key', '');
 $defenso_recaptcha_secret = (string) get_option('defenso_recaptcha_secret_key', '');
 $defenso_activity = array_slice((array) get_option('defenso_activity_log', []), 0, 10);
+$defenso_rl_rules = class_exists('Defenso_Rate_Limit') ? Defenso_Rate_Limit::get_rules() : [];
+$defenso_rl_free = defined('DEFENSO_RL_FREE_RULES') ? DEFENSO_RL_FREE_RULES : 3;
 
 // Count of outstanding findings, used to badge the "Scans" tab so the owner
 // sees at a glance whether anything needs attention.
@@ -45,7 +47,7 @@ if (is_array($defenso_exposed_result) && isset($defenso_exposed_result['exposed'
 // Resolve the active tab from the URL (?page=defenso&tab=…). Client-side JS
 // also restores the last tab from localStorage on a plain reload. Whitelist the
 // slug so nothing user-supplied reaches an attribute unescaped.
-$defenso_tabs = ['overview', 'firewall', 'scans', 'ratelimits', 'uptime', 'activity'];
+$defenso_tabs = ['overview', 'firewall', 'scans', 'filechanges', 'ratelimits', 'uptime', 'activity'];
 // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab selector, no state change
 $defenso_active_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'overview';
 if (! in_array($defenso_active_tab, $defenso_tabs, true)) {
@@ -89,6 +91,7 @@ $defenso_tab_url = static function (string $tab): string {
         <a href="<?php echo $defenso_tab_url('overview'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'overview' ? ' nav-tab-active' : ''; ?>" data-tab="overview"><?php echo esc_html__('Overview', 'defen-so-connector'); ?></a>
         <a href="<?php echo $defenso_tab_url('firewall'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'firewall' ? ' nav-tab-active' : ''; ?>" data-tab="firewall"><?php echo esc_html__('Firewall &amp; hardening', 'defen-so-connector'); ?></a>
         <a href="<?php echo $defenso_tab_url('scans'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'scans' ? ' nav-tab-active' : ''; ?>" data-tab="scans"><?php echo esc_html__('Scans', 'defen-so-connector'); ?><?php if ($defenso_scan_issues > 0) { ?><span class="defenso-tab-badge"><?php echo esc_html($defenso_scan_issues); ?></span><?php } ?></a>
+        <a href="<?php echo $defenso_tab_url('filechanges'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'filechanges' ? ' nav-tab-active' : ''; ?>" data-tab="filechanges"><?php echo esc_html__('File changes', 'defen-so-connector'); ?></a>
         <a href="<?php echo $defenso_tab_url('ratelimits'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'ratelimits' ? ' nav-tab-active' : ''; ?>" data-tab="ratelimits"><?php echo esc_html__('Rate limits', 'defen-so-connector'); ?></a>
         <a href="<?php echo $defenso_tab_url('uptime'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'uptime' ? ' nav-tab-active' : ''; ?>" data-tab="uptime"><?php echo esc_html__('Uptime &amp; alerts', 'defen-so-connector'); ?></a>
         <a href="<?php echo $defenso_tab_url('activity'); ?>" class="nav-tab defenso-tab<?php echo $defenso_active_tab === 'activity' ? ' nav-tab-active' : ''; ?>" data-tab="activity"><?php echo esc_html__('Activity log', 'defen-so-connector'); ?></a>
@@ -229,7 +232,21 @@ $defenso_toggles = [
                         <?php } ?>
                     </p>
                 </div>
-                <button id="defenso-malware-scan" class="button button-primary"><?php echo esc_html__('Scan now', 'defen-so-connector'); ?></button>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button id="defenso-bgscan" class="button button-primary"><?php echo esc_html__('Run full scan', 'defen-so-connector'); ?></button>
+                    <button id="defenso-malware-scan" class="button"><?php echo esc_html__('Quick sweep', 'defen-so-connector'); ?></button>
+                </div>
+            </div>
+            <?php /* Background-scan progress — runs on WP-Cron so the page never hangs. */ ?>
+            <div id="defenso-bgscan-wrap" style="display:none;margin-top:14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;">
+                    <span id="defenso-bgscan-phase" style="font-size:12.5px;color:#374151;"></span>
+                    <span id="defenso-bgscan-pct" style="font-size:12px;color:#6b7280;font-variant-numeric:tabular-nums;">0%</span>
+                </div>
+                <div style="height:8px;background:#eef0f2;border-radius:999px;overflow:hidden;">
+                    <div id="defenso-bgscan-bar" style="height:100%;width:0;background:#1FA855;border-radius:999px;transition:width .4s ease;"></div>
+                </div>
+                <p style="font-size:11.5px;color:#9ca3af;margin:6px 0 0;"><?php echo esc_html__('Runs in the background — you can leave this page; we\'ll keep scanning and update the findings when done.', 'defen-so-connector'); ?></p>
             </div>
             <div id="defenso-malware-findings"></div>
         </div>
@@ -285,6 +302,40 @@ $defenso_toggles = [
         </div>
     </div>
 
+    <?php /* =========================== FILE CHANGES ========================= */ ?>
+    <div class="defenso-panel" data-panel="filechanges"<?php echo $defenso_active_tab === 'filechanges' ? '' : ' style="display:none;"'; ?>>
+        <?php
+            $defenso_bl_at = (int) get_option('defenso_integrity_baseline_at', 0);
+            $defenso_last_diff = (array) get_option('defenso_integrity_last_diff', []);
+            $defenso_diff_counts = isset($defenso_last_diff['counts']) ? $defenso_last_diff['counts'] : ['added' => 0, 'changed' => 0, 'removed' => 0];
+        ?>
+        <div class="defenso-card">
+            <h3 style="margin-top:0;"><?php echo esc_html__('File-change detection', 'defen-so-connector'); ?></h3>
+            <p style="color:#6b7280;font-size:13px;margin-top:2px;">
+                <?php echo esc_html__('Take a trusted baseline right after a clean install or update. Defenso then flags any PHP/JS file that was added, changed, or removed since — the classic sign of an injected backdoor or a hacked file.', 'defen-so-connector'); ?>
+            </p>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;">
+                <button id="defenso-fi-baseline" class="button"><?php echo esc_html__('Take / refresh baseline', 'defen-so-connector'); ?></button>
+                <button id="defenso-fi-diff" class="button button-primary"<?php echo $defenso_bl_at ? '' : ' disabled'; ?>><?php echo esc_html__('Check for changes now', 'defen-so-connector'); ?></button>
+            </div>
+            <p style="font-size:12px;color:#9ca3af;margin:0;">
+                <?php if ($defenso_bl_at) { ?>
+                    <?php printf(esc_html__('Baseline taken %s ago. Newly-modified files are re-checked automatically every week.', 'defen-so-connector'), esc_html(human_time_diff($defenso_bl_at))); ?>
+                <?php } else { ?>
+                    <?php echo esc_html__('No baseline yet — take one to start watching for unexpected file changes.', 'defen-so-connector'); ?>
+                <?php } ?>
+            </p>
+
+            <div id="defenso-fi-summary" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+                <span class="defenso-pill"><?php echo esc_html__('Added', 'defen-so-connector'); ?>: <b id="defenso-fi-added"><?php echo (int) $defenso_diff_counts['added']; ?></b></span>
+                <span class="defenso-pill"><?php echo esc_html__('Changed', 'defen-so-connector'); ?>: <b id="defenso-fi-changed"><?php echo (int) $defenso_diff_counts['changed']; ?></b></span>
+                <span class="defenso-pill"><?php echo esc_html__('Removed', 'defen-so-connector'); ?>: <b id="defenso-fi-removed"><?php echo (int) $defenso_diff_counts['removed']; ?></b></span>
+            </div>
+            <div id="defenso-fi-list" style="margin-top:12px;"></div>
+        </div>
+    </div>
+
     <?php /* =========================== RATE LIMITS ========================== */ ?>
     <div class="defenso-panel" data-panel="ratelimits"<?php echo $defenso_active_tab === 'ratelimits' ? '' : ' style="display:none;"'; ?>>
         <div class="defenso-card">
@@ -312,6 +363,47 @@ $defenso_toggles = [
                 <button id="defenso-login-save" class="button button-primary"><?php echo esc_html__('Save rate-limit settings', 'defen-so-connector'); ?></button>
                 <span id="defenso-login-status" style="font-size:12px; color:#525252; margin-left:10px;"></span>
             </p>
+        </div>
+
+        <?php /* ---- Local path rate limiting: slug/pattern rules, runs in the plugin ---- */ ?>
+        <div class="defenso-card" id="defenso-rl-card"
+             data-connected="<?php echo $defenso_connected ? '1' : '0'; ?>"
+             data-free="<?php echo esc_attr($defenso_rl_free); ?>">
+            <h3 style="margin-top:0;"><?php echo esc_html__('Path rate limiting', 'defen-so-connector'); ?> <span style="font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#a3a3a3;">&middot; <?php echo esc_html__('runs locally, free', 'defen-so-connector'); ?></span></h3>
+            <p class="description" style="margin:4px 0 14px;"><?php echo wp_kses(__('Throttle any path on your site by client IP. Enter an exact slug like <code>/wp-login.php</code> or a pattern with a trailing <code>*</code> like <code>/wp-json/*</code>, set how many requests to allow per time window, and excess requests get a <code>429 Too Many Requests</code>. It is your WordPress — this runs entirely in the plugin, no account needed.', 'defen-so-connector'), ['code' => []]); ?></p>
+
+            <table class="widefat striped" id="defenso-rl-table" style="max-width:760px; margin-bottom:12px;">
+                <thead>
+                    <tr>
+                        <th style="width:44%;"><?php echo esc_html__('Path or pattern', 'defen-so-connector'); ?></th>
+                        <th style="width:16%;"><?php echo esc_html__('Requests', 'defen-so-connector'); ?></th>
+                        <th style="width:20%;"><?php echo esc_html__('Per (seconds)', 'defen-so-connector'); ?></th>
+                        <th style="width:10%;"><?php echo esc_html__('On', 'defen-so-connector'); ?></th>
+                        <th style="width:10%;"></th>
+                    </tr>
+                </thead>
+                <tbody id="defenso-rl-rows">
+                    <!-- rows injected by JS from window.defensoRlRules -->
+                </tbody>
+            </table>
+
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <button type="button" class="button" id="defenso-rl-add"><?php echo esc_html__('+ Add rule', 'defen-so-connector'); ?></button>
+                <button type="button" class="button button-primary" id="defenso-rl-save"><?php echo esc_html__('Save rules', 'defen-so-connector'); ?></button>
+                <span id="defenso-rl-status" style="font-size:12px; color:#525252;"></span>
+            </div>
+
+            <div id="defenso-rl-upsell" style="display:none; margin-top:14px; padding:12px 14px; border:1px solid #e5e5e5; border-radius:8px; background:#fafafa;">
+                <p style="margin:0 0 8px; font-weight:600;"><?php
+                    /* translators: %d is the number of free rules. */
+                    echo esc_html(sprintf(__('You have used all %d free local rules.', 'defen-so-connector'), $defenso_rl_free)); ?></p>
+                <p class="description" style="margin:0 0 10px;"><?php echo esc_html__('Connect a free Defen.so account to add more rules and get the managed edge rate-limiter (blocks abuse before it reaches WordPress) plus the attack log. Rules you already turned on keep working.', 'defen-so-connector'); ?></p>
+                <button type="button" class="button button-primary defenso-connect-alt"><?php echo esc_html__('Connect free to unlock more', 'defen-so-connector'); ?></button>
+            </div>
+
+            <script type="text/javascript">
+                window.defensoRlRules = <?php echo wp_json_encode(array_values($defenso_rl_rules)); ?>;
+            </script>
         </div>
 
         <div class="defenso-card">

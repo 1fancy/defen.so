@@ -1,356 +1,653 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Defen.so Connector\n"
-"Report-Msgid-Bugs-To: info@defen.so\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-10 20:50+0100\n"
 "PO-Revision-Date: 2026-08-04 00:00+0000\n"
 "Last-Translator: Defen.so <info@defen.so>\n"
 "Language-Team: Defen.so <info@defen.so>\n"
 "Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: defen-so-connector\n"
 
+#: defen-so-connector.php:302
+msgid "Settings"
+msgstr "Ajustes"
+
+#: defen-so-connector.php:653
+msgid "Saving…"
+msgstr "Guardando…"
+
+#: defen-so-connector.php:654
+msgid "Saved"
+msgstr "Guardado"
+
+#: defen-so-connector.php:655
+msgid "Remove"
+msgstr "Eliminar"
+
+#: defen-so-connector.php:656
+msgid "No rules yet. Add one to start throttling a path."
+msgstr "Aún no hay reglas. Añade una para empezar a limitar una ruta."
+
+#: defen-so-connector.php:657
+msgid "Connect free to enable more rules"
+msgstr "Conecta gratis para activar más reglas"
+
+#: includes/rate-limit.php:86
+msgid "Permission denied"
+msgstr "Permiso denegado"
+
+#: includes/rate-limit.php:89
+msgid "Invalid nonce"
+msgstr "Nonce no válido"
+
+#: views/admin-page.php:70
+msgid ""
+"Firewall &middot; hardening &middot; malware &amp; core-file scan &middot; "
+"login hardening &middot; WAF &middot; uptime"
+msgstr ""
+"Cortafuegos &middot; refuerzo &middot; análisis de malware y archivos del "
+"núcleo &middot; refuerzo de acceso &middot; WAF &middot; disponibilidad"
+
+#: views/admin-page.php:75 views/admin-page.php:133
 msgid "Connected"
 msgstr "Conectado"
 
+#: views/admin-page.php:77
 msgid "Verified"
 msgstr "Verificado"
 
+#: views/admin-page.php:77
 msgid "Not verified"
 msgstr "No verificado"
 
+#: views/admin-page.php:81
 msgid "Not connected"
 msgstr "No conectado"
 
-msgid "Overview"
-msgstr "Resumen"
-
-msgid "Firewall &amp; hardening"
-msgstr "Cortafuegos y refuerzo"
-
-msgid "Scans"
-msgstr "Análisis"
-
-msgid "Rate limits"
-msgstr "Límites de tasa"
-
-msgid "Uptime &amp; alerts"
-msgstr "Disponibilidad y alertas"
-
-msgid "Activity log"
-msgstr "Registro de actividad"
-
-msgid "Firewall &middot; hardening &middot; malware &amp; core-file scan &middot; login hardening &middot; WAF &middot; uptime"
-msgstr "Cortafuegos &middot; refuerzo &middot; análisis de malware y archivos del núcleo &middot; refuerzo de acceso &middot; WAF &middot; disponibilidad"
-
+#: views/admin-page.php:87
 msgid "Connected!"
 msgstr "¡Conectado!"
 
-msgid "Your site is now protected. WAF policy is being pulled in the background."
-msgstr "Tu sitio ya está protegido. La política WAF se está cargando en segundo plano."
+#: views/admin-page.php:87
+msgid ""
+"Your site is now protected. WAF policy is being pulled in the background."
+msgstr ""
+"Tu sitio ya está protegido. La política WAF se está cargando en segundo "
+"plano."
 
+#: views/admin-page.php:91
+msgid "Overview"
+msgstr "Resumen"
+
+#: views/admin-page.php:92 views/admin-page.php:186
+msgid "Firewall &amp; hardening"
+msgstr "Cortafuegos y refuerzo"
+
+#: views/admin-page.php:93
+msgid "Scans"
+msgstr "Análisis"
+
+#: views/admin-page.php:94
+msgid "Rate limits"
+msgstr "Límites de tasa"
+
+#: views/admin-page.php:95
+msgid "Uptime &amp; alerts"
+msgstr "Disponibilidad y alertas"
+
+#: views/admin-page.php:96
+msgid "Activity log"
+msgstr "Registro de actividad"
+
+#: views/admin-page.php:103
 msgid "Optional: connect the Defen.so service"
 msgstr "Opcional: conecta el servicio Defen.so"
 
-msgid "Every security tool in the tabs above works locally, no account needed. Connecting adds the cloud service on top: the managed WAF policy, uptime monitoring from our edge, upload scanning, the attack-log dashboard and CVE lookups."
-msgstr "Todas las herramientas de seguridad de las pestañas superiores funcionan localmente, sin necesidad de cuenta. Conectar añade el servicio en la nube: la política WAF gestionada, la monitorización de disponibilidad desde nuestro edge, el análisis de subidas, el panel del registro de ataques y las búsquedas de CVE."
+#: views/admin-page.php:104
+msgid ""
+"Every security tool in the tabs above works locally, no account needed. "
+"Connecting adds the cloud service on top: the managed WAF policy, uptime "
+"monitoring from our edge, upload scanning, the attack-log dashboard and CVE "
+"lookups."
+msgstr ""
+"Todas las herramientas de seguridad de las pestañas superiores funcionan "
+"localmente, sin necesidad de cuenta. Conectar añade el servicio en la nube: "
+"la política WAF gestionada, la monitorización de disponibilidad desde "
+"nuestro edge, el análisis de subidas, el panel del registro de ataques y las "
+"búsquedas de CVE."
 
+#: views/admin-page.php:106
 msgid "Connect to Defen.so"
 msgstr "Conectar con Defen.so"
 
+#: views/admin-page.php:107
 msgid "What's Defen.so?"
 msgstr "¿Qué es Defen.so?"
 
+#: views/admin-page.php:109
 msgid "The connector talks to the external Defen.so service"
 msgstr "El conector se comunica con el servicio externo Defen.so"
 
+#: views/admin-page.php:109 views/admin-page.php:145
 msgid "Terms"
 msgstr "Términos"
 
+#: views/admin-page.php:109 views/admin-page.php:145
 msgid "Privacy"
 msgstr "Privacidad"
 
+#: views/admin-page.php:114
 msgid "Live plan"
 msgstr "Plan activo"
 
+#: views/admin-page.php:117
 msgid "Upgrade"
 msgstr "Mejorar"
 
+#: views/admin-page.php:121
 msgid "WAF rules active"
 msgstr "Reglas WAF activas"
 
-#. translators: %s = relative time
+#: views/admin-page.php:125
+#, php-format
 msgid "refreshed %s"
 msgstr "actualizado %s"
 
+#: views/admin-page.php:128
 msgid "Queued events"
 msgstr "Eventos en cola"
 
+#: views/admin-page.php:130
 msgid "shipping in the next request"
 msgstr "se enviarán en la próxima petición"
 
+#: views/admin-page.php:135
 msgid "key scoped to this site"
 msgstr "clave limitada a este sitio"
 
+#: views/admin-page.php:144
 msgid "Vulnerability scan"
 msgstr "Análisis de vulnerabilidades"
 
-msgid "Enumerates installed plugins and themes with versions and checks them against known CVEs via the external Defen.so service"
-msgstr "Enumera los plugins y temas instalados con sus versiones y los compara con CVE conocidos a través del servicio externo Defen.so"
+#: views/admin-page.php:145
+msgid ""
+"Enumerates installed plugins and themes with versions and checks them "
+"against known CVEs via the external Defen.so service"
+msgstr ""
+"Enumera los plugins y temas instalados con sus versiones y los compara con "
+"CVE conocidos a través del servicio externo Defen.so"
 
+#: views/admin-page.php:148 views/admin-page.php:234
 msgid "Scan now"
 msgstr "Analizar ahora"
 
+#: views/admin-page.php:150
 msgid "Connect to run"
 msgstr "Conecta para ejecutar"
 
+#: views/admin-page.php:158
 msgid "Manage this site"
 msgstr "Gestionar este sitio"
 
-msgid "The cloud side (attack log, WAF rules, alerts, monitors, plan) is managed from your Defen.so dashboard."
-msgstr "La parte en la nube (registro de ataques, reglas WAF, alertas, monitores, plan) se gestiona desde tu panel de Defen.so."
+#: views/admin-page.php:159
+msgid ""
+"The cloud side (attack log, WAF rules, alerts, monitors, plan) is managed "
+"from your Defen.so dashboard."
+msgstr ""
+"La parte en la nube (registro de ataques, reglas WAF, alertas, monitores, "
+"plan) se gestiona desde tu panel de Defen.so."
 
+#: views/admin-page.php:161
 msgid "Open Defen.so dashboard"
 msgstr "Abrir el panel de Defen.so"
 
+#: views/admin-page.php:162
 msgid "Manage API keys"
 msgstr "Gestionar claves API"
 
+#: views/admin-page.php:163
 msgid "Disconnect this site"
 msgstr "Desconectar este sitio"
 
-msgid "runs locally, free"
-msgstr "funciona localmente, gratis"
-
-msgid "Cheap, self-contained WordPress protections. Everything here runs in the plugin, no account needed."
-msgstr "Protecciones de WordPress económicas y autónomas. Todo esto funciona dentro del plugin, sin necesidad de cuenta."
-
+#: views/admin-page.php:174
 msgid "Block bad bots &amp; scanners"
 msgstr "Bloquear bots maliciosos y escáneres"
 
-msgid "Rejects sqlmap, nikto, wpscan, nuclei and other known scanner user-agents."
-msgstr "Rechaza sqlmap, nikto, wpscan, nuclei y otros agentes de usuario de escáneres conocidos."
+#: views/admin-page.php:174
+msgid ""
+"Rejects sqlmap, nikto, wpscan, nuclei and other known scanner user-agents."
+msgstr ""
+"Rechaza sqlmap, nikto, wpscan, nuclei y otros agentes de usuario de "
+"escáneres conocidos."
 
+#: views/admin-page.php:175
 msgid "Block exploit request patterns"
 msgstr "Bloquear patrones de petición de exploits"
 
-msgid "Blocks path traversal, LFI/RFI wrappers, code-in-querystring, wp-config &amp; dotfile probes."
-msgstr "Bloquea el path traversal, los wrappers LFI/RFI, el código en la cadena de consulta y los sondeos de wp-config y archivos ocultos."
+#: views/admin-page.php:175
+msgid ""
+"Blocks path traversal, LFI/RFI wrappers, code-in-querystring, wp-config "
+"&amp; dotfile probes."
+msgstr ""
+"Bloquea el path traversal, los wrappers LFI/RFI, el código en la cadena de "
+"consulta y los sondeos de wp-config y archivos ocultos."
 
+#: views/admin-page.php:176
 msgid "Block username enumeration"
 msgstr "Bloquear la enumeración de usuarios"
 
-msgid "Stops ?author=N scans and the anonymous REST /users endpoint from leaking usernames."
-msgstr "Impide que los escaneos ?author=N y el endpoint REST /users anónimo filtren nombres de usuario."
+#: views/admin-page.php:176
+msgid ""
+"Stops ?author=N scans and the anonymous REST /users endpoint from leaking "
+"usernames."
+msgstr ""
+"Impide que los escaneos ?author=N y el endpoint REST /users anónimo filtren "
+"nombres de usuario."
 
+#: views/admin-page.php:177
 msgid "Security response headers"
 msgstr "Cabeceras de respuesta de seguridad"
 
-msgid "Adds X-Frame-Options, X-Content-Type-Options and Referrer-Policy to every page."
-msgstr "Añade X-Frame-Options, X-Content-Type-Options y Referrer-Policy a cada página."
+#: views/admin-page.php:177
+msgid ""
+"Adds X-Frame-Options, X-Content-Type-Options and Referrer-Policy to every "
+"page."
+msgstr ""
+"Añade X-Frame-Options, X-Content-Type-Options y Referrer-Policy a cada "
+"página."
 
+#: views/admin-page.php:178
 msgid "Strict-Transport-Security (HSTS)"
 msgstr "Strict-Transport-Security (HSTS)"
 
+#: views/admin-page.php:178
 msgid "Forces HTTPS for a year. Only enable once your whole site is on HTTPS."
-msgstr "Fuerza HTTPS durante un año. Actívalo solo cuando todo tu sitio esté en HTTPS."
+msgstr "Fuerza HTTPS durante un año. Actívalo solo cuando todo tu sitio use HTTPS."
+"Fuerza HTTPS durante un año. Actívalo solo cuando todo tu sitio esté en "
+"HTTPS."
 
+#: views/admin-page.php:179
 msgid "Hide WordPress version"
 msgstr "Ocultar la versión de WordPress"
 
+#: views/admin-page.php:179
 msgid "Removes the generator meta tag that advertises your exact WP version."
 msgstr "Elimina la etiqueta meta generator que revela tu versión exacta de WP."
 
+#: views/admin-page.php:180
 msgid "Disable theme/plugin file editor"
 msgstr "Desactivar el editor de archivos de temas/plugins"
 
-msgid "Sets DISALLOW_FILE_EDIT so a compromised admin can't edit code from wp-admin."
-msgstr "Activa DISALLOW_FILE_EDIT para que un administrador comprometido no pueda editar código desde wp-admin."
+#: views/admin-page.php:180
+msgid ""
+"Sets DISALLOW_FILE_EDIT so a compromised admin can't edit code from wp-admin."
+msgstr ""
+"Activa DISALLOW_FILE_EDIT para que un administrador comprometido no pueda "
+"editar código desde wp-admin."
 
+#: views/admin-page.php:181
 msgid "Disable XML-RPC"
 msgstr "Desactivar XML-RPC"
 
-msgid "Turns off xmlrpc.php entirely (blocks pingback DDoS &amp; brute-force amplification)."
-msgstr "Desactiva xmlrpc.php por completo (bloquea el DDoS por pingback y la amplificación de fuerza bruta)."
+#: views/admin-page.php:181
+msgid ""
+"Turns off xmlrpc.php entirely (blocks pingback DDoS &amp; brute-force "
+"amplification)."
+msgstr ""
+"Desactiva xmlrpc.php por completo (bloquea el DDoS por pingback y la "
+"amplificación de fuerza bruta)."
 
+#: views/admin-page.php:182
 msgid "Comment / pingback hardening"
 msgstr "Refuerzo de comentarios / pingback"
 
+#: views/admin-page.php:182
 msgid "Drops pingback methods and the X-Pingback header."
 msgstr "Elimina los métodos de pingback y la cabecera X-Pingback."
 
+#: views/admin-page.php:186 views/admin-page.php:293 views/admin-page.php:323
+msgid "runs locally, free"
+msgstr "funciona localmente, gratis"
+
+#: views/admin-page.php:187
+msgid ""
+"Cheap, self-contained WordPress protections. Everything here runs in the "
+"plugin, no account needed."
+msgstr ""
+"Protecciones de WordPress económicas y autónomas. Todo esto funciona dentro "
+"del plugin, sin necesidad de cuenta."
+
+#: views/admin-page.php:200
 msgid "Save hardening settings"
 msgstr "Guardar ajustes de refuerzo"
 
+#: views/admin-page.php:207
 msgid "Geo-block"
 msgstr "Geobloqueo"
 
-msgid "Reject requests from selected countries (ISO 3166-1 alpha-2, comma-separated). Works locally for everyone."
-msgstr "Rechaza peticiones de los países seleccionados (ISO 3166-1 alfa-2, separados por comas). Funciona localmente para todos."
+#: views/admin-page.php:208
+msgid ""
+"Reject requests from selected countries (ISO 3166-1 alpha-2, comma-"
+"separated). Works locally for everyone."
+msgstr ""
+"Rechaza peticiones de los países seleccionados (ISO 3166-1 alfa-2, separados "
+"por comas). Funciona localmente para todos."
 
+#: views/admin-page.php:211
 msgid "e.g. RU, KP, IR"
 msgstr "p. ej. RU, KP, IR"
 
+#: views/admin-page.php:212
 msgid "Save blocklist"
 msgstr "Guardar lista de bloqueo"
 
+#: views/admin-page.php:223
 msgid "Malware scan"
 msgstr "Análisis de malware"
 
-#. translators: %s = relative time
-msgid "Last scan: %s ago"
-msgstr "Último análisis: hace %s"
+#: views/admin-page.php:228
+#, php-format
+msgid "Last scan: %1$s ago"
+msgstr "Último análisis: hace %1$s"
 
+#: views/admin-page.php:228
 msgid "files inspected"
 msgstr "archivos inspeccionados"
 
+#: views/admin-page.php:228
 msgid "flagged"
 msgstr "marcados"
 
+#: views/admin-page.php:230
 msgid "Not run yet. Click Scan to run a local malware sweep."
-msgstr "Aún no ejecutado. Haz clic en Analizar para hacer un barrido local de malware."
+msgstr "Aún no se ha ejecutado. Haz clic en «Analizar» para realizar un barrido local de malware."
+"Aún no ejecutado. Haz clic en Analizar para hacer un barrido local de "
+"malware."
 
+#: views/admin-page.php:242
 msgid "File integrity"
 msgstr "Integridad de archivos"
 
-#. translators: %s = relative time
+#: views/admin-page.php:247
+#, php-format
 msgid "Baseline: %s ago"
 msgstr "Línea base: hace %s"
 
+#: views/admin-page.php:249
 msgid "Last check flagged"
 msgstr "La última comprobación marcó"
 
+#: views/admin-page.php:250
 msgid "new"
 msgstr "nuevos"
 
+#: views/admin-page.php:251
 msgid "changed"
 msgstr "cambiados"
 
+#: views/admin-page.php:252
 msgid "removed"
 msgstr "eliminados"
 
+#: views/admin-page.php:255
 msgid "No baseline taken yet. Take one after a clean install / update."
-msgstr "Aún no hay línea base. Toma una tras una instalación o actualización limpia."
+msgstr "Aún no hay línea base. Crea una tras una instalación o actualización limpia."
+"Aún no hay línea base. Toma una tras una instalación o actualización limpia."
 
+#: views/admin-page.php:260
 msgid "Take baseline"
 msgstr "Tomar línea base"
 
+#: views/admin-page.php:261
 msgid "Check for changes"
 msgstr "Comprobar cambios"
 
+#: views/admin-page.php:270
 msgid "Core file &amp; exposure check"
 msgstr "Comprobación de archivos del núcleo y exposición"
 
+#: views/admin-page.php:270
 msgid "free"
 msgstr "gratis"
 
+#: views/admin-page.php:282
 msgid "Verify core files"
 msgstr "Verificar archivos del núcleo"
 
+#: views/admin-page.php:283
 msgid "Check exposed files"
 msgstr "Comprobar archivos expuestos"
 
+#: views/admin-page.php:293
 msgid "Login rate limiting"
 msgstr "Limitación de intentos de acceso"
 
-msgid "Per-IP brute-force protection on <code>wp-login.php</code>. Too many failed attempts inside the window locks that IP out until it cools down. Fully adjustable and runs entirely in the plugin."
-msgstr "Protección contra fuerza bruta por IP en <code>wp-login.php</code>. Demasiados intentos fallidos dentro de la ventana bloquean esa IP hasta que se enfríe. Totalmente ajustable y funciona por completo en el plugin."
+#: views/admin-page.php:294
+msgid ""
+"Per-IP brute-force protection on <code>wp-login.php</code>. Too many failed "
+"attempts inside the window locks that IP out until it cools down. Fully "
+"adjustable and runs entirely in the plugin."
+msgstr ""
+"Protección contra fuerza bruta por IP en <code>wp-login.php</code>. "
+"Demasiados intentos fallidos dentro de la ventana bloquean esa IP hasta que "
+"se enfríe. Totalmente ajustable y funciona por completo en el plugin."
 
+#: views/admin-page.php:297
 msgid "Max failed attempts"
 msgstr "Máximo de intentos fallidos"
 
+#: views/admin-page.php:301
 msgid "Window (seconds)"
 msgstr "Ventana (segundos)"
 
+#: views/admin-page.php:305
 msgid "reCAPTCHA v3 site key"
 msgstr "Clave de sitio de reCAPTCHA v3"
 
+#: views/admin-page.php:305
 msgid "(optional)"
 msgstr "(opcional)"
 
+#: views/admin-page.php:309
 msgid "reCAPTCHA v3 secret key"
 msgstr "Clave secreta de reCAPTCHA v3"
 
+#: views/admin-page.php:314
 msgid "Save rate-limit settings"
 msgstr "Guardar ajustes de límite de tasa"
 
+#: views/admin-page.php:323
+msgid "Path rate limiting"
+msgstr "Limitación de peticiones por ruta"
+
+#: views/admin-page.php:324
+msgid ""
+"Throttle any path on your site by client IP. Enter an exact slug like <code>/"
+"wp-login.php</code> or a pattern with a trailing <code>*</code> like <code>/"
+"wp-json/*</code>, set how many requests to allow per time window, and excess "
+"requests get a <code>429 Too Many Requests</code>. It is your WordPress — "
+"this runs entirely in the plugin, no account needed."
+msgstr ""
+
+#: views/admin-page.php:329
+msgid "Path or pattern"
+msgstr "Ruta o patrón"
+
+#: views/admin-page.php:330
+msgid "Requests"
+msgstr "Peticiones"
+
+#: views/admin-page.php:331
+msgid "Per (seconds)"
+msgstr "Por (segundos)"
+
+#: views/admin-page.php:332
+msgid "On"
+msgstr "Activa"
+
+#: views/admin-page.php:342
+msgid "+ Add rule"
+msgstr "+ Añadir regla"
+
+#: views/admin-page.php:343
+msgid "Save rules"
+msgstr "Guardar reglas"
+
+#: views/admin-page.php:350
+#, php-format
+msgid "You have used all %d free local rules."
+msgstr "Has usado las %d reglas locales gratuitas."
+
+#: views/admin-page.php:351
+msgid ""
+"Connect a free Defen.so account to add more rules and get the managed edge "
+"rate-limiter (blocks abuse before it reaches WordPress) plus the attack log. "
+"Rules you already turned on keep working."
+msgstr ""
+
+#: views/admin-page.php:352
+msgid "Connect free to unlock more"
+msgstr "Conecta gratis para desbloquear más"
+
+#: views/admin-page.php:361
 msgid "Managed edge rate limits"
 msgstr "Límites de tasa gestionados en el edge"
 
-msgid "Per-endpoint, per-IP and per-account velocity limits run on the Defen.so edge, ahead of WordPress. Configure them, and see what they blocked, from your dashboard."
-msgstr "Los límites de velocidad por endpoint, por IP y por cuenta se ejecutan en el edge de Defen.so, antes que WordPress. Configúralos y consulta lo que han bloqueado desde tu panel."
+#: views/admin-page.php:363
+msgid ""
+"Per-endpoint, per-IP and per-account velocity limits run on the Defen.so "
+"edge, ahead of WordPress. Configure them, and see what they blocked, from "
+"your dashboard."
+msgstr ""
+"Los límites de velocidad por endpoint, por IP y por cuenta se ejecutan en el "
+"edge de Defen.so, antes que WordPress. Configúralos y consulta lo que han "
+"bloqueado desde tu panel."
 
+#: views/admin-page.php:364
 msgid "Open rate-limit rules"
 msgstr "Abrir reglas de límite de tasa"
 
-msgid "Connect a free Defen.so account to add per-endpoint, per-IP and per-account velocity limits at the edge, ahead of WordPress. Higher plans raise the limits and custom-rule count."
-msgstr "Conecta una cuenta gratuita de Defen.so para añadir límites de velocidad por endpoint, por IP y por cuenta en el edge, antes que WordPress. Los planes superiores aumentan los límites y el número de reglas personalizadas."
+#: views/admin-page.php:366
+msgid ""
+"Connect a free Defen.so account to add per-endpoint, per-IP and per-account "
+"velocity limits at the edge, ahead of WordPress. Higher plans raise the "
+"limits and custom-rule count."
+msgstr ""
+"Conecta una cuenta gratuita de Defen.so para añadir límites de velocidad por "
+"endpoint, por IP y por cuenta en el edge, antes que WordPress. Los planes "
+"superiores aumentan los límites y el número de reglas personalizadas."
 
+#: views/admin-page.php:368
 msgid "Connect to enable"
 msgstr "Conecta para activar"
 
+#: views/admin-page.php:369 views/admin-page.php:387
 msgid "Learn more"
 msgstr "Saber más"
 
+#: views/admin-page.php:378
 msgid "optional"
 msgstr "opcional"
 
+#: views/admin-page.php:379
 msgid "Know the instant this site is in trouble"
 msgstr "Entérate al instante cuando este sitio tenga problemas"
 
-msgid "Uptime monitoring, SSL and domain-expiry checks, and multi-channel alerts all run on the Defen.so edge, not in this plugin, so they keep working even if WordPress itself is down."
-msgstr "La monitorización de disponibilidad, las comprobaciones de SSL y de caducidad del dominio, y las alertas multicanal se ejecutan en el edge de Defen.so, no en este plugin, de modo que siguen funcionando aunque el propio WordPress esté caído."
+#: views/admin-page.php:380
+msgid ""
+"Uptime monitoring, SSL and domain-expiry checks, and multi-channel alerts "
+"all run on the Defen.so edge, not in this plugin, so they keep working even "
+"if WordPress itself is down."
+msgstr ""
+"La monitorización de disponibilidad, las comprobaciones de SSL y de "
+"caducidad del dominio, y las alertas multicanal se ejecutan en el edge de "
+"Defen.so, no en este plugin, de modo que siguen funcionando aunque el propio "
+"WordPress esté caído."
 
+#: views/admin-page.php:385
 msgid "Uptime monitoring"
 msgstr "Monitorización de disponibilidad"
 
+#: views/admin-page.php:386
 msgid "Checks from multiple regions; SSL and domain-expiry alerts."
 msgstr "Comprobaciones desde varias regiones; alertas de SSL y de caducidad del dominio."
+"Comprobaciones desde varias regiones; alertas de SSL y de caducidad del "
+"dominio."
 
+#: views/admin-page.php:393
 msgid "Alerts everywhere"
 msgstr "Alertas en todas partes"
 
-msgid "Slack, Discord, Telegram, email and webhooks the moment something breaks."
-msgstr "Slack, Discord, Telegram, correo y webhooks en el momento en que algo falla."
+#: views/admin-page.php:394
+msgid ""
+"Slack, Discord, Telegram, email and webhooks the moment something breaks."
+msgstr ""
+"Slack, Discord, Telegram, correo y webhooks en el momento en que algo falla."
 
+#: views/admin-page.php:400
 msgid "Defenso Alerts app"
 msgstr "App Defenso Alerts"
 
-msgid "A call-style alarm on your phone for downtime and attacks. It rings even on silent."
-msgstr "Una alarma tipo llamada en tu teléfono para caídas y ataques. Suena incluso en silencio."
+#: views/admin-page.php:401
+msgid ""
+"A call-style alarm on your phone for downtime and attacks. It rings even on "
+"silent."
+msgstr ""
+"Una alarma tipo llamada en tu teléfono para caídas y ataques. Suena incluso "
+"en silencio."
 
+#: views/admin-page.php:402
 msgid "Get it on Google Play"
 msgstr "Descárgala en Google Play"
 
+#: views/admin-page.php:408
 msgid "Set up monitoring &amp; alerts"
 msgstr "Configurar monitorización y alertas"
 
+#: views/admin-page.php:410
 msgid "Connect a free account"
 msgstr "Conectar una cuenta gratuita"
 
+#: views/admin-page.php:412
 msgid "Explore the app"
 msgstr "Explorar la app"
 
+#: views/admin-page.php:420
 msgid "Recent activity"
 msgstr "Actividad reciente"
 
-msgid "No admin events yet. Login, plugin activate/deactivate, and role changes show up here."
-msgstr "Aún no hay eventos de administración. Los accesos, la activación/desactivación de plugins y los cambios de rol aparecerán aquí."
+#: views/admin-page.php:422
+msgid ""
+"No admin events yet. Login, plugin activate/deactivate, and role changes "
+"show up here."
+msgstr ""
+"Aún no hay eventos de administración. Los accesos, la activación/"
+"desactivación de plugins y los cambios de rol aparecerán aquí."
 
+#: views/admin-page.php:426
 msgid "When"
 msgstr "Cuándo"
 
+#: views/admin-page.php:427
 msgid "Actor"
 msgstr "Actor"
 
+#: views/admin-page.php:428
 msgid "Event"
 msgstr "Evento"
 
+#: views/admin-page.php:451
 msgid "Docs"
 msgstr "Documentación"
 
+#: views/admin-page.php:453
 msgid "Support"
 msgstr "Soporte"
 
+#~ msgid "Last scan: %s ago"
+#~ msgstr "Último análisis: hace %s"

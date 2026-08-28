@@ -222,10 +222,13 @@ Tools: `scan_domain`, `check_headers`, `list_sites`, `list_monitors`, `list_rece
 
 ## WordPress plugin
 
-[**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) (slug `defen-so-connector`, v1.2.4) is on the WordPress.org plugin directory. Source lives in [`packages/wp-plugin`](./packages/wp-plugin).
+[**Defen.so Connector**](https://wordpress.org/plugins/defen-so-connector/) (slug `defen-so-connector`) is on the WordPress.org plugin directory. Source lives in [`packages/wp-plugin`](./packages/wp-plugin).
 
 - **Tabbed admin** — Overview, Firewall &amp; hardening, Scans, Rate limits, Uptime &amp; alerts, and Activity log, each one click away; the tab you were on is remembered across reloads.
 - **Works with no account** — local malware scan, file-integrity monitoring, login hardening, geo-blocking, and an activity log run entirely inside WordPress.
+- **File-modification detection** — take a trusted baseline, then flag any file added, changed, or removed since, catching backdoors and tampered files that signature scanning alone misses.
+- **Continuous background scanning** — a weekly sweep keeps malware and vulnerability findings fresh automatically, no manual clicking.
+- **Local path rate limiting** — throttle any slug or wildcard pattern on your site by IP, entirely in the plugin.
 - **One-click connect** — link a Defen.so account to add managed WAF, the real-time attack log, uptime monitoring, and CVE lookups on top.
 
 ## Mobile app — Defenso Alerts

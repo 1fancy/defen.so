@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Plugin Name: Defen.so Connector
+ * Plugin Name: Security, Malware Scan, Firewall, Rate-limiting & Uptime Monitor with Alerts by Defen.so
  * Plugin URI: https://defen.so/wordpress-security-plugin
  * Description: Official Defen.so connector for WordPress. One-click connect to Defen.so, block SQL injection / XSS / bot scanners at the edge, scan every uploaded file for polyglots + malware, watch uptime, and detect brute-force logins. Manage everything from your Defen.so dashboard at https://defen.so.
- * Version: 1.2.9
+ * Version: 1.4.1
  * Author: Defen.so
  * Author URI: https://defen.so
  * License: GPLv2 or later
@@ -13,13 +13,12 @@
  * Domain Path: /languages
  * Requires at least: 5.8
  * Requires PHP: 7.4
- * Update URI: false
  */
 if (! defined('ABSPATH')) {
     exit;
 }
 
-define('DEFENSO_VERSION', '1.2.9');
+define('DEFENSO_VERSION', '1.4.1');
 define('DEFENSO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('DEFENSO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('DEFENSO_APP_URL', 'https://app.defen.so');
@@ -75,10 +74,13 @@ class Defenso_Connector
         require_once DEFENSO_PLUGIN_DIR.'includes/file-integrity.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/vuln-scan.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/geo-block.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/rate-limit.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/login-hardening.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/activity-log.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/hardening.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/core-checksum.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/background-scan.php';
+        require_once DEFENSO_PLUGIN_DIR.'includes/admin-bar.php';
         require_once DEFENSO_PLUGIN_DIR.'includes/promo.php';
         if (class_exists('Defenso_Malware_Scan')) {
             Defenso_Malware_Scan::register();
@@ -92,6 +94,9 @@ class Defenso_Connector
         if (class_exists('Defenso_Geo_Block')) {
             Defenso_Geo_Block::register();
         }
+        if (class_exists('Defenso_Rate_Limit')) {
+            Defenso_Rate_Limit::register();
+        }
         if (class_exists('Defenso_Login_Hardening')) {
             Defenso_Login_Hardening::register();
         }
@@ -103,6 +108,12 @@ class Defenso_Connector
         }
         if (class_exists('Defenso_Core_Checksum')) {
             Defenso_Core_Checksum::register();
+        }
+        if (class_exists('Defenso_Background_Scan')) {
+            Defenso_Background_Scan::register();
+        }
+        if (class_exists('Defenso_Admin_Bar')) {
+            Defenso_Admin_Bar::register();
         }
         if (class_exists('Defenso_Promo')) {
             Defenso_Promo::register();
@@ -140,7 +151,8 @@ class Defenso_Connector
     }
 
     /**
-     * Load the plugin's translations (ships es_ES + fr_FR, extensible).
+     * Load the plugin's translations (ships fr_FR, es_ES, de_DE, pt_BR, ru_RU;
+     * extensible via translate.wordpress.org).
      */
     public function load_textdomain(): void
     {
@@ -157,6 +169,9 @@ class Defenso_Connector
     public static function deactivate(): void
     {
         wp_clear_scheduled_hook('defenso_policy_refresh');
+        if (class_exists('Defenso_Background_Scan')) {
+            Defenso_Background_Scan::clear_schedule();
+        }
     }
 
     public function maybe_redirect_to_setup(): void
@@ -646,6 +661,13 @@ class Defenso_Connector
             'admin_nonce' => wp_create_nonce('defenso_admin'),
             'site_url' => get_site_url(),
             'app_url' => DEFENSO_APP_URL,
+            'i18n' => [
+                'saving' => __('Saving…', 'defen-so-connector'),
+                'saved' => __('Saved', 'defen-so-connector'),
+                'remove' => __('Remove', 'defen-so-connector'),
+                'rl_empty' => __('No rules yet. Add one to start throttling a path.', 'defen-so-connector'),
+                'rl_locked' => __('Connect free to enable more rules', 'defen-so-connector'),
+            ],
         ]);
     }
 

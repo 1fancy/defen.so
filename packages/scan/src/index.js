@@ -10,8 +10,9 @@
  */
 import { runTemplates, runPathTemplates, TEMPLATE_COUNT } from './templates.js';
 import { runExtraSecretTemplates, runSurfaceTemplates, runSourcemapTemplate, runSqliProbe, techFingerprint } from './templates-deep.js';
+import { runVersionCveTemplates, runTakeoverTemplate, runExposurePack, runGraphqlTemplate, runCorsTemplate, runOpenRedirectProbe, runReflectedXssProbe } from './templates-deepchecks.js';
 
-const VERSION = '0.2.0';
+const VERSION = '0.3.0';
 const UA = `@defen.so/scan/${VERSION}`;
 const SEV_ORDER = { info: 0, low: 1, medium: 2, high: 3, critical: 4 };
 
@@ -48,6 +49,32 @@ async function fetchTarget(url, timeoutMs, authHeaders = {}) {
   } finally {
     clearTimeout(t);
   }
+}
+
+/**
+ * Flexible request for the deeper probes: pick the method, add headers, send a
+ * JSON body, and optionally do NOT follow redirects (open-redirect needs the
+ * raw Location). Always benign — the deep checks only send inert markers.
+ */
+async function fetchRaw(url, timeoutMs, { method = 'GET', headers = {}, json = null, follow = true } = {}) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(url.href, {
+      method,
+      redirect: follow ? 'follow' : 'manual',
+      headers: {
+        'User-Agent': UA,
+        Accept: json ? 'application/json,*/*' : 'text/html,*/*',
+        ...(json ? { 'Content-Type': 'application/json' } : {}),
+        ...headers,
+      },
+      body: json ? JSON.stringify(json) : undefined,
+      signal: ctrl.signal,
+    });
+    const body = await res.text().catch(() => '');
+    return { status: res.status, headers: lowerHeaders(res.headers), body: (body || '').slice(0, 8192) };
+  } catch { return null; } finally { clearTimeout(t); }
 }
 
 /**
@@ -112,7 +139,7 @@ export async function scan(input, opts = {}) {
 
   const fetched = await fetchTarget(url, timeoutMs, authHeaders);
   const mkCtx = (u, f) => ({
-    url: u.href, host: u.host, https: u.protocol === 'https:',
+    url: u, host: u.host, https: u.protocol === 'https:',
     status: f.status, headers: f.headers, body: f.body, setCookies: f.setCookies,
     probe: async (path) => {
       const p = new URL(path, u.origin);
@@ -121,18 +148,32 @@ export async function scan(input, opts = {}) {
         return { status: r.status, body: (r.body || '').slice(0, 6144) };
       } catch { return null; }
     },
+    // Deep-check probes: POST JSON, custom headers, and raw (no-redirect) GET.
+    probePost: (path, json) => fetchRaw(new URL(path, u.origin), Math.min(timeoutMs, 6000), { method: 'POST', json, ...(authed ? { headers: authHeaders } : {}) }),
+    probeHeaders: (path, headers) => fetchRaw(new URL(path, u.origin), Math.min(timeoutMs, 6000), { headers: { ...authHeaders, ...headers } }),
+    probeRaw: (path) => fetchRaw(new URL(path, u.origin), Math.min(timeoutMs, 6000), { follow: false, ...(authed ? { headers: authHeaders } : {}) }),
   });
   const ctx = mkCtx(url, fetched);
 
-  let findings = runTemplates(ctx).concat(runExtraSecretTemplates(ctx));
+  let findings = runTemplates(ctx).concat(runExtraSecretTemplates(ctx))
+    .concat(runVersionCveTemplates(ctx), runTakeoverTemplate(ctx));
   const deep = opts.deep !== false;
   if (opts.paths !== false) findings = findings.concat(await runPathTemplates(ctx));
   if (deep) {
     findings = findings.concat(
       await runSurfaceTemplates(ctx),
       await runSourcemapTemplate(ctx),
+      await runExposurePack(ctx),
+      await runGraphqlTemplate(ctx),
+      await runCorsTemplate(ctx),
     );
-    if (opts.active) findings = findings.concat(await runSqliProbe(ctx));
+    if (opts.active) {
+      findings = findings.concat(
+        await runSqliProbe(ctx),
+        await runOpenRedirectProbe(ctx),
+        await runReflectedXssProbe(ctx),
+      );
+    }
   }
   const tech = techFingerprint(ctx);
 

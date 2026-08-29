@@ -177,4 +177,7 @@ export async function runPathTemplates(ctx) {
   return out;
 }
 
-export const TEMPLATE_COUNT = HEADER_CHECKS.length + SECRET_PATTERNS.length + SENSITIVE_PATHS.length + 3;
+// Base header/secret/path checks + surface probes (3) + the deeper nuclei-style
+// pack in templates-deepchecks.js (version-CVE, takeover, exposure, graphql,
+// cors, open-redirect, reflected-xss ≈ 27 checks).
+export const TEMPLATE_COUNT = HEADER_CHECKS.length + SECRET_PATTERNS.length + SENSITIVE_PATHS.length + 3 + 27;

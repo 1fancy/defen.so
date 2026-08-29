@@ -1,14 +1,14 @@
 # @defen.so/scan
 
-**Fast, template-based web security scanner for the terminal and CI.** Scan any URL for exposed secrets, weak security headers, missing HSTS/CSP, insecure cookies, exposed `.env`/`.git` files and TLS issues — graded, with **SARIF** and **JSON** output for GitHub code scanning. Zero config, no account to start.
+**Fast, template-based web security scanner for the terminal and CI.** Scan any URL for exposed secrets, weak security headers, missing HSTS/CSP, insecure cookies, exposed `.env`/`.git` files, outdated libraries with known CVEs, subdomain-takeover signals, GraphQL introspection and TLS issues — graded, with **SARIF** and **JSON** output for GitHub code scanning. Zero config, no account to start.
 
 ```bash
 npx @defen.so/scan example.com
 ```
 
 ```
-defenso-scan v0.1.0  https://example.com/
-28 templates · 200 · https
+defenso-scan v0.3.0  https://example.com/
+55 checks · grade B
 Grade  B     0 crit  0 high 2 med 2 low 1 info
 
  MED   Content-Security-Policy missing CWE-1021
@@ -50,7 +50,7 @@ defenso-scan <url> [url2 ...] [options]
 | `--sarif` | SARIF 2.1.0 for GitHub code scanning / CI |
 | `--fail-on <sev>` | Exit non-zero if a finding at/above `<sev>` exists (`info`\|`low`\|`medium`\|`high`\|`critical`) |
 | `--crawl <n>` | Also scan up to `n` same-origin pages |
-| `--active` | Run the safe active checks (error-based SQLi probe) |
+| `--active` | Run the safe active probes (SQLi, open-redirect, reflected-XSS) |
 | `--cookie <str>` | Send a `Cookie` header — **scan behind your login** |
 | `--bearer <token>` | Send `Authorization: Bearer <token>` |
 | `--basic <u:p>` | HTTP Basic auth |
@@ -79,8 +79,13 @@ Templates are grouped by class, each with a severity and CWE:
 - **Cookies** — session cookies missing `Secure`, `HttpOnly`, `SameSite`.
 - **Exposed secrets** in page source — AWS, Stripe, GitHub, Slack, OpenAI, Anthropic, SendGrid, Twilio, Mailgun keys, private-key blocks, Supabase `service_role`, JWTs, credentials in URLs (public-by-design keys like Firebase/Maps are noted, not falsely alarmed).
 - **Exposed files** — `.env`, `.git/config`, `.git/HEAD`, `.env.bak`, `config.json`, `.DS_Store`, `Dockerfile`, SQL backups (verified as real files, not SPA fallbacks).
+- **Expanded exposure pack** — `.svn`/`.hg` metadata, `web.config`, `wp-config.php.bak`, `.env.production`/`.env.local`, `phpinfo`, Spring **Actuator** (`/actuator/env`), `server-status`, Swagger/OpenAPI specs, `.aws/credentials`, exposed `id_rsa` — each verified by a content signature, not just a 200.
+- **Known-CVE version fingerprint** — flags outdated jQuery/Bootstrap with disclosed XSS and old server banners against a known-bad version range (no false alarms on patched builds).
+- **Subdomain takeover** — detects dangling-CNAME signatures for S3, GitHub Pages, Heroku, Fastly, Shopify, Netlify and Vercel.
+- **GraphQL introspection** — flags a `/graphql` endpoint that leaks its full schema in production.
+- **Deep CORS** — catches reflected-origin and `null`-origin misconfig (the real bug), not just wildcard-with-credentials.
 - **Surface & misconfig** — missing `security.txt`, directory listing enabled, exposed JavaScript **source maps** (leaked original source).
-- **Active (opt-in `--active`)** — a safe, error-based SQL-injection probe (appends a quote, looks for a reflected DB error — never extracts data).
+- **Active (opt-in `--active`)** — safe, benign probes for **SQL injection** (error-based), **open redirect** (a harmless external target reflected into `Location`), and **reflected XSS** (an inert marker that comes back unescaped). No data is touched and no credentials are tried.
 - **Tech fingerprint** — detects WordPress, Next.js, Laravel, Nuxt, React, PHP so findings are in context.
 
 Findings are graded A–F, with a multi-page crawl (`--crawl`) and authenticated scanning (`--cookie`/`--bearer`). Add `DEFENSO_TOKEN` (get one at [app.defen.so/developer](https://app.defen.so/developer)) for the full hosted report; without it you still get every local check plus a free daily hosted grade.

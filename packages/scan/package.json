@@ -1,6 +1,6 @@
 {
   "name": "@defen.so/scan",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Fast, template-based web security scanner for CI and the terminal. Scan any URL for exposed secrets, weak security headers, missing HSTS/CSP, insecure cookies, exposed .env/.git and TLS issues — graded, with SARIF and JSON output for GitHub code scanning. Zero config, no account to start.",
   "type": "module",
   "bin": {

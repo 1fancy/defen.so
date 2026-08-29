@@ -7,8 +7,8 @@ npx @defen.so/scan example.com
 ```
 
 ```
-defenso-scan v0.3.0  https://example.com/
-55 checks · grade B
+defenso-scan v0.3.1  https://example.com/
+67 checks · grade B
 Grade  B     0 crit  0 high 2 med 2 low 1 info
 
  MED   Content-Security-Policy missing CWE-1021
@@ -37,6 +37,21 @@ defenso-scan example.com
 ```
 
 Requires Node 18+.
+
+## Free to run · what an account adds
+
+The local checks are **free and unlimited, forever** — every header, cookie, secret, exposed-file, version-CVE, takeover, GraphQL, CORS and (with `--active`) SQLi/redirect/XSS probe runs entirely on your machine. Nothing about your target leaves your network for the local scan, there's no rate limit, and no account is needed. Run it in CI on every push.
+
+On top of that, each scan asks the Defenso hosted grader for a second opinion:
+
+| | Local checks | Hosted grade |
+|---|---|---|
+| **No token** | Unlimited, offline-capable | Free daily teaser grade per IP |
+| **Free account** (`DEFENSO_TOKEN`) | Unlimited | Full hosted report, generous daily quota |
+| **Pro / Business** | Unlimited | Higher quota + continuous scheduled scans |
+| **Max / Agency** | Unlimited | Adds the **deep environment pentest** (active probes against your live infra, gated to Max+) on onboarded sites |
+
+Get a free token at [app.defen.so/developer](https://app.defen.so/developer) and set `DEFENSO_TOKEN`. Skip the hosted call entirely with `--offline` — the local scan always stands on its own.
 
 ## Usage
 

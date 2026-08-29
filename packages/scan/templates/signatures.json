@@ -1,0 +1,200 @@
+{
+  "version": 1,
+  "note": "CANONICAL FILE. Single source of truth for language-agnostic scanner signatures, loaded by the hosted PHP pentest (app/Services/PentestScanner.php via resource_path). The JS CLI reads a synced copy at packages/scan/templates/signatures.json (keep them identical; run packages/scan/scripts/sync-signatures to copy this file there). Regexes use the common subset both PCRE and ECMAScript accept; each loader wraps them (PHP: '~'.re.'~i'; JS: new RegExp(re,'i')). Severity sev is info|low|medium|high|critical.",
+  "version_cves": [
+    {
+      "id": "jquery-outdated",
+      "name": "Outdated jQuery with known XSS",
+      "part": "body",
+      "re": "jquery[/-]([0-9]+\\.[0-9]+\\.[0-9]+)(?:\\.min)?\\.js",
+      "lt": "3.5.0",
+      "sev": "medium",
+      "cwe": "CWE-1104",
+      "note": "jQuery {v} is below 3.5.0 and carries known XSS (CVE-2020-11022/11023)."
+    },
+    {
+      "id": "bootstrap-outdated",
+      "name": "Outdated Bootstrap with known XSS",
+      "part": "body",
+      "re": "bootstrap[/-]([0-9]+\\.[0-9]+\\.[0-9]+)(?:\\.min)?\\.(?:js|css)",
+      "lt": "4.3.1",
+      "sev": "low",
+      "cwe": "CWE-1104",
+      "note": "Bootstrap {v} is below 4.3.1 and carries known XSS in data-* attributes."
+    },
+    {
+      "id": "server-old-nginx",
+      "name": "Old nginx banner",
+      "part": "server",
+      "re": "nginx/([0-9]+\\.[0-9]+\\.[0-9]+)",
+      "lt": "1.20.0",
+      "sev": "low",
+      "cwe": "CWE-200",
+      "note": "Server reports nginx {v}; versions below 1.20 have multiple disclosed CVEs. Hide the banner and update."
+    }
+  ],
+  "takeover": [
+    {
+      "name": "AWS S3",
+      "re": "NoSuchBucket|The specified bucket does not exist"
+    },
+    {
+      "name": "GitHub Pages",
+      "re": "There isn't a GitHub Pages site here|For root URLs \\(like http://example\\.com/\\) you must provide an index"
+    },
+    {
+      "name": "Heroku",
+      "re": "No such app|herokucdn\\.com/error-pages/no-such-app"
+    },
+    {
+      "name": "Fastly",
+      "re": "Fastly error: unknown domain"
+    },
+    {
+      "name": "Shopify",
+      "re": "Sorry, this shop is currently unavailable"
+    },
+    {
+      "name": "Netlify",
+      "re": "Not Found - Request ID|Site not found · Netlify"
+    },
+    {
+      "name": "Vercel",
+      "re": "DEPLOYMENT_NOT_FOUND|The deployment could not be found"
+    }
+  ],
+  "exposure_paths": [
+    {
+      "path": "/.svn/entries",
+      "re": "^[0-9]+\\s*$|dir\\n|\\bsvn:",
+      "sev": "high",
+      "cwe": "CWE-538",
+      "name": ".svn repository metadata"
+    },
+    {
+      "path": "/.hg/requires",
+      "re": "revlogv1|dotencode|store",
+      "sev": "high",
+      "cwe": "CWE-538",
+      "name": ".hg (Mercurial) metadata"
+    },
+    {
+      "path": "/web.config",
+      "re": "<configuration|<system\\.web",
+      "sev": "high",
+      "cwe": "CWE-538",
+      "name": "web.config exposed"
+    },
+    {
+      "path": "/wp-config.php.bak",
+      "re": "DB_PASSWORD|DB_NAME|define\\s*\\(",
+      "sev": "critical",
+      "cwe": "CWE-538",
+      "name": "WordPress config backup"
+    },
+    {
+      "path": "/.env.production",
+      "re": "^[A-Z0-9_]+\\s*=",
+      "sev": "critical",
+      "cwe": "CWE-538",
+      "name": ".env.production exposed"
+    },
+    {
+      "path": "/.env.local",
+      "re": "^[A-Z0-9_]+\\s*=",
+      "sev": "critical",
+      "cwe": "CWE-538",
+      "name": ".env.local exposed"
+    },
+    {
+      "path": "/phpinfo.php",
+      "re": "phpinfo\\(\\)|PHP Version|<title>phpinfo",
+      "sev": "medium",
+      "cwe": "CWE-200",
+      "name": "phpinfo() exposed"
+    },
+    {
+      "path": "/actuator/env",
+      "re": "\"propertySources\"|\"activeProfiles\"",
+      "sev": "high",
+      "cwe": "CWE-200",
+      "name": "Spring Actuator env exposed"
+    },
+    {
+      "path": "/actuator/health",
+      "re": "\"status\"\\s*:\\s*\"UP\"|\"components\"",
+      "sev": "low",
+      "cwe": "CWE-200",
+      "name": "Spring Actuator reachable"
+    },
+    {
+      "path": "/swagger.json",
+      "re": "\"swagger\"|\"openapi\"|\"paths\"\\s*:",
+      "sev": "low",
+      "cwe": "CWE-200",
+      "name": "Swagger/OpenAPI spec exposed"
+    },
+    {
+      "path": "/openapi.json",
+      "re": "\"openapi\"\\s*:|\"paths\"\\s*:",
+      "sev": "low",
+      "cwe": "CWE-200",
+      "name": "OpenAPI spec exposed"
+    },
+    {
+      "path": "/server-status",
+      "re": "Apache Server Status|Server uptime",
+      "sev": "medium",
+      "cwe": "CWE-200",
+      "name": "Apache server-status exposed"
+    },
+    {
+      "path": "/.aws/credentials",
+      "re": "aws_access_key_id|aws_secret_access_key",
+      "sev": "critical",
+      "cwe": "CWE-538",
+      "name": "AWS credentials file exposed"
+    },
+    {
+      "path": "/id_rsa",
+      "re": "BEGIN (RSA|OPENSSH|EC|DSA) PRIVATE KEY",
+      "sev": "critical",
+      "cwe": "CWE-538",
+      "name": "Private SSH key exposed"
+    }
+  ],
+  "cors": {
+    "evil_origin": "https://evil.example.com"
+  },
+  "graphql": {
+    "paths": [
+      "/graphql",
+      "/api/graphql",
+      "/v1/graphql"
+    ],
+    "query": "{__schema{queryType{name}}}",
+    "match": "\"__schema\"|\"queryType\""
+  },
+  "open_redirect": {
+    "params": [
+      "next",
+      "url",
+      "redirect",
+      "return",
+      "returnTo",
+      "r",
+      "dest"
+    ],
+    "canary": "https://defen.so/redirect-canary"
+  },
+  "xss": {
+    "params": [
+      "q",
+      "s",
+      "search",
+      "query",
+      "name"
+    ],
+    "marker": "dfns7zx9q"
+  }
+}

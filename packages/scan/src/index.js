@@ -9,10 +9,10 @@
  * grade. Returns a structured report; no process side-effects.
  */
 import { runTemplates, runPathTemplates, TEMPLATE_COUNT } from './templates.js';
-import { runExtraSecretTemplates, runSurfaceTemplates, runSourcemapTemplate, runSqliProbe, techFingerprint } from './templates-deep.js';
+import { runExtraSecretTemplates, runSurfaceTemplates, runSourcemapTemplate, runSqliProbe, techFingerprint, EXTRA_TEMPLATE_COUNT } from './templates-deep.js';
 import { runVersionCveTemplates, runTakeoverTemplate, runExposurePack, runGraphqlTemplate, runCorsTemplate, runOpenRedirectProbe, runReflectedXssProbe } from './templates-deepchecks.js';
 
-const VERSION = '0.3.0';
+const VERSION = '0.3.1';
 const UA = `@defen.so/scan/${VERSION}`;
 const SEV_ORDER = { info: 0, low: 1, medium: 2, high: 3, critical: 4 };
 
@@ -208,7 +208,7 @@ export async function scan(input, opts = {}) {
     tool: '@defen.so/scan', version: VERSION,
     url: url.href, host: url.host, https: ctx.https, status: fetched.status,
     authenticated: authed, tech, crawled,
-    templatesRun: TEMPLATE_COUNT + 13,
+    templatesRun: TEMPLATE_COUNT + EXTRA_TEMPLATE_COUNT,
     grade: g.grade, counts: g.counts, findings, hosted,
     scannedAt: new Date().toISOString(),
   };

@@ -177,7 +177,21 @@ export async function runPathTemplates(ctx) {
   return out;
 }
 
-// Base header/secret/path checks + surface probes (3) + the deeper nuclei-style
-// pack in templates-deepchecks.js (version-CVE, takeover, exposure, graphql,
-// cors, open-redirect, reflected-xss ≈ 27 checks).
-export const TEMPLATE_COUNT = HEADER_CHECKS.length + SECRET_PATTERNS.length + SENSITIVE_PATHS.length + 3 + 27;
+// Total distinct signatures shipped, derived (never hand-counted). Base pack =
+// header + secret + path templates + the 3 surface probes (TLS, robots,
+// server-info). Deep pack = every signature in the shared signatures.json:
+// each version-CVE / takeover / exposure path is its own rule, plus the four
+// single-rule probes (graphql, cors, open-redirect, reflected-xss).
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const SIG = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'templates', 'signatures.json'), 'utf8')
+);
+const DEEP_COUNT =
+  SIG.version_cves.length + SIG.takeover.length + SIG.exposure_paths.length + 4;
+
+export const BASE_TEMPLATE_COUNT = HEADER_CHECKS.length + SECRET_PATTERNS.length + SENSITIVE_PATHS.length + 3;
+export const DEEP_TEMPLATE_COUNT = DEEP_COUNT;
+export const TEMPLATE_COUNT = BASE_TEMPLATE_COUNT + DEEP_COUNT;

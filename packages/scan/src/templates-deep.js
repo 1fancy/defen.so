@@ -33,6 +33,11 @@ export function techFingerprint(ctx) {
   return hits;
 }
 
+// Distinct checks contributed by this file: every extra-secret pattern, plus the
+// four single-purpose probes (security.txt, directory-listing, source-map, SQLi).
+// Tech fingerprint is metadata, not a finding, so it is not counted.
+export const EXTRA_TEMPLATE_COUNT = EXTRA_SECRETS.length + 4;
+
 export function runExtraSecretTemplates(ctx) {
   const out = [];
   if (!ctx.body) return out;

@@ -10,15 +10,23 @@
 [![Google Play](https://img.shields.io/badge/Google%20Play-Defenso%20Alerts-34A853)](https://play.google.com/store/apps/details?id=so.defen.alerts)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-## Modern security kit for developers &amp; vibe coders
+## Web &amp; App Pentest, Security, Code Scanning &amp; Uptime Monitoring
 
-Scan your website, apps &amp; GitHub for vulnerabilities. Block attacks &amp; bad bots, rate-limit your APIs, monitor uptime, domain &amp; SSL expiry — all in one security platform.
+Pentest and scan your website, web apps, code and GitHub for vulnerabilities and exposed keys. Secure vibe-coded apps, monitor uptime, SSL and domains, and rate-limit APIs. One platform.
 
-**Scan &amp; pentest** · **Monitoring &amp; uptime** · **Instant alerts** · **API rate limits** · **360° protection** · **MCP &amp; SDKs**
+**Pentest &amp; scan** · **Code &amp; repo scan** · **Uptime &amp; monitoring** · **Instant alerts** · **API rate limits** · **MCP &amp; SDKs**
 
 ---
 
-**Defen.so** is a developer-first web security SaaS. Managed WAF, uptime monitoring, quick pentest (headers, TLS, **email security** — SPF/DKIM/DMARC — and compliance-style findings), vibe-coder scan, repo/secret scan, Cloudflare DDoS wrap, bot detection, active deception, and file-upload scanning — installed in **one line** for Node, PHP/Laravel, Python, Go, Ruby, Java, .NET, Rust, Bun, or Deno.
+**Install it, scan it, or plug it into your AI editor:**
+
+```bash
+npx @defen.so/init      # add the SDK + protection to your app in 30 seconds
+npx @defen.so/scan      # pentest any site or repo from your terminal
+npx -y @defen.so/mcp    # security tools inside Claude Code, Cursor, Windsurf
+```
+
+**Defen.so** is a developer-first web security platform. It runs a real pentest — surface **and** deep: CVE version fingerprint, port scan, admin-surface enumeration, GraphQL introspection, reflected-origin CORS, reflected XSS, open redirect, subdomain takeover and a login brute-force-resistance probe. The code and repo scanner cross-references every dependency against **OSV** (Google's live vulnerability database) plus an auto-updating malicious-package feed, and catches committed secrets, dangerous code and Supabase/Firebase/S3 misconfigurations. Uptime, SSL and domain-expiry monitoring, alerts, active deception, file-upload scanning and a managed firewall complete the stack — installed in **one line** for Node, PHP/Laravel, Python, Go, Ruby, Java, .NET, Rust, Bun or Deno.
 
 **Your security layer. Shipped in 30 seconds.** One line — `npx @defen.so/init` — and every SDK fails open, so if Defen.so is ever down your app keeps serving.
 

@@ -1,4 +1,4 @@
-# Defen.so — your security layer. Shipped in 30 seconds.
+# Defen.so — Web &amp; App Pentest, Code Scanning, Uptime Monitoring &amp; WAF for developers
 
 [![Website](https://img.shields.io/badge/site-defen.so-22c55e)](https://defen.so)
 [![App](https://img.shields.io/badge/app-app.defen.so-0A0A0A)](https://app.defen.so)
@@ -112,6 +112,25 @@ A fast, template-based security scanner. No account needed to start.
 
 ```bash
 npx @defen.so/scan example.com
+```
+
+```text
+ █████  ███████ ███████ ███████ ██   ██ ███████  █████
+ ██  ██ ██      ██      ██      ███  ██ ██      ██   ██
+ ██  ██ █████   █████   █████   ██ █ ██ ███████ ██   ██
+ ██  ██ ██      ██      ██      ██  ███      ██ ██   ██
+ █████  ███████ ██      ███████ ██   ██ ███████  █████
+ pentest · repo scan · uptime · alerts        https://defen.so
+
+ → scanning example.com …
+ ✓ 41 checks · grade B (88/100)
+
+   CRITICAL  Exposed .env file            /.env                 CWE-538
+   CRITICAL  Stripe secret key in JS      /app.js:1204          CWE-312
+   HIGH      Missing Content-Security-Policy                    CWE-693
+   MEDIUM    Cookie without Secure flag   session               CWE-614
+
+ Every finding has a fix. Full report: https://app.defen.so
 ```
 
 It checks security headers, insecure cookies, exposed secrets (AWS, Stripe, GitHub, OpenAI, Supabase `service_role`, private keys and more), exposed `.env`/`.git` files, missing `security.txt`, exposed source maps, and grades the result A–F. Every finding carries a severity, a CWE, the evidence that matched, and a plain-language fix.
@@ -290,6 +309,24 @@ Bug in an SDK? Open an issue at https://github.com/1fancy/defen.so/issues. Inclu
 - A minimal reproduction
 
 Security disclosures: mail `info@defen.so` — please don't file public issues for security bugs.
+
+## How Defen.so compares
+
+Most teams run four or five tools. Defen.so puts them in one account and one install line.
+
+| | **Defen.so** | Nuclei | Snyk | GitGuardian | UptimeRobot |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Web pentest (surface + deep) | ✅ | ✅ (templates) | ⚠️ SAST only | ❌ | ❌ |
+| Live-CVE dependency scan (OSV) | ✅ | ❌ | ✅ | ❌ | ❌ |
+| Committed-secret / repo scan | ✅ | ❌ | ✅ | ✅ | ❌ |
+| Malicious-package feed (auto-update) | ✅ | ❌ | ⚠️ | ❌ | ❌ |
+| Uptime + SSL + domain monitoring | ✅ | ❌ | ❌ | ❌ | ✅ |
+| MCP tools for AI editors | ✅ (18) | ❌ | ⚠️ basic | ❌ | ❌ |
+| One-line install (`npx @defen.so/init`) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Managed WAF + rate limits | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Free tier with real value | ✅ | ✅ (OSS) | ⚠️ 100 tests | ⚠️ 25 devs | ✅ |
+
+Defen.so is built for indie developers, vibe coders and small teams who want the whole picture — scan, pentest, monitor and fix — without stitching five vendors together.
 
 ## Links
 

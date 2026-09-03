@@ -10,9 +10,9 @@
  */
 import { runTemplates, runPathTemplates, TEMPLATE_COUNT } from './templates.js';
 import { runExtraSecretTemplates, runSurfaceTemplates, runSourcemapTemplate, runSqliProbe, techFingerprint, EXTRA_TEMPLATE_COUNT } from './templates-deep.js';
-import { runVersionCveTemplates, runTakeoverTemplate, runExposurePack, runGraphqlTemplate, runCorsTemplate, runOpenRedirectProbe, runReflectedXssProbe } from './templates-deepchecks.js';
+import { runVersionCveTemplates, runTakeoverTemplate, runExposurePack, runGraphqlTemplate, runCorsTemplate, runOpenRedirectProbe, runReflectedXssProbe, runSstiProbe, runMixedContentTemplate } from './templates-deepchecks.js';
 
-const VERSION = '0.3.1';
+const VERSION = '0.4.1';
 const UA = `@defen.so/scan/${VERSION}`;
 const SEV_ORDER = { info: 0, low: 1, medium: 2, high: 3, critical: 4 };
 
@@ -166,12 +166,14 @@ export async function scan(input, opts = {}) {
       await runExposurePack(ctx),
       await runGraphqlTemplate(ctx),
       await runCorsTemplate(ctx),
+      runMixedContentTemplate(ctx),
     );
     if (opts.active) {
       findings = findings.concat(
         await runSqliProbe(ctx),
         await runOpenRedirectProbe(ctx),
         await runReflectedXssProbe(ctx),
+        await runSstiProbe(ctx),
       );
     }
   }

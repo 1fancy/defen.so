@@ -11,7 +11,7 @@
  * remotely later (same pattern as the browser-extension rules endpoint).
  */
 
-const SECRET_PATTERNS = [
+export const SECRET_PATTERNS = [
   { id: 'aws-access-key', name: 'AWS access key', re: /\bAKIA[0-9A-Z]{16}\b/, sev: 'critical', cwe: 'CWE-798' },
   { id: 'aws-secret-key', name: 'AWS secret key', re: /\baws_secret_access_key\s*[=:]\s*['"]?[A-Za-z0-9/+=]{40}\b/i, sev: 'critical', cwe: 'CWE-798' },
   { id: 'gcp-api-key', name: 'Google API key', re: /\bAIza[0-9A-Za-z\-_]{35}\b/, sev: 'high', cwe: 'CWE-798', note: 'Some Google keys are public by design (Maps) — verify scope.' },

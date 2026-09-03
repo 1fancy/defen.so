@@ -181,3 +181,50 @@ export async function runReflectedXssProbe(ctx) {
   }
   return [];
 }
+
+// ── #6 Server-side template injection (ACTIVE) ───────────────────────────────
+// Inject arithmetic markers a vulnerable template engine evaluates (7*7 -> 49).
+// A literal echo of the payload is XSS, not SSTI, so only flag the evaluated
+// result appearing where the raw payload does not.
+export async function runSstiProbe(ctx) {
+  const probes = ['{{7*7}}', '${7*7}', '#{7*7}', '<%= 7*7 %>'];
+  for (const p of SIG.xss.params) {
+    for (const probe of probes) {
+      const path = `/?${p}=${encodeURIComponent(probe)}`;
+      let r = null;
+      try { r = ctx.probeRaw ? await ctx.probeRaw(path) : null; } catch { r = null; }
+      if (!r || !r.body) { continue; }
+      if (r.body.includes('49') && !r.body.includes(probe) && !r.body.includes('7*7')) {
+        return [{
+          id: 'ssti', name: 'Server-side template injection', severity: 'critical', cwe: 'CWE-1336',
+          tags: ['ssti', 'active'],
+          evidence: `The "${p}" parameter evaluated a template expression on the server (7*7 returned 49). This can lead to remote code execution inside the template engine.`,
+          remediation: 'Never render user input as a template. Pass user values as data to a pre-compiled template and disable expression evaluation on untrusted strings.',
+        }];
+      }
+    }
+  }
+  return [];
+}
+
+// ── #7 Active mixed content (PASSIVE) ────────────────────────────────────────
+// An HTTPS page pulling active resources over plain http:// lets a network
+// attacker tamper with them. Reads the already-fetched body, no extra request.
+export function runMixedContentTemplate(ctx) {
+  if (!ctx.https) { return []; }
+  const body = ctx.body || '';
+  const hits = new Set();
+  const scriptSrc = /<script[^>]+src\s*=\s*["'](http:\/\/[^"']+)["']/gi;
+  const linkOrSrc = /(?:src|href)\s*=\s*["'](http:\/\/[^"']+\.(?:js|css)(?:[?#][^"']*)?)["']/gi;
+  let m;
+  while ((m = scriptSrc.exec(body))) { hits.add(m[1]); }
+  while ((m = linkOrSrc.exec(body))) { hits.add(m[1]); }
+  if (hits.size === 0) { return []; }
+  const sample = [...hits].slice(0, 3).join(', ');
+  return [{
+    id: 'mixed-content', name: 'Active mixed content over HTTP', severity: 'high', cwe: 'CWE-311',
+    tags: ['tls', 'mixed-content'],
+    evidence: `This HTTPS page loads active resources over plain HTTP, for example ${sample}. A network attacker can replace them, and browsers block or downgrade them.`,
+    remediation: 'Load every subresource over https:// (or protocol-relative //host), and add a Content-Security-Policy of "upgrade-insecure-requests".',
+  }];
+}

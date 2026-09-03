@@ -1,6 +1,6 @@
 # @defen.so/init
 
-**The one-command way to install a production web application firewall in any language.** No config files. No DevOps ticket. `npx @defen.so/init` detects your framework, adds the right SDK, wires the middleware, and prints your next step — all in about 30 seconds.
+**The one-command way to add pentest scans, code scanning, uptime monitoring and a managed firewall to any app.** No config files. No DevOps ticket. `npx @defen.so/init` detects your framework, adds the right SDK, wires the middleware, and prints your next step — all in about 30 seconds.
 
 ```bash
 npx @defen.so/init
@@ -344,6 +344,21 @@ Beyond the SDKs, Defenso also ships the [**Defen.so Connector**](https://wordpre
 - **Issues**: [github.com/1fancy/defen.so/issues](https://github.com/1fancy/defen.so/issues)
 - **Contact**: info@defen.so
 - **Enterprise inquiry**: [defen.so/enterprise](https://defen.so/enterprise)
+
+## How Defen.so compares
+
+Most teams run four or five tools. Defen.so puts them in one account and one install line.
+
+| | **Defen.so** | Nuclei | Snyk | GitGuardian | UptimeRobot |
+|---|:---:|:---:|:---:|:---:|:---:|
+| Web pentest (surface + deep) | ✅ | ✅ | ⚠️ | ❌ | ❌ |
+| Live-CVE dependency scan (OSV) | ✅ | ❌ | ✅ | ❌ | ❌ |
+| Committed-secret / repo scan | ✅ | ❌ | ✅ | ✅ | ❌ |
+| Malicious-package feed (auto-update) | ✅ | ❌ | ⚠️ | ❌ | ❌ |
+| Uptime + SSL + domain monitoring | ✅ | ❌ | ❌ | ❌ | ✅ |
+| MCP tools for AI editors | ✅ (18) | ❌ | ⚠️ | ❌ | ❌ |
+| One-line install (`npx @defen.so/init`) | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Managed WAF + rate limits | ✅ | ❌ | ❌ | ❌ | ❌ |
 
 ## License
 

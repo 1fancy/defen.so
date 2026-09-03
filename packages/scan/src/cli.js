@@ -11,6 +11,7 @@
  * augments with the Defenso hosted grade. No account needed to start.
  */
 import { scan, VERSION } from './index.js';
+import { scanRepo } from './repo.js';
 import { toSarif } from './sarif.js';
 
 const SEV_ORDER = { info: 0, low: 1, medium: 2, high: 3, critical: 4 };
@@ -52,6 +53,14 @@ function help() {
 
 USAGE
   npx @defen.so/scan <url> [url2 ...] [options]
+  npx @defen.so/scan repo [path]     [options]   # scan a local working tree
+
+REPO SCAN (offline)
+  Walks a directory for committed secrets, known-bad dependencies and unsafe
+  Dockerfile / GitHub Actions config. No network, no account.
+    npx @defen.so/scan repo .
+    npx @defen.so/scan repo . --sarif > repo.sarif
+    npx @defen.so/scan repo . --fail-on high        # gate a CI job
 
 OPTIONS
   --json             Output the full report as JSON
@@ -124,8 +133,53 @@ function worstSeverity(findings) {
   return findings.reduce((w, f) => Math.max(w, SEV_ORDER[f.severity] ?? 0), -1);
 }
 
+function printRepoReport(report, o) {
+  if (!o.quiet) {
+    const gcolor = report.grade === 'F' ? C.red : report.grade === 'D' ? C.r : report.grade.startsWith('A') ? C.g : C.y;
+    console.log(`\n${C.bold}defenso-scan repo${C.x} ${C.dim}v${report.version}${C.x}  ${C.bold}${report.url}${C.x}`);
+    console.log(`${C.dim}${report.filesScanned} files · ${report.templatesRun} rules · offline${C.x}`);
+    console.log(`Grade ${gcolor}${C.bold} ${report.grade} ${C.x}   ` +
+      `${C.red} ${report.counts.critical} crit ${C.x} ${C.r}${report.counts.high} high${C.x} ` +
+      `${C.y}${report.counts.medium} med${C.x} ${C.b}${report.counts.low} low${C.x} ${C.dim}${report.counts.info} info${C.x}\n`);
+  }
+  if (!report.findings.length) {
+    if (!o.quiet) console.log(`${C.g}✓ No secrets, risky dependencies or unsafe Docker/CI config found.${C.x}\n`);
+    return;
+  }
+  for (const f of report.findings) {
+    const col = SEV_COLOR[f.severity] || '';
+    console.log(`${col} ${SEV_LABEL[f.severity]} ${C.x} ${C.bold}${f.name}${C.x}` + (f.cwe ? ` ${C.dim}${f.cwe}${C.x}` : ''));
+    console.log(`      ${f.evidence}`);
+    if (f.remediation) console.log(`      ${C.g}fix${C.x} ${f.remediation}`);
+    console.log('');
+  }
+}
+
+async function runRepo(o) {
+  const path = o.targets[1] || '.';
+  let report;
+  try {
+    report = scanRepo(path, {});
+  } catch (err) {
+    if (o.json || o.sarif) { process.stdout.write(JSON.stringify({ tool: '@defen.so/scan', version: VERSION, mode: 'repo', url: path, error: err.message, findings: [], grade: '?', counts: {} }, null, 2) + '\n'); }
+    else console.error(`${C.r}✗ ${path}: ${err.message}${C.x}`);
+    process.exit(2);
+  }
+  if (o.sarif) process.stdout.write(JSON.stringify(toSarif(report), null, 2) + '\n');
+  else if (o.json) process.stdout.write(JSON.stringify(report, null, 2) + '\n');
+  else printRepoReport(report, o);
+
+  if (o.failOn) {
+    const threshold = SEV_ORDER[o.failOn];
+    if (threshold === undefined) { console.error(`--fail-on: unknown severity "${o.failOn}"`); process.exit(2); }
+    if (worstSeverity(report.findings) >= threshold) process.exit(1);
+  }
+  process.exit(0);
+}
+
 async function main() {
   const o = parseArgs(process.argv.slice(2));
+  if (o.targets[0] === 'repo') { await runRepo(o); return; }
   if (!o.targets.length) { help(); process.exit(o.json || o.sarif ? 0 : 2); }
 
   const reports = [];

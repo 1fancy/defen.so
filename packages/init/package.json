@@ -1,6 +1,6 @@
 {
   "name": "@defen.so/init",
-  "version": "0.3.2",
+  "version": "0.3.7",
   "description": "One command to install a production Web Application Firewall. Detects Node (Next.js / Express / Fastify), PHP (Laravel / Symfony), and Python (Django / FastAPI / Flask), installs the right Defenso SDK, wires the middleware, writes DEFENSO_TOKEN to .env. $0 to start. Fails open. Playground + MCP for Claude Code / Cursor / Windsurf included.",
   "type": "module",
   "bin": {

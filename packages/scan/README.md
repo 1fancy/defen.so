@@ -100,10 +100,31 @@ Templates are grouped by class, each with a severity and CWE:
 - **GraphQL introspection** — flags a `/graphql` endpoint that leaks its full schema in production.
 - **Deep CORS** — catches reflected-origin and `null`-origin misconfig (the real bug), not just wildcard-with-credentials.
 - **Surface & misconfig** — missing `security.txt`, directory listing enabled, exposed JavaScript **source maps** (leaked original source).
-- **Active (opt-in `--active`)** — safe, benign probes for **SQL injection** (error-based), **open redirect** (a harmless external target reflected into `Location`), and **reflected XSS** (an inert marker that comes back unescaped). No data is touched and no credentials are tried.
+- **Mixed content** — an HTTPS page loading active scripts or stylesheets over plain `http://`, which a network attacker can tamper with (CWE-311).
+- **Active (opt-in `--active`)** — safe, benign probes for **SQL injection** (error-based), **open redirect** (a harmless external target reflected into `Location`), **reflected XSS** (an inert marker that comes back unescaped), and **server-side template injection** (an arithmetic marker the engine evaluates, e.g. `{{7*7}}` returning `49`). No data is touched and no credentials are tried.
 - **Tech fingerprint** — detects WordPress, Next.js, Laravel, Nuxt, React, PHP so findings are in context.
 
 Findings are graded A–F, with a multi-page crawl (`--crawl`) and authenticated scanning (`--cookie`/`--bearer`). Add `DEFENSO_TOKEN` (get one at [app.defen.so/developer](https://app.defen.so/developer)) for the full hosted report; without it you still get every local check plus a free daily hosted grade.
+
+## Scan a local repository (offline)
+
+Point the scanner at a working tree instead of a URL. It never touches the network, so it is safe to run on a laptop or inside CI before anything is deployed:
+
+```bash
+npx @defen.so/scan repo .                    # scan the current directory
+npx @defen.so/scan repo ./service --json
+npx @defen.so/scan repo . --sarif > repo.sarif
+npx @defen.so/scan repo . --fail-on high     # exit 1 to gate a CI job
+```
+
+It walks the tree (skipping `node_modules`, `.git`, build output and binaries) and reports:
+
+- **Committed secrets** — the same key patterns as the URL scanner (AWS, Stripe, GitHub, Slack, OpenAI, SendGrid, Twilio, npm tokens, private-key blocks), plus generic `api_key`/`secret` assignments and database URLs with an inline password. Each finding points to `file:line`. Obvious placeholders (`example`, `changeme`, `<token>`) are skipped.
+- **Known-bad dependencies** — reads `package.json` and flags packages with well-known compromised releases (`event-stream`, `ua-parser-js`, `node-ipc`, `coa`, `rc`, `flatmap-stream`).
+- **Unsafe Dockerfiles** — base image pinned to `:latest`, a container that runs as root, and secrets baked into `ENV`/`ARG`.
+- **Unsafe GitHub Actions** — third-party actions pinned to a mutable tag/branch instead of a commit SHA, and `pull_request_target` workflows that check out untrusted PR code.
+
+Output, grading and `--fail-on` behave exactly like the URL scanner, so the same SARIF upload works for repo findings.
 
 ## CI / GitHub code scanning
 

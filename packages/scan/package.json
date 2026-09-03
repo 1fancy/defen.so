@@ -1,7 +1,7 @@
 {
   "name": "@defen.so/scan",
-  "version": "0.3.1",
-  "description": "Fast, template-based web security scanner for CI and the terminal. Scan any URL for exposed secrets, weak security headers, missing HSTS/CSP, insecure cookies, exposed .env/.git and TLS issues — graded, with SARIF and JSON output for GitHub code scanning. Zero config, no account to start.",
+  "version": "0.4.1",
+  "description": "Fast, template-based security scanner for CI and the terminal. Scan any URL for exposed secrets, weak security headers, missing HSTS/CSP, insecure cookies, exposed .env/.git and TLS issues, or scan a local repo for committed secrets, known-bad dependencies and unsafe Docker/CI config. Graded, with SARIF and JSON output for GitHub code scanning. Zero config, no account to start.",
   "type": "module",
   "bin": {
     "defenso-scan": "./src/cli.js"
@@ -9,6 +9,9 @@
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "node test/repo.test.mjs && node test/deepchecks.test.mjs"
   },
   "files": [
     "src",
@@ -25,6 +28,10 @@
     "pentest",
     "security-headers",
     "secrets-scanner",
+    "secret-detection",
+    "supply-chain-security",
+    "dependency-scanner",
+    "sca",
     "sarif",
     "ci",
     "devsecops",

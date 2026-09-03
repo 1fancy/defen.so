@@ -26,6 +26,61 @@ function warn(msg) { process.stderr.write('  ! ' + msg + '\n'); }
 function done(msg) { log('  ✓ ' + msg); }
 
 /**
+ * Claude-style ASCII hero. Colours only when writing to a real TTY that isn't
+ * NO_COLOR — piped/CI output stays plain. Kept dependency-free (raw ANSI).
+ */
+function banner() {
+  const tty = process.stdout.isTTY && !process.env.NO_COLOR;
+  const c = (code, s) => (tty ? `\x1b[${code}m${s}\x1b[0m` : s);
+  const ink = (s) => c('38;5;111', s);   // soft indigo, brand accent
+  const bold = (s) => c('1;38;5;111', s);
+  const dim = (s) => c('2', s);
+  const cols = process.stdout.columns || 80;
+
+  // Letters use ONLY solid full blocks (█) and spaces — every glyph is exactly
+  // one monospace cell, so rows can't drift the way thin box-drawing chars do in
+  // the user's terminal. Framed top/bottom with a rule, like a proper CLI.
+  const wideArt = [
+    '█████  ███████ ███████ ███████ ██   ██ ███████  █████ ',
+    '██  ██ ██      ██      ██      ███  ██ ██      ██   ██',
+    '██  ██ █████   █████   █████   ██ █ ██ ███████ ██   ██',
+    '██  ██ ██      ██      ██      ██  ███      ██ ██   ██',
+    '█████  ███████ ██      ███████ ██   ██ ███████  █████ ',
+  ];
+  const inner = 58; // characters between the │ borders
+  const rule = '─'.repeat(inner);
+  // Pad a plain (uncolored) string to the inner width, then colorize — so ANSI
+  // codes never count toward the visible length and the right border stays flush.
+  const rowLine = (plain, paint) => {
+    const pad = Math.max(0, inner - plain.length);
+    return '  ' + dim('│') + paint(plain) + ' '.repeat(pad) + dim('│');
+  };
+
+  if (cols >= inner + 4) {
+    log('');
+    log('  ' + dim('┌' + rule + '┐'));
+    log(rowLine('', ink));
+    for (const row of wideArt) { log(rowLine(' ' + row, ink)); }
+    log(rowLine('', ink));
+    log(rowLine('  Your security layer, shipped in 30 seconds.', dim));
+    log('  ' + dim('└' + rule + '┘'));
+    log('  ' + dim('pentest · repo scan · uptime · alerts') + '   ' + ink('https://defen.so'));
+    log('');
+  } else {
+    const nInner = 24;
+    const nRule = '─'.repeat(nInner);
+    const nLine = (plain, paint) => '  ' + dim('│') + paint(plain) + ' '.repeat(Math.max(0, nInner - plain.length)) + dim('│');
+    log('');
+    log('  ' + dim('┌' + nRule + '┐'));
+    log(nLine('  DEFEN.SO', bold));
+    log(nLine('  security, shipped fast', dim));
+    log('  ' + dim('└' + nRule + '┘'));
+    log('  ' + dim('pentest · uptime · alerts'));
+    log('');
+  }
+}
+
+/**
  * `npx @defen.so/init skill` — install the Defenso skill into this project so
  * Claude Code / Cursor / Windsurf know what Defenso is (WAF, uptime, pentest,
  * repo-secret scanning, the MCP tools) and stop hesitating on our commands.
@@ -65,6 +120,8 @@ function installSkill() {
   }
   process.exit(wrote > 0 ? 0 : 1);
 }
+
+banner();
 
 if (process.argv[2] === 'skill') {
   installSkill();
@@ -131,10 +188,7 @@ function run(cmd, args) {
 }
 
 const framework = detect();
-log('');
-log('  Defenso init');
-log('  ------------');
-log(`  Detected: ${framework}`);
+log(`  Detected framework: ${framework}`);
 log('');
 
 if (framework === 'unknown') {
